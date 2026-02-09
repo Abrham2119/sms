@@ -38,7 +38,7 @@ const RoleCard = ({ role, onEdit, onDelete }: { role: Role; onEdit: (r: Role) =>
                             <MoreVertical size={20} />
                         </button>
 
-                        {/* Dropdown Menu */}
+
                         {showMenu && (
                             <>
                                 <div
@@ -85,7 +85,7 @@ const RoleCard = ({ role, onEdit, onDelete }: { role: Role; onEdit: (r: Role) =>
                 </div>
             </div>
 
-            {/* Collapsible Content */}
+
             {isOpen && (
                 <div className="p-6 border border-gray-200 border-t-0 rounded-b-2xl bg-white animate-in slide-in-from-top-2 duration-200">
                     <h4 className="text-sm font-bold text-blue-600 mb-4">Assigned Permissions</h4>

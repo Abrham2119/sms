@@ -14,11 +14,11 @@ export const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
     }
 
     if (allowedRoles && roles.length > 0) {
-        // Check if user has any of the allowed roles by name
+
         const hasAllowedRole = roles.some(role => allowedRoles.includes(role.name));
 
         if (!hasAllowedRole) {
-            // Redirect to the first available role's dashboard or a default
+
             const homeRole = roles[0].name;
             return <Navigate to={`/${homeRole}`} replace />;
         }

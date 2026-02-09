@@ -18,7 +18,7 @@ import { PermissionsPage } from "../features/permissions/PermissionsPage";
 const AppRoutes = () => {
     return (
         <Routes>
-            {/* Public Routes - Redirect to Dashboard if logged in */}
+
             <Route element={<PublicRoute />}>
                 <Route path="/login" element={<LoginPage />} />
                 <Route element={<AuthLayout />}>
@@ -26,22 +26,22 @@ const AppRoutes = () => {
                 </Route>
             </Route>
 
-            {/* Protected Routes */}
+
             <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
-                    {/* Main Dashboard Route */}
+
                     <Route path="/dashboard" element={<DashboardPage />} />
 
-                    {/* Example mapping - adjust as per actual role names */}
+
                     <Route path="/suppliers" element={<SuppliersPage />} />
                     <Route path="/requests" element={<RequestsPage />} />
 
-                    {/* Root redirect - Redirect to Dashboard */}
+
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 </Route>
             </Route>
 
-            {/* Admin Only Routes */}
+
             <Route element={<ProtectedRoute allowedRoles={['admin', 'Super_Admin']} />}>
                 <Route element={<MainLayout />}>
                     <Route path="/admins" element={<AdminsPage />} />

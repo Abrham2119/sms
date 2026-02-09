@@ -6,22 +6,22 @@ interface DataState {
     requests: Request[];
     admins: AdminUser[];
 
-    // Supplier Actions
+
     addSupplier: (supplier: Omit<Supplier, 'id' | 'joinedDate' | 'rating'>) => void;
     updateSupplier: (id: string, updates: Partial<Supplier>) => void;
     deleteSupplier: (id: string) => void;
 
-    // Request Actions
+
     addRequest: (request: Omit<Request, 'id' | 'date' | 'status'>) => void;
     updateRequestStatus: (id: string, status: RequestStatus) => void;
 
-    // Admin Actions
+
     addAdmin: (admin: Omit<AdminUser, 'id' | 'lastLogin' | 'status'>) => void;
     updateAdminStatus: (id: string, status: "active" | "inactive") => void;
     deleteAdmin: (id: string) => void;
 }
 
-// Dummy Data
+
 const initialSuppliers: Supplier[] = [
     { id: '1', companyName: 'TechSource Solutions', contactPerson: 'John Doe', email: 'john@techsource.com', phone: '+1 555-0123', address: '123 Tech Blvd, Silicon Valley', status: 'active', rating: 4.8, joinedDate: '2023-01-15', category: 'electronics' },
     { id: '2', companyName: 'Office Depot Pro', contactPerson: 'Sarah Smith', email: 'contact@officedepot.com', phone: '+1 555-0199', address: '456 Market St, New York', status: 'active', rating: 4.5, joinedDate: '2023-03-20', category: 'office_supplies' },

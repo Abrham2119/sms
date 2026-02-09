@@ -21,14 +21,7 @@ export const LoginPage = () => {
     try {
       await login({ email, password });
       toast.success("Login successful");
-      // Navigation is handled by PublicRoute or manual redirect if needed
-      // But usually PublicRoute will auto-redirect if we are now authenticated
-      // However, PublicRoute wraps the Login route, so it detects state change? 
-      // Zustand state update might happen after render. 
-      // Safest to let the Router or PublicRoute handle it, or manual redirect.
-      // We'll manual redirect just in case or rely on PublicRoute's Effect if it had one (it doesn't).
-      // Since PublicRoute is a parent, it might re-render. 
-      // But typically we navigate manually after login.
+
 
       const { roles } = useAuthStore.getState();
       const redirectPath = getRoleRedirectPath(roles);

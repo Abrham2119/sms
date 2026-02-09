@@ -45,7 +45,7 @@ export function DataTable<T extends { id: string | number }>({
     const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
     const [expandedRows, setExpandedRows] = useState<Set<string | number>>(new Set());
 
-    // Sorting
+
     const handleSort = (key: string) => {
         let direction: 'asc' | 'desc' = 'asc';
         if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -54,11 +54,11 @@ export function DataTable<T extends { id: string | number }>({
         setSortConfig({ key, direction });
     };
 
-    // Filtering & Sorting
+
     const filteredAndSortedData = useMemo(() => {
         let processedData = [...data];
 
-        // Filter
+
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
             processedData = processedData.filter(item =>
@@ -70,7 +70,7 @@ export function DataTable<T extends { id: string | number }>({
             );
         }
 
-        // Sort
+
         if (sortConfig) {
             processedData.sort((a, b) => {
                 const aValue = (a as any)[sortConfig.key];
@@ -85,7 +85,7 @@ export function DataTable<T extends { id: string | number }>({
         return processedData;
     }, [data, searchQuery, sortConfig, columns]);
 
-    // Pagination
+
     const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
     const paginatedData = filteredAndSortedData.slice(
         (currentPage - 1) * itemsPerPage,
@@ -104,7 +104,7 @@ export function DataTable<T extends { id: string | number }>({
 
     return (
         <div className={`space - y - 4 ${wrapperClassName} `}>
-            {/* Controls */}
+
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <div className="relative w-full sm:w-72">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -117,7 +117,7 @@ export function DataTable<T extends { id: string | number }>({
                 </div>
             </div>
 
-            {/* Image-Match: Top Controls Bar */}
+
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                     <button className="flex items-center gap-1 font-semibold hover:text-gray-900">
@@ -148,7 +148,7 @@ export function DataTable<T extends { id: string | number }>({
                 </div>
             </div>
 
-            {/* Table */}
+
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm text-left">

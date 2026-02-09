@@ -21,14 +21,14 @@ export const useAuth = () => {
             if (data.success && data.data) {
                 const { member, access_token } = data.data;
 
-                // Map Member to User
+
                 const user = {
                     id: member.id,
                     name: member.full_name,
                     email: member.email,
                 };
 
-                // create default role for member
+
                 const roles = [{
                     uuid: 'member-role',
                     name: 'Member',

@@ -126,9 +126,9 @@ export interface LoginResponse {
     data: LoginResponseData;
 }
 
-// Supplier Management Dashboard Types
 
-// Permissions & Roles
+
+
 
 export interface PermissionEntity {
     uuid: string;
@@ -207,7 +207,7 @@ export interface Supplier {
     phone: string;
     address: string;
     status: SupplierStatus;
-    rating: number; // 1-5
+    rating: number;
     joinedDate: string;
     category: SupplierCategory;
 }
@@ -230,7 +230,7 @@ export interface AdminUser {
     id: string;
     name: string;
     email: string;
-    role: "admin"; // Always admin for this table view
+    role: "admin";
     lastLogin: string;
     status: "active" | "inactive";
 }

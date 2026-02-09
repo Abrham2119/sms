@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>()(
                     const response = await api.post<AuthResponse>('/v1/login', credentials);
                     const { user, access_token, roles } = response.data.data;
 
-                    // Flatten permissions from all roles
+
                     const permissions = roles.flatMap(role => role.permissions);
 
                     set({

@@ -2,15 +2,15 @@ import { AdvancedTable } from '../../components/ui/AdvancedTable';
 import { Badge } from '../../components/ui/Badge';
 
 export const RequestsPage = () => {
-    // Generate 10 dummy columns
+
     const dummyColumns = Array.from({ length: 10 }, (_, i) => ({
         id: `col_${i + 1}`,
         title: `Column ${i + 1}`,
         accessor: `col_${i + 1}`,
         width: 150,
         render: (row: any) => {
-            // Customize rendering for specific columns to look realistic
-            if (i === 4) { // Status column
+
+            if (i === 4) {
                 const status = row[`col_${i + 1}`] as string;
                 const variant = status === 'Active' ? 'default' : status === 'Pending' ? 'secondary' : 'destructive';
                 return <Badge variant={variant}>{status}</Badge>;
@@ -19,7 +19,7 @@ export const RequestsPage = () => {
         }
     }));
 
-    // Generate dummy rows
+
     const dummyData = Array.from({ length: 50 }, (_, rowIdx) => {
         const row: any = { id: `row_${rowIdx}` };
         dummyColumns.forEach((col, colIdx) => {

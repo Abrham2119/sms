@@ -17,20 +17,14 @@ export const RegisterPage = () => {
     const onSubmit = async (data: any) => {
         setIsLoading(true);
         try {
-            // Mapping form data to API expected structure if needed
-            // API expects: name, email, password, password_confirmation, roles
-            // Form has: fullName, email, phone, password
 
-            // We need password_confirmation in the form technically or just copy password
-            // We also need to assign a default role effectively if the UI doesn't allow selection
-            // Or the backend assigns default.
 
             await registerUser({
                 name: data.fullName,
                 email: data.email,
                 password: data.password,
-                password_confirmation: data.password, // mocking confirmation as same
-                roles: ["Supplier"] // Defaulting to Supplier as per prompt example
+                password_confirmation: data.password,
+                roles: ["Supplier"]
             });
 
             toast.success("Registration successful");

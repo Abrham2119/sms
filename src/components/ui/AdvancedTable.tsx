@@ -22,7 +22,7 @@ interface AdvancedTableProps {
 }
 
 export const AdvancedTable = ({ initialColumns, initialData, title }: AdvancedTableProps) => {
-    // Determine all available column IDs for visibility toggling
+
     const [visibleColumnIds, setVisibleColumnIds] = useState<Set<string>>(() =>
         new Set(initialColumns.map(col => col.id))
     );
@@ -31,7 +31,7 @@ export const AdvancedTable = ({ initialColumns, initialData, title }: AdvancedTa
     const toggleColumnVisibility = (colId: string) => {
         const newVisibleIds = new Set(visibleColumnIds);
         if (newVisibleIds.has(colId)) {
-            // Prevent hiding all columns
+
             if (newVisibleIds.size > 1) {
                 newVisibleIds.delete(colId);
             }
@@ -45,11 +45,11 @@ export const AdvancedTable = ({ initialColumns, initialData, title }: AdvancedTa
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col h-full">
-            {/* Table Toolbar */}
+
             <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50/50 rounded-t-xl">
                 <h3 className="text-lg font-semibold text-gray-800">{title || 'Data Table'}</h3>
 
-                {/* Column Visibility Toggle */}
+
                 <div className="relative">
                     <Button
                         variant="outline"
@@ -88,7 +88,7 @@ export const AdvancedTable = ({ initialColumns, initialData, title }: AdvancedTa
                 </div>
             </div>
 
-            {/* Table Container - Horizontal Scroll */}
+
             <div className="overflow-x-auto relative flex-1 w-full">
                 <table className="w-full text-left border-collapse min-w-max">
                     <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-semibold sticky top-0 z-20 shadow-sm">
@@ -132,7 +132,7 @@ export const AdvancedTable = ({ initialColumns, initialData, title }: AdvancedTa
                     </div>
                 )}
             </div>
-            {/* Backdrop for closing menu */}
+
             {showColumnMenu && (
                 <div
                     className="fixed inset-0 z-40 bg-transparent"

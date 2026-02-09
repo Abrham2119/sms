@@ -42,19 +42,19 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     ];
 
     const filteredLinks = links.filter(link => {
-        // If permission required, check it
+
         if (link.permission) {
             return hasPermission(link.permission);
         }
 
-        // Fallback to Role checks (legacy)
+
         if (!link.roles || link.roles.length === 0) return true;
         return roles.some(role => link.roles!.includes(role.name.toLowerCase()));
     });
 
     return (
         <>
-            {/* Mobile Overlay */}
+
             {isOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -62,7 +62,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 />
             )}
 
-            {/* Sidebar */}
+
             <aside className={`
                 fixed top-0 left-0 z-50 h-full bg-[var(--color-sidebar-bg)] text-white border-r border-gray-800
                 transition-all duration-300 ease-in-out
@@ -71,10 +71,10 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 group w-64 lg:w-20 lg:hover:w-64
             `}>
                 <div className="h-full flex flex-col overflow-hidden">
-                    {/* Header */}
+
                     <div className="h-16 flex items-center justify-between px-6 border-b border-gray-800 whitespace-nowrap">
                         <div className="flex items-center gap-2 min-w-max">
-                            {/* Placeholder Logo Icon */}
+
                             <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
                                 <span className="font-bold text-white">A</span>
                             </div>
@@ -87,7 +87,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         </button>
                     </div>
 
-                    {/* Nav Links */}
+
                     <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto overflow-x-hidden">
                         <div className="mb-6">
                             <div className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
@@ -104,7 +104,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                                         className={`
                                             flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                                             ${active
-                                                ? 'bg-blue-600/20 text-blue-400 border-l-4 border-blue-500' // Active state style
+                                                ? 'bg-blue-600/20 text-blue-400 border-l-4 border-blue-500'
                                                 : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                                             }
                                         `}
@@ -120,7 +120,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                         </div>
                     </nav>
 
-                    {/* Footer */}
+
                     <div className="p-4 border-t border-gray-800 bg-[var(--color-sidebar-bg)] overflow-hidden">
                         <div className="mb-4 px-2 flex items-center gap-3 whitespace-nowrap">
                             <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold shrink-0">

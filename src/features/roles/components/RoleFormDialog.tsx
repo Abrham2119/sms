@@ -78,16 +78,16 @@ export const RoleFormDialog: React.FC<RoleFormDialogProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
+
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
 
-            {/* Modal */}
+
             <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
                 <form onSubmit={handleFormSubmit} className="flex flex-col h-full">
-                    {/* Header */}
+
                     <div className="flex items-center justify-between p-6 border-b border-gray-100">
                         <h2 className="text-xl font-extrabold text-gray-900">
                             {initialData ? 'Edit Role' : 'Add Role'}
@@ -101,7 +101,7 @@ export const RoleFormDialog: React.FC<RoleFormDialogProps> = ({
                         </button>
                     </div>
 
-                    {/* Content */}
+
                     <div className="flex-1 overflow-y-auto p-6 space-y-6">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-900">
@@ -184,7 +184,7 @@ export const RoleFormDialog: React.FC<RoleFormDialogProps> = ({
                         </div>
                     </div>
 
-                    {/* Footer */}
+
                     <div className="p-6 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50/50 rounded-b-3xl">
                         <button
                             type="button"

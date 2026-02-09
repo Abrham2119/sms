@@ -12,7 +12,7 @@ import {
 import { RoleTable } from "./components/RoleTable";
 import { RoleFormDialog } from "./components/RoleFormDialog";
 
-// Define a simple Tailwind-styled Modal for Delete Confirmation since it's small
+
 const DeleteConfirmationDialog = ({
     open,
     onClose,
@@ -58,25 +58,24 @@ export const RolesPage = () => {
     const [activeTab, setActiveTab] = useState(0);
     const [search, setSearch] = useState("");
 
-    // Hooks
-    const { data: roles = [], isLoading } = useRoles();
-    const { data: permissions = [] } = usePermissionsList({
-        enabled: activeTab !== 0, // Load permissions if not in Roles tab (or strictly when needed)
-    });
 
-    // Mutations
-    const createMut = useCreateRole();
-    const updateMut = useUpdateRole();
-    const deleteMut = useDeleteRole();
-
-    // Local State
     const [formState, setFormState] = useState<{
         open: boolean;
         data: Role | null;
     }>({ open: false, data: null });
 
+    const { data: roles = [], isLoading } = useRoles();
+    const { data: permissions = [] } = usePermissionsList({
+        enabled: activeTab !== 0 || formState.open,
+    });
 
-    // Derived State
+    const createMut = useCreateRole();
+    const updateMut = useUpdateRole();
+    const deleteMut = useDeleteRole();
+
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+
+
     const filteredRoles = useMemo(() => {
         return (
             roles?.filter((r) =>
@@ -98,7 +97,7 @@ export const RolesPage = () => {
         return groups;
     }, [permissions]);
 
-    // Handlers
+
     const handleCreate = async (data: {
         name: string;
         permissions: string[];
@@ -131,7 +130,7 @@ export const RolesPage = () => {
             </div>
 
             <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
-                {/* Tabs Header */}
+
                 <div className="px-6 pt-4 border-b border-gray-100">
                     <div className="flex space-x-8">
                         <button
@@ -149,7 +148,7 @@ export const RolesPage = () => {
                                 <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-t-full" />
                             )}
                         </button>
-                        {/* We could add a Permissions tab here if needed later */}
+
                     </div>
                 </div>
 
@@ -212,12 +211,12 @@ export const RolesPage = () => {
                 </div>
             </div>
 
-            {/* Dialogs */}
+
             <RoleFormDialog
                 open={formState.open}
                 onClose={() => setFormState({ open: false, data: null })}
                 initialData={formState.data}
-                permissions={permissions || []} // Pass fetched permissions
+                permissions={permissions || []}
                 onSubmit={formState.data ? handleUpdate : handleCreate}
             />
 

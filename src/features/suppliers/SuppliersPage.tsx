@@ -55,9 +55,9 @@ export const SuppliersPage = () => {
 
     const getStatusVariant = (status: SupplierStatus) => {
         switch (status) {
-            case 'active': return 'default'; // Blueish or Greenish? Custom 'success' not in Badge types yet, reusing 'default' (blue-100) or 'secondary'
+            case 'active': return 'default';
             case 'inactive': return 'secondary';
-            case 'pending': return 'warning'; // If we add warning to Badge
+            case 'pending': return 'warning';
             case 'blacklisted': return 'destructive';
             default: return 'default';
         }
@@ -125,7 +125,7 @@ export const SuppliersPage = () => {
         </div>
     );
 
-    // TODO: Replace with real API -> e.g. axios.get('/suppliers') or use react-query
+
 
     return (
         <div className="space-y-6">
