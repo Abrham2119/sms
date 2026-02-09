@@ -6,7 +6,7 @@ import type { LoginResponse } from '../../../types';
 import { handleApiError } from '../../../utils/errorHandler';
 
 export const useAuth = () => {
-    const { login } = useAuthStore();
+    const { setAuth } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -19,9 +19,23 @@ export const useAuth = () => {
         },
         onSuccess: (data) => {
             if (data.success && data.data) {
-                const { member } = data.data;
-                // login(member, access_token); // PATCH: updated signature
-                login(member.email, 'viewer'); // Default role for member registration
+                const { member, access_token } = data.data;
+
+                // Map Member to User
+                const user = {
+                    id: member.id,
+                    name: member.full_name,
+                    email: member.email,
+                };
+
+                // create default role for member
+                const roles = [{
+                    uuid: 'member-role',
+                    name: 'Member',
+                    permissions: []
+                }];
+
+                setAuth(user, access_token, roles);
                 navigate(from, { replace: true });
             } else {
                 throw new Error(data.message || 'Login failed');

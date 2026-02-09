@@ -16,6 +16,7 @@ interface AuthState {
     register: (credentials: RegisterCredentials) => Promise<void>;
     logout: () => Promise<void>;
     hasPermission: (permissionName: Permission) => boolean;
+    setAuth: (user: User, token: string, roles: Role[]) => void;
     resetError: () => void;
 }
 
@@ -102,6 +103,18 @@ export const useAuthStore = create<AuthState>()(
             hasPermission: (permissionName: Permission) => {
                 const { permissions } = get();
                 return permissions.some(p => p.name === permissionName);
+            },
+
+            setAuth: (user, token, roles) => {
+                const permissions = roles.flatMap(role => role.permissions);
+                set({
+                    user,
+                    token,
+                    roles,
+                    permissions,
+                    isAuthenticated: true,
+                    isLoading: false
+                });
             },
 
             resetError: () => set({ error: null }),
