@@ -1,0 +1,113 @@
+import { useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import { Sidebar } from "./Sidebar";
+import { Menu, Search, Bell, Crown } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
+import { Button } from "../ui/Button";
+
+interface MainLayoutProps {
+  children?: React.ReactNode;
+}
+
+export const MainLayout = ({ children }: MainLayoutProps) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { user } = useAuthStore();
+  const location = useLocation();
+
+  // Map routes to titles
+  const getPageTitle = (pathname: string) => {
+    if (pathname.startsWith("/suppliers")) return "Suppliers";
+    if (pathname.startsWith("/requests")) return "Requests";
+    if (pathname.startsWith("/admins")) return "Admins";
+    return "Dashboard";
+  };
+
+  const pageTitle = getPageTitle(location.pathname);
+
+  return (
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-20 transition-all duration-300">
+        {/* Top Navigation */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-800 hidden sm:block">
+              {pageTitle}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {/* Search Bar */}
+            <div className="hidden md:flex items-center bg-gray-100 rounded-md px-3 py-2 w-64">
+              <Search className="w-4 h-4 text-gray-400 mr-2" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="bg-transparent border-none outline-none text-sm text-gray-700 w-full placeholder-gray-400"
+                aria-label="Search"
+              />
+            </div>
+
+            {/* Notifications */}
+            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full relative">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+
+            {/* Upgrade Button */}
+            <Button
+              size="sm"
+              className="bg-sky-500 hover:bg-sky-600 text-white font-semibold hidden sm:flex items-center gap-2"
+            >
+              <Crown className="w-4 h-4 fill-current" />
+              Upgrade
+            </Button>
+
+            {/* User Profile */}
+            <div className="relative group">
+              <button className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm cursor-pointer hover:bg-indigo-200 transition-colors">
+                {user?.name?.substring(0, 2).toUpperCase() || "AZ"}
+              </button>
+              {/* Simple Dropdown for Logout */}
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 hidden group-hover:block border border-gray-100 dark:border-gray-700">
+                <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    {user?.name}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {user?.email}
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    useAuthStore.getState().logout();
+                    // The store update should trigger re-render in Routes (Public/Protected)
+                    // but manual navigation to login is safer
+                    window.location.href = "/login";
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="flex-1 p-4 lg:p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto">
+            {children || <Outlet />} {/* Support both children and Outlet */}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
