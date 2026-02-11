@@ -44,7 +44,7 @@ const DeleteConfirmationDialog = ({
                     </button>
                     <button
                         onClick={onConfirm}
-                        className="px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-lg shadow-red-200"
+                        className="px-4 py-2 text-sm font-bold text-white bg-danger-600 hover:bg-danger-700 rounded-lg transition-colors shadow-lg shadow-danger-200"
                     >
                         Delete
                     </button>
@@ -138,14 +138,14 @@ export const RolesPage = () => {
                             className={`
                                 pb-4 text-base font-extrabold transition-all relative
                                 ${activeTab === 0
-                                    ? "text-blue-600"
+                                    ? "text-primary-600"
                                     : "text-gray-400 hover:text-gray-600"
                                 }
                             `}
                         >
                             Roles
                             {activeTab === 0 && (
-                                <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded-t-full" />
+                                <span className="absolute bottom-0 left-0 w-full h-1 bg-primary-600 rounded-t-full" />
                             )}
                         </button>
 
@@ -167,12 +167,12 @@ export const RolesPage = () => {
                                         placeholder="Search..."
                                         value={search}
                                         onChange={(e) => setSearch(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none transition-all font-medium"
+                                        className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-gray-200 bg-gray-50/50 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-50 outline-none transition-all font-medium"
                                     />
                                 </div>
                                 <button
                                     onClick={() => setFormState({ open: true, data: null })}
-                                    className="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-200"
+                                    className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-200"
                                 >
                                     <Plus size={20} />
                                     Add Role
@@ -192,9 +192,9 @@ export const RolesPage = () => {
                             {Object.entries(groupedPermissions).map(([category, perms]) => (
                                 <div
                                     key={category}
-                                    className="p-6 rounded-3xl border border-gray-200 hover:border-blue-200 transition-colors bg-white"
+                                    className="p-6 rounded-3xl border border-gray-200 hover:border-primary-200 transition-colors bg-white"
                                 >
-                                    <h3 className="text-lg font-extrabold text-blue-600 mb-4">
+                                    <h3 className="text-lg font-extrabold text-primary-600 mb-4">
                                         {category}
                                     </h3>
                                     <div className="space-y-2">
