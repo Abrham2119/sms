@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Mail, Globe, MapPin, User, Eye, Edit2, Trash2, Package } from 'lucide-react';
+import { Plus, Mail, Globe, MapPin, User, Eye, Edit2, Trash2, Package, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DataTable } from '../../components/table/DataTable';
 import type { Column } from '../../components/table/DataTable';
@@ -138,6 +138,15 @@ export const SuppliersPage = () => {
                         title="Manage Products"
                     >
                         <Package className="w-4 h-4" />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => { e.stopPropagation(); setManagingSupplierStatus(item); }}
+                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                        title="Change Status"
+                    >
+                        <Settings className="w-4 h-4" />
                     </Button>
                     <Button
                         variant="ghost"
