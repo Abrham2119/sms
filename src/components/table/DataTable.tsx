@@ -1,16 +1,11 @@
 
-import React, { useState, useMemo } from 'react';
 import {
     ArrowUpDown,
-    ChevronUp,
     ChevronDown,
-    Search,
-    ChevronRight,
-    Filter,
-    Columns,
-    Download,
-    LayoutDashboard
+    ChevronUp,
+    Search
 } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import { Input } from '../ui/Input';
 import { Pagination } from './Pagination';
 
@@ -29,6 +24,16 @@ interface DataTableProps<T> {
     initialItemsPerPage?: number;
     wrapperClassName?: string;
     renderCollapsible?: (item: T) => React.ReactNode;
+    // Server-side support
+    serverSide?: boolean;
+    totalItems?: number;
+    currentPage?: number;
+    itemsPerPage?: number;
+    onPageChange?: (page: number) => void;
+    onItemsPerPageChange?: (n: number) => void;
+    onSearchChange?: (query: string) => void;
+    onSortChange?: (key: string, direction: 'asc' | 'desc') => void;
+    loading?: boolean;
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -37,14 +42,41 @@ export function DataTable<T extends { id: string | number }>({
     searchPlaceholder = "Search...",
     initialItemsPerPage = 10,
     wrapperClassName = "",
-    renderCollapsible
+    renderCollapsible,
+    serverSide = false,
+    totalItems: externalTotalItems,
+    currentPage: externalCurrentPage,
+    itemsPerPage: externalItemsPerPage,
+    onPageChange,
+    onItemsPerPageChange,
+    onSearchChange,
+    onSortChange,
+    loading
 }: DataTableProps<T>) {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
+    const [internalCurrentPage, setInternalCurrentPage] = useState(1);
+    const [internalItemsPerPage, setInternalItemsPerPage] = useState(initialItemsPerPage);
     const [expandedRows, setExpandedRows] = useState<Set<string | number>>(new Set());
 
+    const currentPage = serverSide ? (externalCurrentPage ?? 1) : internalCurrentPage;
+    const itemsPerPage = serverSide ? (externalItemsPerPage ?? initialItemsPerPage) : internalItemsPerPage;
+
+    const setCurrentPage = (page: number) => {
+        if (serverSide) {
+            onPageChange?.(page);
+        } else {
+            setInternalCurrentPage(page);
+        }
+    };
+
+    const setItemsPerPage = (n: number) => {
+        if (serverSide) {
+            onItemsPerPageChange?.(n);
+        } else {
+            setInternalItemsPerPage(n);
+        }
+    };
 
     const handleSort = (key: string) => {
         let direction: 'asc' | 'desc' = 'asc';
@@ -52,12 +84,14 @@ export function DataTable<T extends { id: string | number }>({
             direction = 'desc';
         }
         setSortConfig({ key, direction });
+        if (serverSide) {
+            onSortChange?.(key, direction);
+        }
     };
 
-
     const filteredAndSortedData = useMemo(() => {
+        if (serverSide) return data;
         let processedData = [...data];
-
 
         if (searchQuery) {
             const lowerQuery = searchQuery.toLowerCase();
@@ -69,7 +103,6 @@ export function DataTable<T extends { id: string | number }>({
                 })
             );
         }
-
 
         if (sortConfig) {
             processedData.sort((a, b) => {
@@ -83,11 +116,11 @@ export function DataTable<T extends { id: string | number }>({
         }
 
         return processedData;
-    }, [data, searchQuery, sortConfig, columns]);
+    }, [data, searchQuery, sortConfig, columns, serverSide]);
 
-
-    const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
-    const paginatedData = filteredAndSortedData.slice(
+    const totalItems = serverSide ? (externalTotalItems ?? data.length) : filteredAndSortedData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const paginatedData = serverSide ? data : filteredAndSortedData.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
@@ -102,27 +135,33 @@ export function DataTable<T extends { id: string | number }>({
         setExpandedRows(newExpanded);
     };
 
-    return (
-        <div className={`space - y - 4 ${wrapperClassName} `}>
+    const handleSearch = (val: string) => {
+        setSearchQuery(val);
+        if (onSearchChange) {
+            onSearchChange(val);
+        }
+        setCurrentPage(1);
+    };
 
+    return (
+        <div className={`space-y-4 ${wrapperClassName} `}>
             <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
                 <div className="relative w-full sm:w-72">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                         placeholder={searchPlaceholder}
                         value={searchQuery}
-                        onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                        onChange={(e) => handleSearch(e.target.value)}
                         className="pl-9"
                     />
                 </div>
             </div>
 
-
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            {/* <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                     <button className="flex items-center gap-1 font-semibold hover:text-gray-900">
                         <LayoutDashboard className="w-4 h-4" />
-                        20 rows
+                        {itemsPerPage} rows
                         <ChevronDown className="w-3 h-3 text-gray-400" />
                     </button>
                     <button className="flex items-center gap-1 font-semibold hover:text-gray-900">
@@ -146,8 +185,7 @@ export function DataTable<T extends { id: string | number }>({
                         <span className="text-sm font-semibold text-gray-500">Search</span>
                     </div>
                 </div>
-            </div>
-
+            </div> */}
 
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
                 <div className="overflow-x-auto">
@@ -159,7 +197,7 @@ export function DataTable<T extends { id: string | number }>({
                                     <th
                                         key={String(col.key)}
                                         scope="col"
-                                        className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 transition-colors"
+                                        className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
                                         onClick={() => col.sortable && handleSort(String(col.key))}
                                     >
                                         <div className="flex items-center gap-2">
@@ -176,34 +214,52 @@ export function DataTable<T extends { id: string | number }>({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                            {paginatedData.length > 0 ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={columns.length + (renderCollapsible !== undefined ? 1 : 0)} className="px-6 py-8 text-center">
+                                        <div className="flex justify-center items-center gap-2">
+                                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
+                                            <span className="text-gray-500">Loading data...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : paginatedData.length > 0 ? (
                                 paginatedData.map((item) => (
                                     <React.Fragment key={item.id}>
-                                        <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <tr
+                                            className={`hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors ${renderCollapsible ? 'cursor-pointer' : ''}`}
+                                            onClick={() => renderCollapsible && toggleRow(item.id)}
+                                        >
                                             {renderCollapsible && (
                                                 <td className="px-4 py-3">
                                                     <button
-                                                        onClick={() => toggleRow(item.id)}
-                                                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleRow(item.id);
+                                                        }}
+                                                        className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-transform duration-200"
+                                                        style={{ transform: expandedRows.has(item.id) ? 'rotate(0deg)' : 'rotate(-90deg)' }}
                                                     >
-                                                        {expandedRows.has(item.id) ? (
-                                                            <ChevronDown className="h-4 w-4" />
-                                                        ) : (
-                                                            <ChevronRight className="h-4 w-4" />
-                                                        )}
+                                                        <ChevronDown className="h-4 w-4" />
                                                     </button>
                                                 </td>
                                             )}
                                             {columns.map((col) => (
-                                                <td key={`${item.id} -${String(col.key)} `} className="px-4 py-3 text-gray-600 dark:text-gray-300">
+                                                <td key={`${item.id}-${String(col.key)}`} className="px-4 py-3 text-gray-600 dark:text-gray-300">
                                                     {col.render ? col.render(item) : (item as any)[col.key]}
                                                 </td>
                                             ))}
                                         </tr>
-                                        {renderCollapsible && expandedRows.has(item.id) && (
-                                            <tr className="bg-gray-50 dark:bg-gray-900/50">
-                                                <td colSpan={columns.length + 1} className="px-4 py-4 border-b border-gray-100 dark:border-gray-700 shadow-inner">
-                                                    {renderCollapsible(item)}
+                                        {renderCollapsible && (
+                                            <tr className="bg-gray-50/30 dark:bg-gray-900/20">
+                                                <td colSpan={columns.length + 1} className="p-0 border-none">
+                                                    <div className={`collapsible-wrapper ${expandedRows.has(item.id) ? 'open' : ''}`}>
+                                                        <div className="collapsible-inner">
+                                                            <div className="px-4 py-4 border-b border-gray-100 dark:border-gray-700 shadow-inner">
+                                                                {renderCollapsible(item)}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         )}
@@ -211,7 +267,7 @@ export function DataTable<T extends { id: string | number }>({
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={columns.length + (renderCollapsible ? 1 : 0)} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    <td colSpan={columns.length + (renderCollapsible !== undefined ? 1 : 0)} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                         No results found.
                                     </td>
                                 </tr>
@@ -223,7 +279,7 @@ export function DataTable<T extends { id: string | number }>({
                 <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    totalItems={filteredAndSortedData.length}
+                    totalItems={totalItems}
                     itemsPerPage={itemsPerPage}
                     onPageChange={setCurrentPage}
                     onItemsPerPageChange={(n) => { setItemsPerPage(n); setCurrentPage(1); }}

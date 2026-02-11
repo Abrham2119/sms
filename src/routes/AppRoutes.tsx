@@ -14,6 +14,8 @@ import DashboardPage from "../features/dashboard/DashboardPage";
 import { UsersPage } from "../features/users/UsersPage";
 import { RolesPage } from "../features/roles/RolesPage";
 import { PermissionsPage } from "../features/permissions/PermissionsPage";
+import CategoriesPage from "../features/categories/CategoriesPage";
+import ProductsPage from "../features/products/ProductsPage";
 
 const AppRoutes = () => {
     return (
@@ -35,6 +37,8 @@ const AppRoutes = () => {
 
                     <Route path="/suppliers" element={<SuppliersPage />} />
                     <Route path="/requests" element={<RequestsPage />} />
+                    <Route path="/categories" element={<CategoriesPage />} />
+                    <Route path="/products" element={<ProductsPage />} />
 
 
                     <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -1,0 +1,15 @@
+@layer utilities {
+    .collapsible-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .collapsible-wrapper.open {
+        grid-template-rows: 1fr;
+    }
+
+    .collapsible-inner {
+        overflow: hidden;
+    }
+}

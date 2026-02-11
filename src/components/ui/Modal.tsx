@@ -52,11 +52,11 @@ export const Modal: React.FC<ModalProps> = ({
         >
             <div
                 ref={modalRef}
-                className={`bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg border border-gray-100 dark:border-gray-700 overflow-hidden animate-scale-in ${className}`}
+                className={`bg-white dark:bg-gray-800  rounded-xl shadow-2xl w-full max-w-lg border border-gray-100 dark:border-gray-700 overflow-hidden animate-scale-in ${className}`}
                 role="dialog"
                 aria-modal="true"
             >
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex items-center  justify-between px-6 py-4  border-b border-gray-100 dark:border-gray-700">
                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {title}
                     </h2>
@@ -69,7 +69,7 @@ export const Modal: React.FC<ModalProps> = ({
                     </button>
                 </div>
 
-                <div className="p-6">
+                <div className="max-h-[calc(100vh-10rem)] overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
                     {children}
                 </div>
             </div>

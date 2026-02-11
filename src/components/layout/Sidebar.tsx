@@ -32,11 +32,14 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
     const links: SidebarLink[] = [
         { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: [] },
-        { name: 'Suppliers', path: '/suppliers', icon: Truck, roles: ['admin', 'supplier'] },
-        { name: 'Requests', path: '/requests', icon: ClipboardList, roles: ['admin', 'supplier'] },
-        { name: 'Admins', path: '/admins', icon: Users, roles: ['admin'] },
+
+        { name: 'Suppliers', path: '/suppliers', icon: Truck, permission: PERMISSIONS.READ_SUPPLIER },
+        { name: 'Requests', path: '/requests', icon: ClipboardList, permission: PERMISSIONS.READ_REQUEST },
+        { name: 'Admins', path: '/admins', icon: Users, permission: PERMISSIONS.READ_USER },
 
         { name: 'Users', path: '/users', icon: Users, permission: PERMISSIONS.READ_USER },
+        { name: 'Categories', path: '/categories', icon: ClipboardList, permission: PERMISSIONS.READ_CATEGORY },
+        { name: 'Products', path: '/products', icon: ClipboardList, permission: PERMISSIONS.READ_PRODUCT },
         { name: 'Roles', path: '/roles', icon: ClipboardList, permission: PERMISSIONS.READ_ROLES },
         { name: 'Permissions', path: '/permissions', icon: ClipboardList, permission: PERMISSIONS.READ_PERMISSION },
     ];
@@ -47,10 +50,12 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             return hasPermission(link.permission);
         }
 
-
         if (!link.roles || link.roles.length === 0) return true;
         return roles.some(role => link.roles!.includes(role.name.toLowerCase()));
     });
+
+    console.log(filteredLinks);
+
 
     return (
         <>

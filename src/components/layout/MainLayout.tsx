@@ -19,6 +19,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     if (pathname.startsWith("/suppliers")) return "Suppliers";
     if (pathname.startsWith("/requests")) return "Requests";
     if (pathname.startsWith("/admins")) return "Admins";
+    if (pathname.startsWith("/categories")) return "Categories";
+    if (pathname.startsWith("/products")) return "Products";
     return "Dashboard";
   };
 
