@@ -1,5 +1,5 @@
 import { api } from "../../../lib/api";
-import type { Supplier, PaginatedResponse, ApiResponse } from "../../../types";
+import type { Supplier, PaginatedResponse, ApiResponse, Product } from "../../../types";
 import { queryBuilder } from "../../../utils/queryBuilder";
 
 export const SUPPLIER_ENDPOINTS = {
@@ -55,5 +55,19 @@ export class SupplierService {
                 "Content-Type": "multipart/form-data",
             },
         });
+    }
+
+    static async getLinkedProducts(id: string, params?: any): Promise<PaginatedResponse<Product>> {
+        const queryString = queryBuilder(params || {});
+        const response = await api.get<PaginatedResponse<Product>>(`${SUPPLIER_ENDPOINTS.BASE}/${id}/products${queryString}`);
+        return response.data;
+    }
+
+    static async linkProducts(id: string, productIds: string[]): Promise<void> {
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/products/link`, { product_ids: productIds });
+    }
+
+    static async unlinkProduct(id: string, productId: string): Promise<void> {
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/products/unlink`, { product_ids: [productId] });
     }
 }

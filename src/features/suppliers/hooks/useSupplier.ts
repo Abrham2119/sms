@@ -117,3 +117,41 @@ export const useUploadSupplierAttachments = () => {
         }
     });
 };
+
+export const useLinkedProducts = (id: string, params?: any) => {
+    return useQuery({
+        queryKey: ['suppliers', id, 'products', params],
+        queryFn: () => SupplierService.getLinkedProducts(id, params),
+        enabled: !!id,
+    });
+};
+
+export const useLinkProducts = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ supplierId, productIds }: { supplierId: string; productIds: string[] }) =>
+            SupplierService.linkProducts(supplierId, productIds),
+        onSuccess: (_, { supplierId }) => {
+            queryClient.invalidateQueries({ queryKey: ['suppliers', supplierId, 'products'] });
+            toast.success('Products linked successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to link products.');
+        }
+    });
+};
+
+export const useUnlinkProduct = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ supplierId, productId }: { supplierId: string; productId: string }) =>
+            SupplierService.unlinkProduct(supplierId, productId),
+        onSuccess: (_, { supplierId }) => {
+            queryClient.invalidateQueries({ queryKey: ['suppliers', supplierId, 'products'] });
+            toast.success('Product unlinked successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to unlink product.');
+        }
+    });
+};

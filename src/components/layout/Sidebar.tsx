@@ -3,8 +3,13 @@ import { useAuthStore } from '../../store/authStore';
 import { PERMISSIONS, type Permission } from '../../types';
 import {
     Truck,
-    ClipboardList,
+    FileText,
+    ShieldCheck,
     Users,
+    FolderTree,
+    Package,
+    UserCog,
+    KeyRound,
     LogOut,
     X,
     LayoutDashboard
@@ -34,14 +39,14 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, roles: [] },
 
         { name: 'Suppliers', path: '/suppliers', icon: Truck, permission: PERMISSIONS.READ_SUPPLIER },
-        { name: 'Requests', path: '/requests', icon: ClipboardList, permission: PERMISSIONS.READ_REQUEST },
-        { name: 'Admins', path: '/admins', icon: Users, permission: PERMISSIONS.READ_USER },
+        { name: 'Requests', path: '/requests', icon: FileText, permission: PERMISSIONS.READ_REQUEST },
+        { name: 'Admins', path: '/admins', icon: ShieldCheck, permission: PERMISSIONS.READ_USER },
 
         { name: 'Users', path: '/users', icon: Users, permission: PERMISSIONS.READ_USER },
-        { name: 'Categories', path: '/categories', icon: ClipboardList, permission: PERMISSIONS.READ_CATEGORY },
-        { name: 'Products', path: '/products', icon: ClipboardList, permission: PERMISSIONS.READ_PRODUCT },
-        { name: 'Roles', path: '/roles', icon: ClipboardList, permission: PERMISSIONS.READ_ROLES },
-        { name: 'Permissions', path: '/permissions', icon: ClipboardList, permission: PERMISSIONS.READ_PERMISSION },
+        { name: 'Categories', path: '/categories', icon: FolderTree, permission: PERMISSIONS.READ_CATEGORY },
+        { name: 'Products', path: '/products', icon: Package, permission: PERMISSIONS.READ_PRODUCT },
+        { name: 'Roles', path: '/roles', icon: UserCog, permission: PERMISSIONS.READ_ROLES },
+        { name: 'Permissions', path: '/permissions', icon: KeyRound, permission: PERMISSIONS.READ_PERMISSION },
     ];
 
     const filteredLinks = links.filter(link => {
