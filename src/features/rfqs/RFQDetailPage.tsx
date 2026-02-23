@@ -288,7 +288,7 @@ export const RFQDetailPage = () => {
             <div className="max-w-7xl mx-auto px-6 py-10 lg:px-8">
                 {activeTab === 'overview' && <RFQOverviewTab rfq={rfq} />}
                 {activeTab === 'products' && <RFQProductsTab rfq={rfq} />}
-                {activeTab === 'activity' && <ActivityLog entityType="rfq" entityId={id!} />}
+                {activeTab === 'activity' && <ActivityLog entityType="supplier" entityId={id!} />}
             </div>
         </div>
     );

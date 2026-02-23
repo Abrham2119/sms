@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trophy, CheckCircle2 } from 'lucide-react';
-import { useShortlistedEvaluations, useAwardQuotation, useRFQ } from './hooks/useRFQ';
-import { DataTable } from '../../components/table/DataTable';
-import type { Column } from '../../components/table/DataTable';
-import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
-import type { Evaluation } from '../../types/rfq';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PermissionGuard } from '../../components/guards/PermissionGuard';
+import type { Column } from '../../components/table/DataTable';
+import { DataTable } from '../../components/table/DataTable';
+import { Badge } from '../../components/ui/Badge';
+import { Button } from '../../components/ui/Button';
 import { PERMISSIONS } from '../../types';
+import type { Evaluation } from '../../types/rfq';
+import { useAwardQuotation, useRFQ, useShortlistedEvaluations } from './hooks/useRFQ';
 
 export const ShortlistedEvaluationsPage = () => {
     const { id: rfqId } = useParams<{ id: string }>();
@@ -49,23 +49,23 @@ export const ShortlistedEvaluationsPage = () => {
         refetch();
     };
 
-    const getStatusVariant = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'submitted': return 'default';
-            case 'accepted': return 'success';
-            case 'rejected': return 'danger';
-            case 'shortlisted': return 'warning';
-            case 'awarded': return 'success';
-            case 'po_generated': return 'success';
-            default: return 'default';
-        }
-    };
+    // const getStatusVariant = (status: string) => {
+    //     switch (status?.toLowerCase()) {
+    //         case 'submitted': return 'default';
+    //         case 'accepted': return 'success';
+    //         case 'rejected': return 'danger';
+    //         case 'shortlisted': return 'warning';
+    //         case 'awarded': return 'success';
+    //         case 'po_generated': return 'success';
+    //         default: return 'default';
+    //     }
+    // };
 
-    const formatStatus = (s: string) => {
-        if (!s) return 'N/A';
-        const replaced = s.replace(/_/g, ' ');
-        return replaced.charAt(0).toUpperCase() + replaced.slice(1).toLowerCase();
-    };
+    // const formatStatus = (s: string) => {
+    //     if (!s) return 'N/A';
+    //     const replaced = s.replace(/_/g, ' ');
+    //     return replaced.charAt(0).toUpperCase() + replaced.slice(1).toLowerCase();
+    // };
 
     const columns: Column<Evaluation>[] = [
         {
@@ -118,8 +118,9 @@ export const ShortlistedEvaluationsPage = () => {
         {
             key: 'status',
             label: 'Status',
-            render: (e) => {
-                const status = e.quotation?.status || 'N/A';
+            render: (e:any) => {
+                console.log(e);
+                // const status = e.quotation?.status || 'N/A';
                 return (
                     <div className="whitespace-nowrap flex items-center gap-4">
                         {/* <div className="w-40">

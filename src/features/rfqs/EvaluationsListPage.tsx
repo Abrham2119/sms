@@ -58,23 +58,23 @@ export const EvaluationsListPage = () => {
         refetch();
     };
 
-    const getStatusVariant = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case 'submitted': return 'default';
-            case 'accepted': return 'success';
-            case 'rejected': return 'danger';
-            case 'shortlisted': return 'warning';
-            case 'awarded': return 'success';
-            case 'po_generated': return 'success';
-            default: return 'default';
-        }
-    };
+    // const getStatusVariant = (status: string) => {
+    //     switch (status?.toLowerCase()) {
+    //         case 'submitted': return 'default';
+    //         case 'accepted': return 'success';
+    //         case 'rejected': return 'danger';
+    //         case 'shortlisted': return 'warning';
+    //         case 'awarded': return 'success';
+    //         case 'po_generated': return 'success';
+    //         default: return 'default';
+    //     }
+    // };
 
-    const formatStatus = (s: string) => {
-        if (!s) return 'N/A';
-        const replaced = s.replace(/_/g, ' ');
-        return replaced.charAt(0).toUpperCase() + replaced.slice(1).toLowerCase();
-    };
+    // const formatStatus = (s: string) => {
+    //     if (!s) return 'N/A';
+    //     const replaced = s.replace(/_/g, ' ');
+    //     return replaced.charAt(0).toUpperCase() + replaced.slice(1).toLowerCase();
+    // };
 
     const columns: Column<Evaluation>[] = [
         {
