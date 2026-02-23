@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Mail, Globe, MapPin, User, Eye, Edit2, Trash2, Package, Settings } from 'lucide-react';
+import { Plus, Mail, Globe, MapPin, User, Eye, Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DataTable } from '../../components/table/DataTable';
 import type { Column } from '../../components/table/DataTable';
@@ -7,12 +7,13 @@ import { Button } from '../../components/ui/Button';
 import { SupplierFormDialog } from './components/SupplierFormDialog';
 import { useSuppliers, useCreateSupplier, useUpdateSupplier, useDeleteSupplier } from './hooks/useSupplier';
 import type { Supplier } from '../../types';
-
+import { PERMISSIONS } from '../../types';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { EntityDetailModal } from '../../components/ui/EntityDetailModal';
 import { SupplierStatusModal } from './components/SupplierStatusModal';
+import { PermissionGuard } from '../../components/guards/PermissionGuard';
 
-export const SuppliersPage = () => {
+const SuppliersPageContent = () => {
     const navigate = useNavigate();
     // State
     const [page, setPage] = useState(1);
@@ -129,32 +130,25 @@ export const SuppliersPage = () => {
             key: 'actions',
             label: 'Actions',
             render: (item) => (
-                <div className="flex justify-end gap-2">
-                    <Button
+                <div className="flex justify-center gap-2">
+                    {/* <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/suppliers/${item.id}/products`); }}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/suppliers/link/${item.id}`); }}
                         className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-                        title="Manage Products"
-                    >
-                        <Package className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => { e.stopPropagation(); setManagingSupplierStatus(item); }}
-                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-                        title="Change Status"
+                        title="Manage"
                     >
                         <Settings className="w-4 h-4" />
-                    </Button>
+                    </Button> */}
+                    {/* View action is redundant if we navigate on row click, or we can keep it pointing to detail page too */}
                     <Button
                         variant="ghost"
                         size="sm"
-                        onClick={(e) => { e.stopPropagation(); setViewingSupplier(item); }}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/suppliers/${item.id}`); }}
                     >
                         <Eye className="w-4 h-4 text-primary-600" />
                     </Button>
+
                     <Button
                         variant="ghost"
                         size="sm"
@@ -251,6 +245,7 @@ export const SuppliersPage = () => {
                 }}
                 onSearchChange={setSearch}
                 searchPlaceholder="Search suppliers by name, TIN..."
+                onRowClick={(item) => navigate(`/suppliers/${item.id}`)}
             />
 
             <SupplierFormDialog
@@ -266,7 +261,7 @@ export const SuppliersPage = () => {
                 onConfirm={handleDelete}
                 title="Deactivate Supplier?"
                 description="This will permanently remove the supplier and its associations. Are you absolutely certain?"
-                confirmText="Terminate Partnership"
+                confirmText="Archive management"
                 variant="danger"
                 isLoading={deleteMutation.isPending}
             />
@@ -310,6 +305,14 @@ export const SuppliersPage = () => {
                 supplier={managingSupplierStatus}
             />
         </div>
+    );
+};
+
+export const SuppliersPage = () => {
+    return (
+        <PermissionGuard requiredPermission={PERMISSIONS.READ_SUPPLIER}>
+            <SuppliersPageContent />
+        </PermissionGuard>
     );
 };
 

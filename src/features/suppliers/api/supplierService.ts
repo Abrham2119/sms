@@ -1,13 +1,27 @@
 import { api } from "../../../lib/api";
-import type { Supplier, PaginatedResponse, ApiResponse, Product } from "../../../types";
+import type { Supplier, PaginatedResponse, ApiResponse, Product, SupplierProfile, SupplierProfileResponse } from "../../../types";
 import { queryBuilder } from "../../../utils/queryBuilder";
 
 export const SUPPLIER_ENDPOINTS = {
     LIST: "/admin/suppliers",
     BASE: "/admin/suppliers",
+    MY_PRODUCTS: "supplier/my-products",
+    MY_LINKED_PRODUCTS: "/supplier/my-linked-products",
+    PROFILE: "/supplier/me",
+    ACTIVITIES: "/admin/audit/suppliers",
 } as const;
 
 export class SupplierService {
+    static async getProfile(): Promise<SupplierProfileResponse> {
+        const response = await api.get<SupplierProfileResponse>(SUPPLIER_ENDPOINTS.PROFILE);
+        return response.data;
+    }
+
+    static async updateProfile(data: Partial<SupplierProfile>): Promise<SupplierProfile> {
+        const response = await api.put<{ data: SupplierProfile }>(SUPPLIER_ENDPOINTS.PROFILE, data);
+        return response.data.data;
+    }
+
     static async getAll(params?: any): Promise<PaginatedResponse<Supplier>> {
         const queryString = queryBuilder(params || {});
         const response = await api.get<PaginatedResponse<Supplier>>(`${SUPPLIER_ENDPOINTS.LIST}${queryString}`);
@@ -15,18 +29,19 @@ export class SupplierService {
     }
 
     static async getById(id: string): Promise<Supplier> {
-        const response = await api.get<ApiResponse<Supplier>>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`);
-        return response.data.data;
+        const response = await api.get<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`);
+        // Check if response.data has a 'data' property (standard wrapper)
+        return (response.data as any).data || response.data;
     }
 
     static async create(data: Partial<Supplier>): Promise<Supplier> {
-        const response = await api.post<ApiResponse<Supplier>>(SUPPLIER_ENDPOINTS.BASE, data);
-        return response.data.data;
+        const response = await api.post<ApiResponse<Supplier> | Supplier>(SUPPLIER_ENDPOINTS.BASE, data);
+        return (response.data as any).data || response.data;
     }
 
     static async update(id: string, data: Partial<Supplier>): Promise<Supplier> {
-        const response = await api.put<ApiResponse<Supplier>>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data);
-        return response.data.data;
+        const response = await api.put<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data);
+        return (response.data as any).data || response.data;
     }
 
     static async delete(id: string): Promise<void> {
@@ -67,7 +82,39 @@ export class SupplierService {
         await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/products/link`, { product_ids: productIds });
     }
 
-    static async unlinkProduct(id: string, productId: string): Promise<void> {
-        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/products/unlink`, { product_ids: [productId] });
+    static async unlinkProduct(id: string, productIds: string[]): Promise<void> {
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/products/unlink`, { product_ids: productIds });
+    }
+
+    // New endpoints for authenticated suppliers
+    static async getMyProducts(params?: any): Promise<PaginatedResponse<Product>> {
+        const queryString = queryBuilder(params || {});
+        const response = await api.get<PaginatedResponse<Product>>(`${SUPPLIER_ENDPOINTS.MY_PRODUCTS}${queryString}`);
+        return response.data;
+    }
+
+    static async getMyLinkedProducts(supplierId: string, params?: any): Promise<PaginatedResponse<Product>> {
+        const queryString = queryBuilder(params || {});
+        const response = await api.get<PaginatedResponse<Product>>(`${SUPPLIER_ENDPOINTS.BASE}/${supplierId}/products${queryString}`);
+        return response.data;
+    }
+
+    static async linkMyProducts(supplierId: string, productIds: string[]): Promise<void> {
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${supplierId}/products/link`, { product_ids: productIds });
+    }
+
+    static async unlinkMyProduct(supplierId: string, productId: string): Promise<void> {
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${supplierId}/products/unlink`, { product_ids: [productId] });
+    }
+
+    static async getMyProductById(id: string): Promise<Product> {
+        const response = await api.get<ApiResponse<Product> | Product>(`${SUPPLIER_ENDPOINTS.MY_PRODUCTS}/${id}`);
+        return (response.data as any).data || response.data;
+    }
+
+    static async getActivities(id: string, params?: any): Promise<any> {
+        const queryString = queryBuilder(params || {});
+        const response = await api.get<any>(`${SUPPLIER_ENDPOINTS.ACTIVITIES}/${id}/activities${queryString}`);
+        return response.data;
     }
 }

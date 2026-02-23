@@ -17,18 +17,18 @@ export class CategoryService {
     }
 
     static async getById(id: string): Promise<Category> {
-        const response = await api.get<ApiResponse<Category>>(`${CATEGORY_ENDPOINTS.BASE}/${id}`);
-        return response.data.data;
+        const response = await api.get<ApiResponse<Category> | Category>(`${CATEGORY_ENDPOINTS.BASE}/${id}`);
+        return (response.data as any).data || response.data;
     }
 
     static async create(data: Partial<Category>): Promise<Category> {
-        const response = await api.post<ApiResponse<Category>>(CATEGORY_ENDPOINTS.BASE, data);
-        return response.data.data;
+        const response = await api.post<ApiResponse<Category> | Category>(CATEGORY_ENDPOINTS.BASE, data);
+        return (response.data as any).data || response.data;
     }
 
     static async update(id: string, data: Partial<Category>): Promise<Category> {
-        const response = await api.put<ApiResponse<Category>>(`${CATEGORY_ENDPOINTS.BASE}/${id}`, data);
-        return response.data.data;
+        const response = await api.put<ApiResponse<Category> | Category>(`${CATEGORY_ENDPOINTS.BASE}/${id}`, data);
+        return (response.data as any).data || response.data;
     }
 
     static async delete(id: string): Promise<void> {

@@ -1,17 +1,23 @@
 import { AdvancedTable } from '../../components/ui/AdvancedTable';
 import { Badge } from '../../components/ui/Badge';
+import { PERMISSIONS } from '../../types';
+import { PermissionGuard } from '../../components/guards/PermissionGuard';
 
-export const RequestsPage = () => {
+interface Row extends Record<string, string> {
+    id: string;
+}
+
+const RequestsPageContent = () => {
 
     const dummyColumns = Array.from({ length: 10 }, (_, i) => ({
         id: `col_${i + 1}`,
         title: `Column ${i + 1}`,
         accessor: `col_${i + 1}`,
         width: 150,
-        render: (row: any) => {
+        render: (row: Row) => {
 
             if (i === 4) {
-                const status = row[`col_${i + 1}`] as string;
+                const status = row[`col_${i + 1}`];
                 const variant = status === 'Active' ? 'default' : status === 'Pending' ? 'secondary' : 'destructive';
                 return <Badge variant={variant}>{status}</Badge>;
             }
@@ -21,7 +27,7 @@ export const RequestsPage = () => {
 
 
     const dummyData = Array.from({ length: 50 }, (_, rowIdx) => {
-        const row: any = { id: `row_${rowIdx}` };
+        const row: Record<string, string> & { id: string } = { id: `row_${rowIdx}` };
         dummyColumns.forEach((col, colIdx) => {
             if (colIdx === 0) row[col.accessor] = `Item ${rowIdx + 1}`;
             else if (colIdx === 1) row[col.accessor] = `Description ${rowIdx + 1}`;
@@ -51,3 +57,13 @@ export const RequestsPage = () => {
         </div>
     );
 };
+
+export const RequestsPage = () => {
+    return (
+        <PermissionGuard requiredPermission={PERMISSIONS.READ_RFQ}>
+            <RequestsPageContent />
+        </PermissionGuard>
+    );
+};
+
+export default RequestsPage;

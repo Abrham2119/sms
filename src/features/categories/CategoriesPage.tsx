@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import type { Category } from "../../types";
+import { PERMISSIONS } from "../../types";
+import { PermissionGuard } from "../../components/guards/PermissionGuard";
 import {
     useCategories,
     useCreateCategory,
@@ -58,7 +60,7 @@ export const CategoriesPage = () => {
             key: 'actions',
             label: 'Actions',
             render: (c) => (
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-center gap-2">
                     <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setViewingCategory(c); }}>
                         <Eye className="w-4 h-4 text-primary-600" />
                     </Button>
@@ -190,4 +192,12 @@ export const CategoriesPage = () => {
     );
 };
 
-export default CategoriesPage;
+export const CategoriesPageWithGuard = () => {
+    return (
+        <PermissionGuard requiredPermission={PERMISSIONS.READ_CATEGORY}>
+            <CategoriesPage />
+        </PermissionGuard>
+    );
+};
+
+export default CategoriesPageWithGuard;

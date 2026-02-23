@@ -1,9 +1,8 @@
+import { AlignJustify, AlignLeft, Bell, Menu, Search } from "lucide-react";
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Sidebar } from "./Sidebar";
-import { Menu, Search, Bell, Crown } from "lucide-react";
 import { useAuthStore } from "../../store/authStore";
-import { Button } from "../ui/Button";
+import { Sidebar } from "./Sidebar";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -11,6 +10,7 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user } = useAuthStore();
   const location = useLocation();
 
@@ -28,9 +28,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+      />
 
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-20 transition-all duration-300">
+      <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
 
         <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
           <div className="flex items-center gap-4">
@@ -39,6 +43,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               className="lg:hidden p-2 hover:bg-gray-100 rounded-lg text-gray-600"
             >
               <Menu className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="hidden lg:flex p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-900 transition-colors"
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isSidebarCollapsed ? <AlignJustify className="w-5 h-5" /> : <AlignLeft className="w-5 h-5" />}
             </button>
             <h1 className="text-xl font-bold text-gray-800 hidden sm:block">
               {pageTitle}
@@ -64,13 +75,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </button>
 
 
-            <Button
+            {/* <Button
               size="sm"
               className="bg-sky-500 hover:bg-sky-600 text-white font-semibold hidden sm:flex items-center gap-2"
             >
               <Crown className="w-4 h-4 fill-current" />
               Upgrade
-            </Button>
+            </Button> */}
 
 
             <div className="relative group">
@@ -87,22 +98,10 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                     {user?.email}
                   </p>
                 </div>
-                <button
-                  onClick={() => {
-                    useAuthStore.getState().logout();
-
-                    window.location.href = "/login";
-                  }}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  Sign out
-                </button>
               </div>
             </div>
           </div>
         </header>
-
-
         <main className="flex-1 p-4 lg:p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             {children || <Outlet />}

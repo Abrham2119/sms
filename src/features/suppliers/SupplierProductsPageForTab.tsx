@@ -1,41 +1,38 @@
+import {
+    Link2Off,
+    Package,
+    Plus,
+    Eye
+} from 'lucide-react';
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import {
-    Package,
-    ArrowLeft,
-    Plus,
-    Link2Off,
-    // Store
-} from 'lucide-react';
-import { DataTable } from '../../components/table/DataTable';
 import type { Column } from '../../components/table/DataTable';
+import { DataTable } from '../../components/table/DataTable';
 import { Button } from '../../components/ui/Button';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import type { Product } from '../../types';
+import { ProductLinkingModal } from './components/ProductLinkingModal';
 import {
     useLinkedProducts,
     useUnlinkProduct,
-    // useSupplier
 } from './hooks/useSupplier';
-import { ProductLinkingModal } from './components/ProductLinkingModal';
-import type { Product } from '../../types';
-import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 
 interface SupplierProductsPageProps {
     supplierId?: string;
 }
 
-export const SupplierProductsPage = ({ supplierId: propSupplierId }: SupplierProductsPageProps = {}) => {
+export const SupplierProductsPageForTab = ({ supplierId: propSupplierId }: SupplierProductsPageProps = {}) => {
     const { id: paramId } = useParams<{ id: string }>();
-    const id = propSupplierId || paramId;
-
-    if (!id) return <div>Invalid Supplier ID</div>;
-
     const navigate = useNavigate();
+    const id = propSupplierId || paramId;
+    if (!id) return <div>Invalid Supplier ID</div>;
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(15);
     const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
     const [isLinkingModalOpen, setIsLinkingModalOpen] = useState(false);
     const [unlinkingProducts, setUnlinkingProducts] = useState<Product[] | null>(null);
 
+    // const { data: supplier } = useSupplier(id!);
     const { data: productsData, isLoading } = useLinkedProducts(id, {
         page,
         per_page: perPage
@@ -92,7 +89,16 @@ export const SupplierProductsPage = ({ supplierId: propSupplierId }: SupplierPro
             key: 'actions',
             label: 'Actions',
             render: (item) => (
-                <div className="flex justify-end">
+                <div className="flex justify-center gap-2">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-primary-600 hover:text-primary-700 hover:bg-primary-50"
+                        onClick={(e) => { e.stopPropagation(); navigate(`/products/${item.id}`); }}
+                        title="View Details"
+                    >
+                        <Eye className="w-4 h-4" />
+                    </Button>
                     <Button
                         variant="ghost"
                         size="sm"
@@ -111,20 +117,15 @@ export const SupplierProductsPage = ({ supplierId: propSupplierId }: SupplierPro
         <div className="p-6 max-w-[1600px] mx-auto animate-in fade-in duration-700">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div className="flex items-center gap-4">
-                    {!propSupplierId && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate('/suppliers')}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
-                        >
-                            <ArrowLeft className="w-5 h-5 text-gray-500" />
-                        </Button>
-                    )}
-                    <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
                         Manage Linked Products
                     </h1>
+                    {selectedIds.size > 0 && (
+                        <p className="text-sm text-gray-500 mt-1">
+                            {selectedIds.size} product(s) selected
+                        </p>
+                    )}
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -137,7 +138,7 @@ export const SupplierProductsPage = ({ supplierId: propSupplierId }: SupplierPro
                         disabled={selectedIds.size === 0}
                         className={`text-red-600 border-red-200 hover:bg-red-50 ${selectedIds.size === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        Unlink Selected {selectedIds.size > 0 ? `(${selectedIds.size})` : ''}
+                        Unlink Selected
                     </Button>
                     <Button
                         onClick={() => setIsLinkingModalOpen(true)}
@@ -191,4 +192,4 @@ export const SupplierProductsPage = ({ supplierId: propSupplierId }: SupplierPro
     );
 };
 
-export default SupplierProductsPage;
+export default SupplierProductsPageForTab;

@@ -18,13 +18,15 @@ interface EntityDetailModalProps {
     onClose: () => void;
     title: string;
     sections: DetailSection[];
+    extraContent?: React.ReactNode;
 }
 
 export const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
     isOpen,
     onClose,
     title,
-    sections
+    sections,
+    extraContent
 }) => {
     return (
         <Modal
@@ -55,6 +57,12 @@ export const EntityDetailModal: React.FC<EntityDetailModalProps> = ({
                         </div>
                     </div>
                 ))}
+
+                {extraContent && (
+                    <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-700">
+                        {extraContent}
+                    </div>
+                )}
             </div>
 
             <div className="flex justify-end mt-8">

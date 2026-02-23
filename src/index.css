@@ -69,8 +69,70 @@
   }
 }
 
+/* Custom Scrollbar for 2026 UI */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.dark .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900;
+  }
+
+  @layer utilities {
+    .glass {
+      @apply bg-white/10 backdrop-blur-md border border-white/20;
+    }
+
+    .glass-dark {
+      @apply bg-black/20 backdrop-blur-lg border border-white/10;
+    }
+
+    .neumorphic {
+      box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+    }
+
+    .neumorphic-inset {
+      box-shadow: inset 20px 20px 60px #bebebe, inset -20px -20px 60px #ffffff;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      @apply bg-gray-400 dark:bg-gray-600;
+    }
   }
 }

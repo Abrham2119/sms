@@ -3,7 +3,8 @@ import {
     ArrowUpDown,
     ChevronDown,
     ChevronUp,
-    Search
+    Search,
+    Check
 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Input } from '../ui/Input';
@@ -24,6 +25,10 @@ interface DataTableProps<T> {
     initialItemsPerPage?: number;
     wrapperClassName?: string;
     renderCollapsible?: (item: T) => React.ReactNode;
+    // Selection support
+    enableSelection?: boolean;
+    selectedIds?: Set<string | number>;
+    onSelectionChange?: (ids: Set<string | number>) => void;
     // Server-side support
     serverSide?: boolean;
     totalItems?: number;
@@ -34,6 +39,7 @@ interface DataTableProps<T> {
     onSearchChange?: (query: string) => void;
     onSortChange?: (key: string, direction: 'asc' | 'desc') => void;
     loading?: boolean;
+    onRowClick?: (item: T) => void;
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -43,6 +49,9 @@ export function DataTable<T extends { id: string | number }>({
     initialItemsPerPage = 10,
     wrapperClassName = "",
     renderCollapsible,
+    enableSelection = false,
+    selectedIds = new Set(),
+    onSelectionChange,
     serverSide = false,
     totalItems: externalTotalItems,
     currentPage: externalCurrentPage,
@@ -51,7 +60,8 @@ export function DataTable<T extends { id: string | number }>({
     onItemsPerPageChange,
     onSearchChange,
     onSortChange,
-    loading
+    loading,
+    onRowClick
 }: DataTableProps<T>) {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
@@ -61,6 +71,26 @@ export function DataTable<T extends { id: string | number }>({
 
     const currentPage = serverSide ? (externalCurrentPage ?? 1) : internalCurrentPage;
     const itemsPerPage = serverSide ? (externalItemsPerPage ?? initialItemsPerPage) : internalItemsPerPage;
+
+    const toggleAll = () => {
+        if (!onSelectionChange) return;
+        if (selectedIds.size === data.length && data.length > 0) {
+            onSelectionChange(new Set());
+        } else {
+            onSelectionChange(new Set(data.map(item => item.id)));
+        }
+    };
+
+    const toggleOne = (id: string | number) => {
+        if (!onSelectionChange) return;
+        const newSelected = new Set(selectedIds);
+        if (newSelected.has(id)) {
+            newSelected.delete(id);
+        } else {
+            newSelected.add(id);
+        }
+        onSelectionChange(newSelected);
+    };
 
     const setCurrentPage = (page: number) => {
         if (serverSide) {
@@ -188,29 +218,45 @@ export function DataTable<T extends { id: string | number }>({
             </div> */}
 
             <div className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800 shadow-sm">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
+                <div className="overflow-x-auto scrollbar-thin">
+                    <table className="w-full text-sm text-left min-w-[800px]">
                         <thead className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                             <tr>
                                 {renderCollapsible && <th className="w-10 px-4 py-3"></th>}
-                                {columns.map((col) => (
-                                    <th
-                                        key={String(col.key)}
-                                        scope="col"
-                                        className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider"
-                                        onClick={() => col.sortable && handleSort(String(col.key))}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {col.label}
-                                            {col.sortable && sortConfig?.key === col.key && (
-                                                sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                                            )}
-                                            {col.sortable && sortConfig?.key !== col.key && (
-                                                <ArrowUpDown className="w-4 h-4 text-gray-400" />
-                                            )}
+                                {enableSelection && (
+                                    <th className="w-10 px-4 py-3">
+                                        <div
+                                            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${selectedIds.size === data.length && data.length > 0
+                                                ? 'bg-primary-600 border-primary-600'
+                                                : 'border-gray-300 dark:border-gray-600 bg-transparent'
+                                                }`}
+                                            onClick={toggleAll}
+                                        >
+                                            {selectedIds.size === data.length && data.length > 0 && <Check className="w-3 h-3 text-white" />}
                                         </div>
                                     </th>
-                                ))}
+                                )}
+                                {columns.map((col, index) => {
+                                    const isLast = index === columns.length - 1;
+                                    return (
+                                        <th
+                                            key={String(col.key)}
+                                            scope="col"
+                                            className={`px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider ${isLast ? 'text-center' : 'text-left'}`}
+                                            onClick={() => col.sortable && handleSort(String(col.key))}
+                                        >
+                                            <div className={`flex items-center gap-2 ${isLast ? 'justify-center' : ''}`}>
+                                                {col.label}
+                                                {col.sortable && sortConfig?.key === col.key && (
+                                                    sortConfig.direction === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                                                )}
+                                                {col.sortable && sortConfig?.key !== col.key && (
+                                                    <ArrowUpDown className="w-4 h-4 text-gray-400" />
+                                                )}
+                                            </div>
+                                        </th>
+                                    );
+                                })}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -227,8 +273,11 @@ export function DataTable<T extends { id: string | number }>({
                                 paginatedData.map((item) => (
                                     <React.Fragment key={item.id}>
                                         <tr
-                                            className={`hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors ${renderCollapsible ? 'cursor-pointer' : ''}`}
-                                            onClick={() => renderCollapsible && toggleRow(item.id)}
+                                            className={`hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors ${renderCollapsible || onRowClick ? 'cursor-pointer' : ''} ${selectedIds.has(item.id) ? 'bg-primary-50/30 dark:bg-primary-900/10' : ''}`}
+                                            onClick={() => {
+                                                if (onRowClick) onRowClick(item);
+                                                else if (renderCollapsible) toggleRow(item.id);
+                                            }}
                                         >
                                             {renderCollapsible && (
                                                 <td className="px-4 py-3">
@@ -244,11 +293,30 @@ export function DataTable<T extends { id: string | number }>({
                                                     </button>
                                                 </td>
                                             )}
-                                            {columns.map((col) => (
-                                                <td key={`${item.id}-${String(col.key)}`} className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                                                    {col.render ? col.render(item) : (item as any)[col.key]}
+                                            {enableSelection && (
+                                                <td className="px-4 py-3">
+                                                    <div
+                                                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${selectedIds.has(item.id)
+                                                            ? 'bg-primary-600 border-primary-600'
+                                                            : 'border-gray-300 dark:border-gray-600 bg-transparent'
+                                                            }`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleOne(item.id);
+                                                        }}
+                                                    >
+                                                        {selectedIds.has(item.id) && <Check className="w-3 h-3 text-white" />}
+                                                    </div>
                                                 </td>
-                                            ))}
+                                            )}
+                                            {columns.map((col, index) => {
+                                                const isLast = index === columns.length - 1;
+                                                return (
+                                                    <td key={`${item.id}-${String(col.key)}`} className={`px-4 py-3 text-gray-600 dark:text-gray-300 ${isLast ? 'text-center' : 'text-left'}`}>
+                                                        {col.render ? col.render(item) : (item as any)[col.key]}
+                                                    </td>
+                                                );
+                                            })}
                                         </tr>
                                         {renderCollapsible && (
                                             <tr className="bg-gray-50/30 dark:bg-gray-900/20">

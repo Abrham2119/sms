@@ -60,3 +60,19 @@ export const useDeleteProduct = () => {
         }
     });
 };
+
+export const useProductSuppliers = (id: string, params?: any) => {
+    return useQuery({
+        queryKey: ['products', id, 'suppliers', params],
+        queryFn: () => ProductService.getSuppliers(id, params),
+        enabled: !!id,
+    });
+};
+
+export const useProductActivities = (id: string, params?: any) => {
+    return useQuery({
+        queryKey: ['product-activities', id, params],
+        queryFn: () => ProductService.getActivities(id, params),
+        enabled: !!id,
+    });
+};

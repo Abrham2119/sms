@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { SupplierService } from '../api/supplierService';
-import type { Supplier } from '../../../types';
+import type { Supplier, SupplierProfile } from '../../../types';
 
 export const useSuppliers = (params?: any) => {
     return useQuery({
@@ -144,14 +144,97 @@ export const useLinkProducts = () => {
 export const useUnlinkProduct = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ supplierId, productId }: { supplierId: string; productId: string }) =>
-            SupplierService.unlinkProduct(supplierId, productId),
+        mutationFn: ({ supplierId, productIds }: { supplierId: string; productIds: string[] }) =>
+            SupplierService.unlinkProduct(supplierId, productIds),
         onSuccess: (_, { supplierId }) => {
             queryClient.invalidateQueries({ queryKey: ['suppliers', supplierId, 'products'] });
+            toast.success('Products unlinked successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to unlink product.');
+        }
+    });
+};
+
+// Hooks for authenticated supplier's own products
+export const useMyProducts = (params?: any) => {
+    return useQuery({
+        queryKey: ['my-products', params],
+        queryFn: () => SupplierService.getMyProducts(params),
+    });
+};
+
+export const useMyProduct = (id: string) => {
+    return useQuery({
+        queryKey: ['my-products', id],
+        queryFn: () => SupplierService.getMyProductById(id),
+        enabled: !!id,
+    });
+};
+
+export const useMyLinkedProducts = (supplierId: string, params?: any) => {
+    return useQuery({
+        queryKey: ['my-linked-products', supplierId, params],
+        queryFn: () => SupplierService.getMyLinkedProducts(supplierId, params),
+        enabled: !!supplierId,
+    });
+};
+
+export const useLinkMyProducts = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ supplierId, productIds }: { supplierId: string; productIds: string[] }) =>
+            SupplierService.linkMyProducts(supplierId, productIds),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my-linked-products'] });
+            toast.success('Products linked successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to link products.');
+        }
+    });
+};
+
+export const useUnlinkMyProduct = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ supplierId, productId }: { supplierId: string; productId: string }) =>
+            SupplierService.unlinkMyProduct(supplierId, productId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my-linked-products'] });
             toast.success('Product unlinked successfully!');
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || 'Failed to unlink product.');
         }
+    });
+};
+
+export const useMyProfile = () => {
+    return useQuery({
+        queryKey: ['my-profile'],
+        queryFn: () => SupplierService.getProfile(),
+    });
+};
+
+export const useUpdateMyProfile = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: Partial<SupplierProfile>) => SupplierService.updateProfile(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my-profile'] });
+            toast.success('Profile updated successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to update profile.');
+        }
+    });
+};
+
+export const useSupplierActivities = (id: string, params?: any) => {
+    return useQuery({
+        queryKey: ['supplier-activities', id, params],
+        queryFn: () => SupplierService.getActivities(id, params),
+        enabled: !!id,
     });
 };

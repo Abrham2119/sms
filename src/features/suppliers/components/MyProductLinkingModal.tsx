@@ -1,35 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { Package } from 'lucide-react';
+import { Package, Check } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { DataTable } from '../../../components/table/DataTable';
 import type { Column } from '../../../components/table/DataTable';
-import { useProducts } from '../../products/hooks/useProduct';
-import { useLinkProducts } from '../hooks/useSupplier';
+import { useMyProducts, useLinkMyProducts } from '../hooks/useSupplier';
 import type { Product } from '../../../types';
 
-interface ProductLinkingModalProps {
+interface MyProductLinkingModalProps {
     open: boolean;
     onClose: () => void;
     supplierId: string;
 }
 
-export const ProductLinkingModal: React.FC<ProductLinkingModalProps> = ({
+export const MyProductLinkingModal: React.FC<MyProductLinkingModalProps> = ({
     open,
     onClose,
     supplierId
 }) => {
     const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
-    const [selectedIds, setSelectedIds] = useState<Set<string | number>>(new Set());
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-    const { data: productsData, isLoading } = useProducts({
+    // Use useMyProducts instead of useProducts
+    const { data: productsData, isLoading } = useMyProducts({
         page,
         per_page: 10,
         search
     });
 
-    const linkMutation = useLinkProducts();
+    const linkMutation = useLinkMyProducts();
 
     useEffect(() => {
         if (!open) {
@@ -39,17 +39,46 @@ export const ProductLinkingModal: React.FC<ProductLinkingModalProps> = ({
         }
     }, [open]);
 
+    const toggleProduct = (id: string) => {
+        const newSelected = new Set(selectedIds);
+        if (newSelected.has(id)) {
+            newSelected.delete(id);
+        } else {
+            newSelected.add(id);
+        }
+        setSelectedIds(newSelected);
+    };
+
     const handleLink = async () => {
         if (selectedIds.size > 0) {
             await linkMutation.mutateAsync({
-                supplierId,
-                productIds: Array.from(selectedIds) as string[]
+                supplierId, // Although useLinkMyProducts might not strictly need it if it uses session, the hook signature currently expects it based on my previous checks or edits. I will check the hook again. 
+                // Wait, the user edited the hook to take supplierId.
+                productIds: Array.from(selectedIds)
             });
             onClose();
         }
     };
 
     const columns: Column<Product>[] = [
+        {
+            key: 'selection',
+            label: '',
+            render: (item) => (
+                <div
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors cursor-pointer ${selectedIds.has(item.id)
+                        ? 'bg-primary-600 border-primary-600'
+                        : 'border-gray-300 dark:border-gray-600 bg-transparent'
+                        }`}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleProduct(item.id);
+                    }}
+                >
+                    {selectedIds.has(item.id) && <Check className="w-3 h-3 text-white" />}
+                </div>
+            )
+        },
         {
             key: 'name',
             label: 'Product',
@@ -75,7 +104,7 @@ export const ProductLinkingModal: React.FC<ProductLinkingModalProps> = ({
         <Modal
             isOpen={open}
             onClose={onClose}
-            title="Link Products to Supplier"
+            title="Link My Products"
             className="max-w-4xl w-full"
         >
             <div className="space-y-4 py-4">
@@ -89,11 +118,8 @@ export const ProductLinkingModal: React.FC<ProductLinkingModalProps> = ({
                     itemsPerPage={10}
                     onPageChange={setPage}
                     onSearchChange={setSearch}
-                    searchPlaceholder="Search product catalog..."
+                    searchPlaceholder="Search my products..."
                     wrapperClassName="min-h-[400px]"
-                    enableSelection
-                    selectedIds={selectedIds}
-                    onSelectionChange={setSelectedIds}
                 />
 
                 <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700">

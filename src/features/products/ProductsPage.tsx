@@ -1,33 +1,34 @@
-import { useState, useEffect } from "react";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { PermissionGuard } from "../../components/guards/PermissionGuard";
 import type { Product } from "../../types";
+import { PERMISSIONS } from "../../types";
 import {
-    useProducts,
     useCreateProduct,
-    useUpdateProduct,
     useDeleteProduct,
+    useProducts,
+    useUpdateProduct,
 } from "./hooks/useProduct";
 // We need categories for the dropdown in the form
+import { Edit2, Eye, Trash2 } from "lucide-react";
+import type { Column } from "../../components/table/DataTable";
+import { DataTable } from "../../components/table/DataTable";
+import { Button } from "../../components/ui/Button";
 import { useCategories } from "../categories/hooks/useCategory";
 import { ProductFormDialog } from "./components/ProductFormDialog";
-import { Button } from "../../components/ui/Button";
-import { Input } from "../../components/ui/Input";
-import { DataTable } from "../../components/table/DataTable";
-import type { Column } from "../../components/table/DataTable";
-import { Edit2, Trash2, Eye } from "lucide-react";
 
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
-import { EntityDetailModal } from "../../components/ui/EntityDetailModal";
 
-export const ProductsPage = () => {
+const ProductsPageContent = () => {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(20);
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [sortBy, setSortBy] = useState<string | undefined>();
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
-    const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
+    const navigate = useNavigate();
 
     // Debounce search
     useEffect(() => {
@@ -70,8 +71,8 @@ export const ProductsPage = () => {
             key: 'actions',
             label: 'Actions',
             render: (p) => (
-                <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="sm" onClick={() => setViewingProduct(p)}>
+                <div className="flex justify-center gap-2">
+                    <Button variant="ghost" size="sm" onClick={() => navigate(`/products/${p.id}`)}>
                         <Eye className="w-4 h-4 text-primary-600" />
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => setFormState({ open: true, data: p })}>
@@ -130,15 +131,6 @@ export const ProductsPage = () => {
                 </h1>
 
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <div className="relative w-full sm:w-64">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                            placeholder="Search products..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="pl-9"
-                        />
-                    </div>
                     <Button
                         onClick={() => setFormState({ open: true, data: null })}
                         className="whitespace-nowrap px-6 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-lg shadow-primary-200"
@@ -191,26 +183,16 @@ export const ProductsPage = () => {
                 isLoading={deleteMut.isPending}
             />
 
-            <EntityDetailModal
-                isOpen={!!viewingProduct}
-                onClose={() => setViewingProduct(null)}
-                title="Product Details"
-                sections={[
-                    {
-                        title: "Product Information",
-                        fields: [
-                            { label: "Product Name", value: viewingProduct?.name },
-                            { label: "Category", value: viewingProduct?.category?.name || 'Uncategorized' },
-                            { label: "Status", value: viewingProduct?.is_active ? "Active" : "Inactive" },
-                            { label: "Created At", value: (viewingProduct as any)?.created_at ? new Date((viewingProduct as any).created_at).toLocaleDateString() : '-' },
-                            { label: "Description", value: (viewingProduct as any)?.description || 'No description provided.' },
-                        ]
-                    }
-                ]}
-            />
-
             <ToastContainer position="top-right" autoClose={5000} />
         </div>
+    );
+};
+
+export const ProductsPage = () => {
+    return (
+        <PermissionGuard requiredPermission={PERMISSIONS.READ_PRODUCT}>
+            <ProductsPageContent />
+        </PermissionGuard>
     );
 };
 
