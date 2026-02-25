@@ -89,7 +89,7 @@ export const ProductLinkingModal: React.FC<ProductLinkingModalProps> = ({
                     itemsPerPage={10}
                     onPageChange={setPage}
                     onSearchChange={setSearch}
-                    searchPlaceholder="Search product catalog..."
+                    searchPlaceholder="Search product cataLog..."
                     wrapperClassName="min-h-[400px]"
                     enableSelection
                     selectedIds={selectedIds}

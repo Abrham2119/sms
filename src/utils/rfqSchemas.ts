@@ -8,7 +8,9 @@ export const step1Schema = z.object({
         today.setHours(0, 0, 0, 0);
         return selectedDate > today;
     }, "Deadline must be a future date"),
-    delivery_terms: z.string().min(1, "Delivery terms are required"),
+    delivery_terms: z.array(z.object({
+        value: z.string().min(1, "Term cannot be empty")
+    })).min(1, "At least one delivery term is required"),
     delivery_location: z.string().min(1, "Delivery location is required"),
 });
 

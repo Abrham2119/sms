@@ -181,8 +181,8 @@ export const SupplierProductsPageForTab = ({ supplierId: propSupplierId }: Suppl
                 title={unlinkingProducts && unlinkingProducts.length > 1 ? "Bulk Unlink Products?" : "Unlink Product?"}
                 description={
                     unlinkingProducts && unlinkingProducts.length > 1
-                        ? `Are you sure you want to remove ${unlinkingProducts.length} products from this supplier's catalog?`
-                        : `Are you sure you want to remove "${unlinkingProducts?.[0]?.name}" from this supplier's catalog?`
+                        ? `Are you sure you want to remove ${unlinkingProducts.length} products from this supplier's cataLog?`
+                        : `Are you sure you want to remove "${unlinkingProducts?.[0]?.name}" from this supplier's cataLog?`
                 }
                 confirmText="Unlink"
                 variant="danger"

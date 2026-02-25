@@ -43,7 +43,13 @@ export const Step3ReviewPublish: React.FC<Step3ReviewPublishProps> = ({
                     </div>
                     <div>
                         <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Delivery Terms</span>
-                        <span className="text-sm text-gray-800">{generalInfo.delivery_terms}</span>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                            {generalInfo.delivery_terms.map((t, i) => (
+                                <span key={i} className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded border border-gray-200">
+                                    {t.value}
+                                </span>
+                            ))}
+                        </div>
                     </div>
                     <div>
                         <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Delivery Location</span>

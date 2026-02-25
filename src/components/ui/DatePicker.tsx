@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, forwardRef } from 'react';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react';
-
-// Note: Logic is implemented manually with native Date object to avoid extra dependencies.
+import { forwardRef } from 'react';
+import ReactDatePicker from 'react-datepicker';
+import { Calendar as CalendarIcon, X } from 'lucide-react';
+import "react-datepicker/dist/react-datepicker.css";
 
 interface DatePickerProps {
-    value?: string; // ISO format or string
+    value?: string; // ISO format string (YYYY-MM-DD)
     onChange: (date: string) => void;
     label?: string;
     placeholder?: string;
@@ -12,6 +12,7 @@ interface DatePickerProps {
     className?: string;
     minDate?: Date;
     disabled?: boolean;
+    placement?: "top-start" | "top-end" | "bottom-start" | "bottom-end";
 }
 
 export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(({
@@ -22,232 +23,177 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(({
     error,
     className = '',
     minDate,
-    disabled
+    disabled,
+    placement = "bottom-start"
 }, ref) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [viewDate, setViewDate] = useState(value ? new Date(value) : new Date());
-    const innerRef = useRef<HTMLDivElement>(null);
-
-    // Sync forwarded ref with innerRef
-    useEffect(() => {
-        if (!ref) return;
-        if (typeof ref === 'function') {
-            ref(innerRef.current);
-        } else {
-            ref.current = innerRef.current;
-        }
-    }, [ref]);
-
-    // Close on outside click
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (innerRef.current && !innerRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
+    // ... Convert string value to Date object for react-datepicker
     const selectedDate = value ? new Date(value) : null;
 
-    const daysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
-    const firstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
-
-    const generateDays = () => {
-        const year = viewDate.getFullYear();
-        const month = viewDate.getMonth();
-        const days = [];
-
-        // Previous month days
-        const prevMonthDays = daysInMonth(year, month - 1);
-        const firstDay = firstDayOfMonth(year, month);
-        for (let i = firstDay - 1; i >= 0; i--) {
-            days.push({
-                day: prevMonthDays - i,
-                month: month - 1,
-                year: month === 0 ? year - 1 : year,
-                currentMonth: false
-            });
+    const handleDateChange = (date: Date | null) => {
+        if (date) {
+            // Format to YYYY-MM-DD
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            onChange(`${year}-${month}-${day}`);
+        } else {
+            onChange('');
         }
-
-        // Current month days
-        const count = daysInMonth(year, month);
-        for (let i = 1; i <= count; i++) {
-            days.push({
-                day: i,
-                month: month,
-                year,
-                currentMonth: true
-            });
-        }
-
-        // Next month days
-        const remaining = 42 - days.length;
-        for (let i = 1; i <= remaining; i++) {
-            days.push({
-                day: i,
-                month: month + 1,
-                year: month === 11 ? year + 1 : year,
-                currentMonth: false
-            });
-        }
-
-        return days;
     };
 
-    const handleDateSelect = (d: { day: number, month: number, year: number }) => {
-        const date = new Date(d.year, d.month, d.day);
-        const isoString = date.toISOString().split('T')[0];
-        onChange(isoString);
-        setIsOpen(false);
-    };
+    // Custom input to maintain the existing premium design
+    const CustomInput = forwardRef<HTMLDivElement, any>(({ value: displayValue, onClick }, inputRef) => (
+        <div
+            ref={inputRef}
+            onClick={!disabled ? onClick : undefined}
+            className={`
+                flex items-center justify-between h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm 
+                transition-all duration-200
+                ${disabled
+                    ? 'bg-gray-100 dark:bg-gray-900/50 cursor-not-allowed opacity-70 border-gray-200'
+                    : 'cursor-pointer hover:border-primary-400 focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500'
+                }
+                dark:border-gray-700 dark:text-white
+                ${error ? 'border-danger-500' : ''}
+            `}
+        >
+            <div className="flex items-center gap-2 overflow-hidden">
+                <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                <span className={value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400'}>
+                    {displayValue || placeholder}
+                </span>
+            </div>
+            {value && !disabled && (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onChange('');
+                    }}
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                >
+                    <X className="w-3 h-3 text-gray-400" />
+                </button>
+            )}
+        </div>
+    ));
 
-    const nextMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
-    const prevMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
-
-    const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
-
-    const isToday = (d: number, m: number, y: number) => {
-        const today = new Date();
-        return today.getDate() === d && today.getMonth() === m && today.getFullYear() === y;
-    };
-
-    const isSelected = (d: number, m: number, y: number) => {
-        return selectedDate?.getDate() === d && selectedDate?.getMonth() === m && selectedDate?.getFullYear() === y;
-    };
-
-    const isDisabled = (d: number, m: number, y: number) => {
-        if (!minDate) return false;
-        const date = new Date(y, m, d);
-        // Compare dates ignoring time
-        const min = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
-        return date < min;
-    };
+    CustomInput.displayName = 'DatePickerCustomInput';
 
     return (
-        <div className={`relative w-full ${className}`} ref={innerRef}>
+        <div className={`relative w-full ${className}`} ref={ref}>
             {label && (
                 <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-200">
                     {label}
                 </label>
             )}
 
-            <div
-                onClick={() => !disabled && setIsOpen(!isOpen)}
-                className={`
-                    flex items-center justify-between h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm 
-                    transition-all duration-200
-                    ${disabled
-                        ? 'bg-gray-100 dark:bg-gray-900/50 cursor-not-allowed opacity-70 border-gray-200'
-                        : 'cursor-pointer hover:border-primary-400 focus-within:ring-2 focus-within:ring-primary-500/20 focus-within:border-primary-500'
-                    }
-                    dark:border-gray-700 dark:text-white
-                    ${error ? 'border-danger-500' : ''}
-                `}
-            >
-                <div className="flex items-center gap-2 overflow-hidden">
-                    <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                    <span className={value ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400'}>
-                        {value ? new Date(value).toLocaleDateString() : placeholder}
-                    </span>
-                </div>
-                {value && !disabled && (
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onChange('');
-                        }}
-                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                    >
-                        <X className="w-3 h-3 text-gray-400" />
-                    </button>
-                )}
-            </div>
+            <ReactDatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                minDate={minDate}
+                disabled={disabled}
+                placeholderText={placeholder}
+                customInput={<CustomInput />}
+                dateFormat="MM/dd/yyyy"
+                popperPlacement={placement}
+                popperModifiers={[
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, 0],
+                        },
+                    },
+                    {
+                        name: 'flip',
+                        enabled: false,
+                    },
+                    {
+                        name: 'preventOverflow',
+                        options: {
+                            boundary: 'viewport',
+                            altAxis: true,
+                        },
+                    },
+                ] as any}
+                showPopperArrow={false}
+            />
 
             {error && <p className="mt-1 text-sm text-danger-500">{error}</p>}
 
-            {isOpen && (
-                <div className="absolute z-50 mt-2 p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 w-[320px] animate-in fade-in zoom-in-95 duration-200 origin-top">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-4">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); prevMonth(); }}
-                            className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors text-gray-400"
-                        >
-                            <ChevronLeft className="w-5 h-5" />
-                        </button>
-                        <div className="font-bold text-gray-900 dark:text-white">
-                            {monthNames[viewDate.getMonth()]} {viewDate.getFullYear()}
-                        </div>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); nextMonth(); }}
-                            className="p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl transition-colors text-gray-400"
-                        >
-                            <ChevronRight className="w-5 h-5" />
-                        </button>
-                    </div>
+            {/* Note: Additional Tailwind global CSS might be helpful for full theme consistency 
+                but this preserves the core input look.  */}
+            <style>{`
+                /* Force popper position and remove gaps */
+                .react-datepicker-popper {
+                    z-index: 9999 !important;
+                }
+                
+                /* Ensure no gap when on top */
+                .react-datepicker-popper[data-placement^="top"] {
+                    margin-bottom: 0 !important;
+                    padding-bottom: 0 !important;
+                    transform: translateY(2px) !important; /* Tiny adjustment to overlap slightly and hide border gap */
+                }
 
-                    {/* Weekdays */}
-                    <div className="grid grid-cols-7 gap-1 mb-2">
-                        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                            <div key={day} className="text-center text-[10px] font-black text-gray-400 uppercase tracking-tighter">
-                                {day}
-                            </div>
-                        ))}
-                    </div>
+                .react-datepicker-popper[data-placement^="bottom"] {
+                    margin-top: 0 !important;
+                    padding-top: 0 !important;
+                }
 
-                    {/* Calendar Grid */}
-                    <div className="grid grid-cols-7 gap-1">
-                        {generateDays().map((d, i) => {
-                            const disabled = d.currentMonth && isDisabled(d.day, d.month, d.year);
-                            const selected = d.currentMonth && isSelected(d.day, d.month, d.year);
-                            const today = d.currentMonth && isToday(d.day, d.month, d.year);
+                .react-datepicker {
+                    font-family: inherit;
+                    border-radius: 1rem;
+                    border: 1px solid #e5e7eb;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                    background-color: white;
+                }
 
-                            return (
-                                <button
-                                    key={i}
-                                    disabled={disabled}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (d.currentMonth && !disabled) handleDateSelect(d);
-                                    }}
-                                    className={`
-                                        h-9 w-9 flex items-center justify-center rounded-xl text-sm font-medium transition-all
-                                        ${!d.currentMonth ? 'text-gray-300 dark:text-gray-600 pointer-events-none' : ''}
-                                        ${selected ? 'bg-primary-600 text-white shadow-lg shadow-primary-200' :
-                                            today ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/20' :
-                                                'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}
-                                        ${disabled ? 'opacity-30 cursor-not-allowed grayscale' : ''}
-                                    `}
-                                >
-                                    {d.day}
-                                </button>
-                            );
-                        })}
-                    </div>
+                /* Hide the default arrow which often causes a gap */
+                .react-datepicker__triangle {
+                    display: none !important;
+                }
 
-                    {/* Footer */}
-                    <div className="mt-4 pt-4 border-t border-gray-50 dark:border-gray-700 flex justify-center">
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                const today = new Date();
-                                onChange(today.toISOString().split('T')[0]);
-                                setIsOpen(false);
-                            }}
-                            className="text-xs font-bold text-primary-600 hover:text-primary-700 px-3 py-1 bg-primary-50 dark:bg-primary-900/20 rounded-full"
-                        >
-                            Switch to Today
-                        </button>
-                    </div>
-                </div>
-            )}
+                .react-datepicker__header {
+                    padding-top: 1rem;
+                    background-color: transparent;
+                    border-bottom: none;
+                }
+                .react-datepicker__month {
+                    margin: 0.4rem 1rem 1rem;
+                }
+                .dark .react-datepicker {
+                    background-color: #1f2937;
+                    border-color: #374151;
+                    color: white;
+                }
+                .dark .react-datepicker__header {
+                    background-color: transparent;
+                }
+                .dark .react-datepicker__current-month, 
+                .dark .react-datepicker__day-name,
+                .dark .react-datepicker__day {
+                    color: #f3f4f6;
+                }
+                .react-datepicker__day--selected {
+                    background-color: var(--color-primary-600, #2563eb) !important;
+                    border-radius: 0.75rem;
+                }
+                .react-datepicker__day:hover {
+                    border-radius: 0.75rem;
+                }
+                .react-datepicker__day--keyboard-selected {
+                    background-color: var(--color-primary-50, #eff6ff);
+                    color: var(--color-primary-600, #2563eb);
+                    border-radius: 0.75rem;
+                }
+                .dark .react-datepicker__day--keyboard-selected {
+                    background-color: rgba(37, 99, 235, 0.2);
+                }
+            `}</style>
         </div>
     );
 });
 
 DatePicker.displayName = 'DatePicker';
+

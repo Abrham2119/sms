@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import { Activity, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Monitor, Search, User as UserIcon } from 'lucide-react';
 import { useSupplierActivities } from '../../features/suppliers/hooks/useSupplier';
 import { useProductActivities } from '../../features/products/hooks/useProduct';
+import { useUserActivities } from '../../features/users/hooks/useUser';
 
 interface ActivityLogProps {
-    entityType: 'supplier' | 'product';
+    entityType: 'supplier' | 'product' | 'user';
     entityId: string;
 }
 
@@ -43,7 +44,7 @@ const TYPE_COLORS: Record<string, string> = {
     update: 'bg-blue-500',
     create: 'bg-green-500',
     delete: 'bg-red-500',
-    login: 'bg-purple-500',
+    Login: 'bg-purple-500',
     default: 'bg-gray-400',
 };
 
@@ -78,7 +79,7 @@ const ChangesDetail = ({ changes }: { changes: ActivityChange[] }) => {
 };
 
 // Unified hook that routes to the correct query based on entityType
-const useActivityData = (entityType: 'supplier' | 'product', entityId: string, params: any) => {
+const useActivityData = (entityType: 'supplier' | 'product' | 'user', entityId: string, params: any) => {
     const supplierResult = useSupplierActivities(
         entityType === 'supplier' ? entityId : '',
         entityType === 'supplier' ? params : undefined
@@ -86,6 +87,10 @@ const useActivityData = (entityType: 'supplier' | 'product', entityId: string, p
     const productResult = useProductActivities(
         entityType === 'product' ? entityId : '',
         entityType === 'product' ? params : undefined
+    );
+    const userResult = useUserActivities(
+        entityType === 'user' ? entityId : '',
+        entityType === 'user' ? params : undefined
     );
 
     if (entityType === 'supplier') {
@@ -95,13 +100,20 @@ const useActivityData = (entityType: 'supplier' | 'product', entityId: string, p
         const total: number = raw?.data?.total ?? 0;
         const lastPage: number = raw?.data?.last_page ?? 1;
         return { list, total, lastPage, isLoading: supplierResult.isLoading };
-    } else {
+    } else if (entityType === 'product') {
         const raw = productResult.data;
         // Full envelope: { success, message, data: { data:[], total, last_page, ... } }
         const list: ActivityEntry[] = raw?.data?.data ?? [];
         const total: number = raw?.data?.total ?? 0;
         const lastPage: number = raw?.data?.last_page ?? 1;
         return { list, total, lastPage, isLoading: productResult.isLoading };
+    } else {
+        const raw = userResult.data;
+        // Full envelope: { success, message, data: { data:[], total, last_page, ... } }
+        const list: ActivityEntry[] = raw?.data?.data ?? [];
+        const total: number = raw?.data?.total ?? 0;
+        const lastPage: number = raw?.data?.last_page ?? 1;
+        return { list, total, lastPage, isLoading: userResult.isLoading };
     }
 };
 
@@ -178,13 +190,13 @@ export const ActivityLog = ({ entityType, entityId }: ActivityLogProps) => {
                 </div>
             )}
 
-            {/* Timeline */}
+            {/* Log */}
             {!isLoading && list.length > 0 && (
                 <div className="relative border-l-2 border-gray-200 dark:border-gray-700 ml-3 space-y-6">
-                    {list.map((log, idx) => (
-                        <div key={log.id ?? idx} className="relative pl-8">
-                            {/* Timeline dot */}
-                            <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${typeColor(log.type)}`} />
+                    {list.map((Log, idx) => (
+                        <div key={Log.id ?? idx} className="relative pl-8">
+                            {/* Log dot */}
+                            <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${typeColor(Log.type)}`} />
 
                             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
                                 {/* Top row */}
@@ -192,95 +204,98 @@ export const ActivityLog = ({ entityType, entityId }: ActivityLogProps) => {
                                     <div className="flex items-center gap-2">
                                         {/* Actor avatar */}
                                         <div className="w-7 h-7 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                                            {log.actor?.initials ?? <UserIcon className="w-3 h-3" />}
+                                            {Log.actor?.initials ?? <UserIcon className="w-3 h-3" />}
                                         </div>
                                         <div>
                                             <span className="font-semibold text-gray-900 dark:text-white text-sm">
-                                                {log.actor?.name ?? 'System'}
+                                                {Log.actor?.name ?? 'System'}
                                             </span>
-                                            <span className="text-gray-500 text-sm"> {log.action}</span>
+                                            <span className="text-gray-500 text-sm"> {Log.action}</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3 text-xs text-gray-400">
                                         <span className="flex items-center gap-1">
                                             <Clock className="w-3 h-3" />
-                                            <span title={new Date(log.timestamp).toLocaleString()}>{log.timestamp_human}</span>
+                                            <span title={new Date(Log.timestamp).toLocaleString()}>{Log.timestamp_human}</span>
                                         </span>
-                                        <span className={`capitalize px-2 py-0.5 rounded-full font-medium text-white text-[10px] ${typeColor(log.type)}`}>
-                                            {log.type}
+                                        <span className={`capitalize px-2 py-0.5 rounded-full font-medium text-white text-[10px] ${typeColor(Log.type)}`}>
+                                            {Log.type}
                                         </span>
                                     </div>
                                 </div>
 
                                 {/* Target */}
                                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                                    Target: <span className="font-medium text-gray-800 dark:text-gray-200">{log.target_name}</span>
+                                    Target: <span className="font-medium text-gray-800 dark:text-gray-200">{Log.target_name}</span>
                                 </p>
 
                                 {/* IP / metadata */}
-                                {log.metadata?.ip_address && (
+                                {Log.metadata?.ip_address && (
                                     <div className="flex items-center gap-1 mt-1 text-xs text-gray-400">
                                         <Monitor className="w-3 h-3" />
-                                        {log.metadata.ip_address}
+                                        {Log.metadata.ip_address}
                                     </div>
                                 )}
 
                                 {/* Changes */}
-                                <ChangesDetail changes={log.changes} />
+                                <ChangesDetail changes={Log.changes} />
                             </div>
                         </div>
                     ))}
                 </div>
-            )}
+            )
+            }
 
             {/* Pagination */}
-            {!isLoading && total > 0 && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <span className="text-sm text-gray-500">
-                        Showing {from}–{to} of {total} activities
-                    </span>
-                    <div className="flex items-center gap-1">
-                        <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                            disabled={page <= 1}
-                            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        {Array.from({ length: lastPage }, (_, i) => i + 1)
-                            .filter(p => p === 1 || p === lastPage || Math.abs(p - page) <= 2)
-                            .reduce<(number | '...')[]>((acc, p, i, arr) => {
-                                if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
-                                acc.push(p);
-                                return acc;
-                            }, [])
-                            .map((p, i) =>
-                                p === '...' ? (
-                                    <span key={`dot-${i}`} className="px-2 text-gray-400 text-sm select-none">…</span>
-                                ) : (
-                                    <button
-                                        key={p}
-                                        onClick={() => setPage(p as number)}
-                                        className={`w-8 h-8 rounded-lg text-sm font-medium transition ${page === p
-                                            ? 'bg-primary-600 text-white shadow'
-                                            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                                            }`}
-                                    >
-                                        {p}
-                                    </button>
+            {
+                !isLoading && total > 0 && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <span className="text-sm text-gray-500">
+                            Showing {from}–{to} of {total} activities
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page <= 1}
+                                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            {Array.from({ length: lastPage }, (_, i) => i + 1)
+                                .filter(p => p === 1 || p === lastPage || Math.abs(p - page) <= 2)
+                                .reduce<(number | '...')[]>((acc, p, i, arr) => {
+                                    if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
+                                    acc.push(p);
+                                    return acc;
+                                }, [])
+                                .map((p, i) =>
+                                    p === '...' ? (
+                                        <span key={`dot-${i}`} className="px-2 text-gray-400 text-sm select-none">…</span>
+                                    ) : (
+                                        <button
+                                            key={p}
+                                            onClick={() => setPage(p as number)}
+                                            className={`w-8 h-8 rounded-lg text-sm font-medium transition ${page === p
+                                                ? 'bg-primary-600 text-white shadow'
+                                                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                                }`}
+                                        >
+                                            {p}
+                                        </button>
+                                    )
                                 )
-                            )
-                        }
-                        <button
-                            onClick={() => setPage(p => Math.min(lastPage, p + 1))}
-                            disabled={page >= lastPage}
-                            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                        >
-                            <ChevronRight className="w-4 h-4" />
-                        </button>
+                            }
+                            <button
+                                onClick={() => setPage(p => Math.min(lastPage, p + 1))}
+                                disabled={page >= lastPage}
+                                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 };

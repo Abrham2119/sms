@@ -10,10 +10,8 @@ export const CATEGORY_ENDPOINTS = {
 export class CategoryService {
     static async getAll(params?: any): Promise<PaginatedResponse<Category>> {
         const queryString = queryBuilder(params || {});
-        // If the API returns { data: [...], meta: ... }, axios usually returns that in response.data
-        // Adjusting based on previous implementation: response.data was returned directly.
-        const response = await api.get<PaginatedResponse<Category>>(`${CATEGORY_ENDPOINTS.LIST}${queryString}`);
-        return response.data;
+        const response = await api.get<ApiResponse<PaginatedResponse<Category>>>(`${CATEGORY_ENDPOINTS.LIST}${queryString}`);
+        return response.data.data;
     }
 
     static async getById(id: string): Promise<Category> {

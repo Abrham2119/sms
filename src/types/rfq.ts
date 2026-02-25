@@ -3,7 +3,7 @@ export interface RFQ {
     reference_number: string;
     description: string;
     submission_deadline: string;
-    delivery_terms: string;
+    delivery_terms: string[];
     delivery_location: string;
     status: string;
     created_at: string;
@@ -45,7 +45,7 @@ export interface RFQProduct {
 export interface CreateRFQRequest {
     description: string;
     submission_deadline: string;
-    delivery_terms: string;
+    delivery_terms: string[];
     delivery_location: string;
 }
 

@@ -7,7 +7,7 @@ import type { Column } from '../../components/table/DataTable';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import type { Quotation } from '../../types/rfq';
-import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { QuotationDetailsModal } from './components/QuotationDetailsModal';
 import { EvaluationModal } from './components/EvaluationModal';
 import { PermissionGuard } from '../../components/guards/PermissionGuard';

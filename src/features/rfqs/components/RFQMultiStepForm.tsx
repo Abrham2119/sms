@@ -47,7 +47,9 @@ export const RFQMultiStepForm: React.FC<RFQMultiStepFormProps> = ({ initialRFQ, 
         initialRFQ ? {
             description: initialRFQ.description || '',
             submission_deadline: formatDateForInput(initialRFQ.submission_deadline),
-            delivery_terms: initialRFQ.delivery_terms || '',
+            delivery_terms: Array.isArray(initialRFQ.delivery_terms)
+                ? initialRFQ.delivery_terms.map(t => ({ value: t }))
+                : (initialRFQ.delivery_terms ? [{ value: initialRFQ.delivery_terms as any }] : [{ value: '' }]),
             delivery_location: initialRFQ.delivery_location || ''
         } : null
     );
@@ -78,18 +80,24 @@ export const RFQMultiStepForm: React.FC<RFQMultiStepFormProps> = ({ initialRFQ, 
         return names;
     });
 
-    const handleStep1Submit = async (data: Step1FormData) => {
+    const handleStep1Submit = async (formData: Step1FormData) => {
         try {
+            // Transform delivery_terms from {value: string}[] to string[] for backend
+            const data = {
+                ...formData,
+                delivery_terms: formData.delivery_terms.map(t => t.value)
+            };
+
             if (rfqId) {
                 await updateMut.mutateAsync({ id: rfqId, data });
-                setStep1Data(data);
+                setStep1Data(formData);
                 setCurrentStep(1);
             } else {
                 const result = await createMut.mutateAsync(data);
                 const rfq = result.data;
                 setRfqId(rfq.id);
                 setReferenceNumber(rfq.reference_number);
-                setStep1Data(data);
+                setStep1Data(formData);
                 setCurrentStep(1);
             }
         } catch (error) {

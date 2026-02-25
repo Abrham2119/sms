@@ -12,9 +12,9 @@ export const useAuth = () => {
 
     const from = location.state?.from?.pathname || '/dashboard';
 
-    const loginMutation = useMutation({
+    const LoginMutation = useMutation({
         mutationFn: async (credentials: any) => {
-            const response = await api.post<LoginResponse>('/auth/login-member', credentials);
+            const response = await api.post<LoginResponse>('/auth/Login-member', credentials);
             return response.data;
         },
         onSuccess: (data) => {
@@ -47,6 +47,6 @@ export const useAuth = () => {
     });
 
     return {
-        login: loginMutation,
+        Login: LoginMutation,
     };
 };

@@ -181,7 +181,7 @@ export const SupplierDetailPage = () => {
         { id: 'info', label: 'Overview', icon: FileText },
         { id: 'products', label: 'Products', icon: Package },
         { id: 'attachments', label: 'Attachments', icon: UploadCloud },
-        { id: 'logs', label: 'Activity Logs', icon: Activity },
+        { id: 'Log', label: 'Activity Log', icon: Activity },
         { id: 'settings', label: 'Settings', icon: Settings },
     ];
 
@@ -264,7 +264,7 @@ export const SupplierDetailPage = () => {
                     </div>
                 )}
                 {activeTab === 'attachments' && <AttachmentsTab />}
-                {activeTab === 'logs' && <ActivityLog entityType="supplier" entityId={id!} />}
+                {activeTab === 'Log' && <ActivityLog entityType="supplier" entityId={id!} />}
                 {activeTab === 'settings' && (
                     <SettingsTab
                         supplier={supplier}

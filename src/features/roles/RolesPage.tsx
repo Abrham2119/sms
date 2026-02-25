@@ -11,48 +11,10 @@ import {
 } from "./hooks/useRole";
 import { RoleTable } from "./components/RoleTable";
 import { RoleFormDialog } from "./components/RoleFormDialog";
+import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 
 
-const DeleteConfirmationDialog = ({
-    open,
-    onClose,
-    onConfirm,
-}: {
-    open: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-}) => {
-    if (!open) return null;
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                onClick={onClose}
-            />
-            <div className="relative bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm animate-in zoom-in-95 duration-200">
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Role?</h3>
-                <p className="text-sm text-gray-500 mb-6">
-                    Are you sure you want to delete this role? All associated permission
-                    assignments will be removed. This action cannot be undone.
-                </p>
-                <div className="flex items-center justify-end gap-3">
-                    <button
-                        onClick={onClose}
-                        className="px-4 py-2 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        className="px-4 py-2 text-sm font-bold text-white bg-danger-600 hover:bg-danger-700 rounded-lg transition-colors shadow-lg shadow-danger-200"
-                    >
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-};
+
 
 export const RolesPage = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -220,10 +182,15 @@ export const RolesPage = () => {
                 onSubmit={formState.data ? handleUpdate : handleCreate}
             />
 
-            <DeleteConfirmationDialog
+            <ConfirmDialog
                 open={!!deleteId}
                 onClose={() => setDeleteId(null)}
                 onConfirm={handleDelete}
+                title="Delete Role?"
+                description="Are you sure you want to delete this role? All associated permission assignments will be removed. This action cannot be undone."
+                confirmText="Delete"
+                variant="danger"
+                isLoading={deleteMut.isPending}
             />
 
             <ToastContainer position="top-right" autoClose={5000} />

@@ -92,7 +92,7 @@ const MyProductsPageContent = () => {
                         My Products
                     </h1>
                     <p className="text-gray-500 text-sm font-medium">
-                        View and manage your product catalog
+                        View and manage your product cataLog
                     </p>
                 </div>
             </div>

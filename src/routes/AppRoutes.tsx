@@ -12,6 +12,7 @@ import { RequestsPage } from "../features/requests/RequestsPage";
 import { AdminsPage } from "../features/admins/AdminsPage";
 import DashboardPage from "../features/dashboard/DashboardPage";
 import { UsersPage } from "../features/users/UsersPage";
+import { UserDetailPage } from "../features/users/UserDetailPage";
 import { RolesPage } from "../features/roles/RolesPage";
 import { PermissionsPage } from "../features/permissions/PermissionsPage";
 import CategoriesPage from "../features/categories/CategoriesPage";
@@ -27,7 +28,7 @@ import { RFQsPage } from "../features/rfqs/RFQsPage";
 import { RFQDetailPage } from "../features/rfqs/RFQDetailPage";
 import { SupplierRFQsPage } from "../features/rfqs/SupplierRFQsPage";
 import { RFQQuotationsPage } from '../features/rfqs/RFQQuotationsPage';
-import { EvaluationsListPage } from '../features/rfqs/EvaluationsListPage';
+// import { EvaluationsListPage } from '../features/rfqs/EvaluationsListPage';
 import { ShortlistedEvaluationsPage } from '../features/rfqs/ShortlistedEvaluationsPage';
 
 const AppRoutes = () => {
@@ -65,7 +66,7 @@ const AppRoutes = () => {
                     <Route path="/admin/rfqs" element={<RFQsPage />} />
                     <Route path="/admin/rfqs/:id" element={<RFQDetailPage />} />
                     <Route path="/admin/rfqs/:id/quotations" element={<RFQQuotationsPage />} />
-                    <Route path="/admin/evaluations/:id" element={<EvaluationsListPage />} />
+                    {/* <Route path="/admin/evaluations/:id" element={<EvaluationsListPage />} /> */}
                     <Route path="/admin/evaluations/:id/shortlisted" element={<ShortlistedEvaluationsPage />} />
                     <Route path="/supplier/rfqs" element={<SupplierRFQsPage />} />
 
@@ -80,6 +81,7 @@ const AppRoutes = () => {
                     <Route path="/admins" element={<AdminsPage />} />
 
                     <Route path="/users" element={<UsersPage />} />
+                    <Route path="/users/:id" element={<UserDetailPage />} />
                     <Route path="/roles" element={<RolesPage />} />
                     <Route path="/permissions" element={<PermissionsPage />} />
                 </Route>

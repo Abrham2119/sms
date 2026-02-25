@@ -1,4 +1,4 @@
-import { Eye, FileText, Pencil, Plus, Trophy } from 'lucide-react';
+import { Eye, FileText, Pencil, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -74,16 +74,14 @@ export const RFQsPage = () => {
     };
 
     const handleViewQuotations = (rfq: RFQ) => {
-        navigate(`/admin/rfqs/${rfq.id}/quotations`, { state: { rfqStatus: rfq.status } });
+        navigate(`/admin/rfqs/${rfq.id}`, { state: { initialTab: 'quotations' } });
     };
 
     // const handleViewEvaluations = (rfq: RFQ) => {
     //     navigate(`/admin/evaluations/${rfq.id}`);
     // };
 
-    const handleViewShortlisted = (rfq: RFQ) => {
-        navigate(`/admin/evaluations/${rfq.id}/shortlisted`);
-    };
+
 
     const handleEdit = async (rfq: RFQ) => {
         const fullData = await fetchRFQDetails(rfq.id);
@@ -95,7 +93,7 @@ export const RFQsPage = () => {
 
     const handleSuccess = () => {
         setIsModalOpen(false);
-        refetch(); 
+        refetch();
     };
 
     const getStatusVariant = (status: string) => {
@@ -217,8 +215,8 @@ export const RFQsPage = () => {
                         title="View Quotations"
                     >
                         <FileText className="w-4 h-4 text-green-600" />
-                    </Button>                  
-                    {['evaluation', 'closed', 'po_generated'].includes(rfq.status?.toLowerCase()) && (
+                    </Button>
+                    {/* {['evaluation', 'closed', 'po_generated'].includes(rfq.status?.toLowerCase()) && (
                         <Button
                             variant="ghost"
                             size="sm"
@@ -227,7 +225,7 @@ export const RFQsPage = () => {
                         >
                             <Trophy className="w-4 h-4 text-amber-500" />
                         </Button>
-                    )}
+                    )} */}
                     {rfq.status?.toLowerCase() === 'draft' && (
                         <Button variant="ghost" size="sm" onClick={() => handleEdit(rfq)}>
                             <Pencil className="w-4 h-4 text-indigo-600" />

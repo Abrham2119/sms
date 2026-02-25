@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import {
     ArrowLeft,
     FileText,
@@ -11,12 +11,26 @@ import {
     Clock,
     CheckCircle,
     AlertCircle,
-    Hash
+    Hash,
+    Trophy,
+    XCircle,
+    Filter,
+    Eye,
+    CheckCircle2
 } from 'lucide-react';
-import { useRFQ } from './hooks/useRFQ';
+import {
+    useRFQ,
+    useRFQQuotations,
+    useAwardQuotation,
+    useRejectQuotation
+} from './hooks/useRFQ';
 import { ActivityLog } from '../../components/common/ActivityLog';
 import { Button } from '../../components/ui/Button';
-import type { RFQ } from '../../types/rfq';
+import { DataTable, type Column } from '../../components/table/DataTable';
+import { Badge } from '../../components/ui/Badge';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import { QuotationDetailsModal } from './components/QuotationDetailsModal';
+import type { RFQ, Quotation } from '../../types/rfq';
 
 // Tab Components
 const RFQOverviewTab = ({ rfq }: { rfq: RFQ }) => {
@@ -99,71 +113,279 @@ const RFQOverviewTab = ({ rfq }: { rfq: RFQ }) => {
     );
 };
 
-const RFQProductsTab = ({ rfq }: { rfq: RFQ }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/30">
-            <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Package className="w-5 h-5 text-primary-600" />
-                Requested Items
-            </h3>
-            <span className="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 border border-gray-200 dark:border-gray-700">
-                {rfq.products?.length || 0} Total
-            </span>
+// const RFQProductsTab = ({ rfq }: { rfq: RFQ }) => (
+//     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+//         <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/30">
+//             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+//                 <Package className="w-5 h-5 text-primary-600" />
+//                 Requested Items
+//             </h3>
+//             <span className="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 border border-gray-200 dark:border-gray-700">
+//                 {rfq.products?.length || 0} Total
+//             </span>
+//         </div>
+//         <div className="overflow-x-auto">
+//             <table className="w-full text-sm text-left">
+//                 <thead className="bg-gray-50/80 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+//                     <tr>
+//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Product Details</th>
+//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Category</th>
+//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs text-center">Quantity</th>
+//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Specifications</th>
+//                     </tr>
+//                 </thead>
+//                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+//                     {(!rfq.products || rfq.products.length === 0) ? (
+//                         <tr>
+//                             <td colSpan={4} className="px-8 py-12 text-center text-gray-500 italic">
+//                                 No items have been added to this request yet.
+//                             </td>
+//                         </tr>
+//                     ) : (
+//                         rfq.products.map((p: any) => (
+//                             <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
+//                                 <td className="px-8 py-5">
+//                                     <p className="font-bold text-gray-900 dark:text-white mb-1">
+//                                         {p.product?.name || p.name || 'Item Name Undefined'}
+//                                     </p>
+//                                     <p className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {p.id}</p>
+//                                 </td>
+//                                 <td className="px-8 py-5">
+//                                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-xs">
+//                                         {p.product?.category?.name || p.category?.name || 'General'}
+//                                     </span>
+//                                 </td>
+//                                 <td className="px-8 py-5 text-center">
+//                                     <span className="text-base font-black text-primary-600 dark:text-primary-400">
+//                                         {p.quantity || 0}
+//                                     </span>
+//                                 </td>
+//                                 <td className="px-8 py-5">
+//                                     <p className="text-gray-600 dark:text-gray-400 line-clamp-2 max-w-sm text-xs italic">
+//                                         {p.specifications || 'No specific requirements'}
+//                                     </p>
+//                                 </td>
+//                             </tr>
+//                         ))
+//                     )}
+//                 </tbody>
+//             </table>
+//         </div>
+//     </div>
+// );
+
+const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
+    const [page, setPage] = useState(1);
+    const [perPage, setPerPage] = useState(20);
+    const [statusFilter, setStatusFilter] = useState<string>("submitted");
+
+    const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
+    const [actionQuotation, setActionQuotation] = useState<{ id: string, type: 'award' | 'reject', supplierName: string } | null>(null);
+
+    const { data, isLoading, refetch } = useRFQQuotations(rfqId, {
+        page,
+        per_page: perPage,
+        status: statusFilter
+    });
+
+    const awardMutation = useAwardQuotation();
+    const rejectMutation = useRejectQuotation();
+
+    const handleAction = async () => {
+        if (!actionQuotation) return;
+
+        try {
+            if (actionQuotation.type === 'award') {
+                await awardMutation.mutateAsync(actionQuotation.id);
+            } else {
+                await rejectMutation.mutateAsync(actionQuotation.id);
+            }
+            refetch();
+            setActionQuotation(null);
+        } catch (error) {
+            // Error toast handled by hook
+        }
+    };
+
+
+
+
+
+    const columns: Column<Quotation>[] = [
+        {
+            key: 'quotation_number',
+            label: 'Quotation #',
+            render: (item) => (
+                <div className="flex flex-col">
+                    <span className="font-bold text-gray-900 dark:text-white">{item.quotation_number}</span>
+                    <span className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {item.id.slice(0, 8)}</span>
+                </div>
+            )
+        },
+        {
+            key: 'supplier',
+            label: 'Supplier',
+            render: (item) => (
+                <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                        {item.supplier?.legal_name || 'N/A'}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                        {item.supplier?.trade_name}
+                    </span>
+                </div>
+            )
+        },
+
+        {
+            key: 'total_amount',
+            label: 'Amount',
+            render: (item) => (
+                <div className="font-mono font-bold text-gray-900 dark:text-white">
+                    {parseFloat(item.total_amount).toFixed(2)} {item.currency}
+                </div>
+            )
+        },
+        {
+            key: 'status',
+            label: 'Status',
+            render: (item) => {
+                const status = (item.status || 'pending').toLowerCase();
+                const variants: Record<string, any> = {
+                    awarded: 'success',
+                    accepted: 'success',
+                    rejected: 'danger',
+                    pending: 'default',
+                    submitted: 'default',
+                    shortlisted: 'warning'
+                };
+                return (
+                    <Badge variant={variants[status] || 'default'}>
+                        {status.replace('_', ' ')}
+                    </Badge>
+                );
+            }
+        },
+        {
+            key: 'actions',
+            label: 'Actions',
+            render: (item) => {
+                const status = (item.status || 'pending').toLowerCase();
+                const supplierName = item.supplier?.legal_name || 'Supplier';
+                const isAwarded = status === 'awarded';
+                const isRejected = status === 'rejected';
+
+                return (
+                    <div className="flex justify-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedQuotation(item)}
+                            title="View Details"
+                            className="text-gray-500 hover:text-primary-600 hover:bg-primary-50"
+                        >
+                            <Eye className="w-4 h-4" />
+                        </Button>
+
+
+
+                        {!isAwarded && !isRejected && (
+                            <>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setActionQuotation({ id: item.id, type: 'award', supplierName })}
+                                    className="text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50"
+                                    title="Award RFQ"
+                                >
+                                    <CheckCircle2 className="w-4 h-4" />
+                                </Button>
+
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => setActionQuotation({ id: item.id, type: 'reject', supplierName })}
+                                    className="text-danger-500 hover:text-danger-600 hover:bg-danger-50"
+                                    title="Reject Quotation"
+                                >
+                                    <XCircle className="w-4 h-4" />
+                                </Button>
+                            </>
+                        )}
+                    </div>
+                );
+            }
+        }
+    ];
+
+    return (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-amber-500" />
+                    <h3 className="font-bold text-gray-900 dark:text-white">RFQ Quotations</h3>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <Filter className="w-4 h-4 text-gray-400" />
+                    <div className="flex bg-gray-100 dark:bg-gray-900/50 p-1 rounded-xl border border-gray-200 dark:border-gray-700">
+                        {['submitted', 'awarded', 'rejected'].map(s => (
+                            <button
+                                key={s}
+                                onClick={() => setStatusFilter(s)}
+                                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${statusFilter === s
+                                    ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm scale-105'
+                                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
+                            >
+                                {s.charAt(0).toUpperCase() + s.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden p-8">
+                <DataTable
+                    data={data?.data || []}
+                    columns={columns}
+                    loading={isLoading}
+                    serverSide
+                    totalItems={data?.total || 0}
+                    currentPage={page}
+                    itemsPerPage={perPage}
+                    onPageChange={setPage}
+                    onItemsPerPageChange={setPerPage}
+                    onRowClick={(item) => setSelectedQuotation(item)}
+                />
+            </div>
+
+            <ConfirmDialog
+                open={!!actionQuotation}
+                onClose={() => setActionQuotation(null)}
+                onConfirm={handleAction}
+                title={actionQuotation?.type === 'award' ? 'Award RFQ to Supplier?' : 'Reject Supplier Quotation?'}
+                description={actionQuotation?.type === 'award'
+                    ? `Are you sure you want to award this RFQ to ${actionQuotation?.supplierName}? This will notify the supplier and finalize the selection process.`
+                    : `Are you sure you want to reject the quotation from ${actionQuotation?.supplierName}? This action is irreversible.`}
+                confirmText={actionQuotation?.type === 'award' ? 'Yes, Award RFQ' : 'Yes, Reject Quotation'}
+                variant={actionQuotation?.type === 'award' ? 'primary' : 'danger'}
+                isLoading={awardMutation.isPending || rejectMutation.isPending}
+            />
+
+            <QuotationDetailsModal
+                isOpen={!!selectedQuotation}
+                onClose={() => setSelectedQuotation(null)}
+                quotation={selectedQuotation}
+            />
         </div>
-        <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50/80 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-                    <tr>
-                        <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Product Details</th>
-                        <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Category</th>
-                        <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs text-center">Quantity</th>
-                        <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Specifications</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {(!rfq.products || rfq.products.length === 0) ? (
-                        <tr>
-                            <td colSpan={4} className="px-8 py-12 text-center text-gray-500 italic">
-                                No items have been added to this request yet.
-                            </td>
-                        </tr>
-                    ) : (
-                        rfq.products.map((p: any) => (
-                            <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
-                                <td className="px-8 py-5">
-                                    <p className="font-bold text-gray-900 dark:text-white mb-1">
-                                        {p.product?.name || p.name || 'Item Name Undefined'}
-                                    </p>
-                                    <p className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {p.id}</p>
-                                </td>
-                                <td className="px-8 py-5">
-                                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-xs">
-                                        {p.product?.category?.name || p.category?.name || 'General'}
-                                    </span>
-                                </td>
-                                <td className="px-8 py-5 text-center">
-                                    <span className="text-base font-black text-primary-600 dark:text-primary-400">
-                                        {p.quantity || 0}
-                                    </span>
-                                </td>
-                                <td className="px-8 py-5">
-                                    <p className="text-gray-600 dark:text-gray-400 line-clamp-2 max-w-sm text-xs italic">
-                                        {p.specifications || 'No specific requirements'}
-                                    </p>
-                                </td>
-                            </tr>
-                        ))
-                    )}
-                </tbody>
-            </table>
-        </div>
-    </div>
-);
+    );
+};
 
 export const RFQDetailPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('overview');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(location.state?.initialTab || 'overview');
 
     const { data: rfq, isLoading, error } = useRFQ(id!);
 
@@ -195,8 +417,9 @@ export const RFQDetailPage = () => {
 
     const tabs = [
         { id: 'overview', label: 'Overview', icon: FileText },
-        { id: 'products', label: 'Requested Items', icon: Package },
-        { id: 'activity', label: 'Timeline', icon: Activity },
+        // { id: 'products', label: 'Requested Items', icon: Package },
+        { id: 'quotations', label: 'RFQ Quotations', icon: Trophy },
+        { id: 'activity', label: 'Logs', icon: Activity },
     ];
 
     return (
@@ -256,7 +479,7 @@ export const RFQDetailPage = () => {
                     </div>
 
                     {/* Navigation Tabs */}
-                    <div className="flex gap-8 mt-10 border-b border-gray-100 dark:border-gray-700">
+                    <div className="flex gap-8 mt-10 border-b border-gray-100 dark:border-gray-700 overflow-x-auto scrollbar-hide">
                         {tabs.map(tab => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -265,7 +488,7 @@ export const RFQDetailPage = () => {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`
-                                        flex items-center gap-2 pb-4 text-sm font-bold transition-all relative px-1
+                                        flex items-center gap-2 pb-4 text-sm font-bold transition-all relative px-1 whitespace-nowrap
                                         ${isActive
                                             ? 'text-primary-600 dark:text-primary-400'
                                             : 'text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
@@ -287,7 +510,8 @@ export const RFQDetailPage = () => {
             {/* Content Display */}
             <div className="max-w-7xl mx-auto px-6 py-10 lg:px-8">
                 {activeTab === 'overview' && <RFQOverviewTab rfq={rfq} />}
-                {activeTab === 'products' && <RFQProductsTab rfq={rfq} />}
+                {/* {activeTab === 'products' && <RFQProductsTab rfq={rfq} />} */}
+                {activeTab === 'quotations' && <RFQQuotationsTab rfqId={id!} />}
                 {activeTab === 'activity' && <ActivityLog entityType="supplier" entityId={id!} />}
             </div>
         </div>

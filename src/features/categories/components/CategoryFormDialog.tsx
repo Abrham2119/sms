@@ -46,7 +46,9 @@ export const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
 
     // Flatten categories for options (simple approach)
     // Ideally this should be a recursive flattening if deeper nesting is needed in dropdown
-    const parentOptions = categories.map(c => ({ label: c.name, value: c.id }));
+    const parentOptions = Array.isArray(categories)
+        ? categories.map(c => ({ label: c.name, value: c.id }))
+        : [];
 
     return (
         <Modal

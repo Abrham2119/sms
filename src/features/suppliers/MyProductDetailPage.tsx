@@ -65,7 +65,7 @@ export const MyProductDetailPage = () => {
 
     const tabs = [
         { id: 'info', label: 'Info', icon: FileText },
-        { id: 'logs', label: 'Logs', icon: Activity },
+        { id: 'Log', label: 'Log', icon: Activity },
     ];
 
     return (
@@ -135,7 +135,7 @@ export const MyProductDetailPage = () => {
             {/* Content Area */}
             <div className="max-w-7xl mx-auto px-6 py-8 lg:px-8">
                 {activeTab === 'info' && <ProductInfoTab product={product} />}
-                {activeTab === 'logs' && <ActivityLog entityType="product" entityId={id!} />}
+                {activeTab === 'Log' && <ActivityLog entityType="product" entityId={id!} />}
             </div>
         </div>
     );
