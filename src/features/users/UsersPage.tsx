@@ -134,16 +134,21 @@ const UsersPageContent = () => {
                     return name.replace(/_/g, ' ');
                 });
 
+                const visibleRoles = formattedRoles.slice(0, 3);
+                const remainingCount = formattedRoles.length - 3;
+
                 return (
                     <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
-                            <Shield className="w-3 h-3" />
-                            {formattedRoles[0]}
-                        </span>
-                        {formattedRoles.length > 1 && (
-                            <Tooltip content={formattedRoles.join(', ')}>
-                                <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-help border border-gray-200 dark:border-gray-700">
-                                    +{formattedRoles.length - 1}
+                        {visibleRoles.map((role, index) => (
+                            <span key={index} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-100 dark:border-blue-800">
+                                <Shield className="w-3 h-3" />
+                                {role}
+                            </span>
+                        ))}
+                        {remainingCount > 0 && (
+                            <Tooltip content={formattedRoles.slice(3).join(', ')}>
+                                <div className="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-[10px] font-bold text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-help border border-gray-200 dark:border-gray-700 shrink-0">
+                                    +{remainingCount}
                                 </div>
                             </Tooltip>
                         )}

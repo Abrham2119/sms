@@ -1,7 +1,6 @@
 import {
     FileText,
     FolderTree,
-    KeyRound,
     LayoutDashboard,
     LogOut,
     Package,
@@ -105,7 +104,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
             title: "User Settings",
             links: [
                 { name: 'Roles', path: '/roles', icon: UserCog, permission: PERMISSIONS.READ_ROLES },
-                { name: 'Permissions', path: '/permissions', icon: KeyRound, permission: PERMISSIONS.READ_PERMISSION },
+                // { name: 'Permissions', path: '/permissions', icon: KeyRound, permission: PERMISSIONS.READ_PERMISSION },
                 { name: 'Users', path: '/users', icon: Users, permission: PERMISSIONS.READ_USER },
             ]
         },

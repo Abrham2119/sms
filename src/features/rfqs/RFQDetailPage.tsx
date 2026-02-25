@@ -29,10 +29,75 @@ import { Button } from '../../components/ui/Button';
 import { DataTable, type Column } from '../../components/table/DataTable';
 import { Badge } from '../../components/ui/Badge';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import { Modal } from '../../components/ui/Modal';
 import { QuotationDetailsModal } from './components/QuotationDetailsModal';
 import type { RFQ, Quotation } from '../../types/rfq';
 
 // Tab Components
+const ProductDetailsModal = ({ isOpen, onClose, product }: { isOpen: boolean, onClose: () => void, product: any }) => {
+    if (!product) return null;
+
+    return (
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Product Specifications"
+            className="max-w-2xl"
+        >
+            <div className="space-y-6">
+                <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                    <div className="w-12 h-12 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+                        <Package className="w-6 h-6 text-primary-600" />
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-gray-900 dark:text-white text-lg">{product.name}</h4>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Category</label>
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                            {product.category?.name || 'General'}
+                        </p>
+                    </div>
+                    <div className="bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">Requested Quantity</label>
+                        <p className="text-sm font-black text-primary-600 dark:text-primary-400">
+                            {product.pivot?.quantity || 0} Units
+                        </p>
+                    </div>
+                </div>
+
+                <div className="bg-amber-50/30 dark:bg-amber-900/10 p-4 rounded-xl border border-amber-100/50 dark:border-amber-900/20">
+                    <label className="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 block mb-2 flex items-center gap-1.5">
+                        <AlertCircle className="w-3 h-3" />
+                        Requested Specifications
+                    </label>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 italic whitespace-pre-wrap leading-relaxed">
+                        {product.pivot?.specifications || 'No specific technical requirements provided for this item.'}
+                    </p>
+                </div>
+
+                {product.description && (
+                    <div className="bg-gray-50 dark:bg-gray-900/30 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <label className="text-[10px] uppercase font-bold text-gray-400 block mb-2">General Description</label>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {product.description}
+                        </p>
+                    </div>
+                )}
+
+                <div className="flex justify-end pt-2">
+                    <Button onClick={onClose} className="px-8">
+                        Close
+                    </Button>
+                </div>
+            </div>
+        </Modal>
+    );
+};
+
 const RFQOverviewTab = ({ rfq }: { rfq: RFQ }) => {
     const formatDate = (dateStr?: string) => {
         if (!dateStr) return '-';
@@ -113,66 +178,88 @@ const RFQOverviewTab = ({ rfq }: { rfq: RFQ }) => {
     );
 };
 
-// const RFQProductsTab = ({ rfq }: { rfq: RFQ }) => (
-//     <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-//         <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/30">
-//             <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-//                 <Package className="w-5 h-5 text-primary-600" />
-//                 Requested Items
-//             </h3>
-//             <span className="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 border border-gray-200 dark:border-gray-700">
-//                 {rfq.products?.length || 0} Total
-//             </span>
-//         </div>
-//         <div className="overflow-x-auto">
-//             <table className="w-full text-sm text-left">
-//                 <thead className="bg-gray-50/80 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
-//                     <tr>
-//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Product Details</th>
-//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Category</th>
-//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs text-center">Quantity</th>
-//                         <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Specifications</th>
-//                     </tr>
-//                 </thead>
-//                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-//                     {(!rfq.products || rfq.products.length === 0) ? (
-//                         <tr>
-//                             <td colSpan={4} className="px-8 py-12 text-center text-gray-500 italic">
-//                                 No items have been added to this request yet.
-//                             </td>
-//                         </tr>
-//                     ) : (
-//                         rfq.products.map((p: any) => (
-//                             <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
-//                                 <td className="px-8 py-5">
-//                                     <p className="font-bold text-gray-900 dark:text-white mb-1">
-//                                         {p.product?.name || p.name || 'Item Name Undefined'}
-//                                     </p>
-//                                     <p className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {p.id}</p>
-//                                 </td>
-//                                 <td className="px-8 py-5">
-//                                     <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-xs">
-//                                         {p.product?.category?.name || p.category?.name || 'General'}
-//                                     </span>
-//                                 </td>
-//                                 <td className="px-8 py-5 text-center">
-//                                     <span className="text-base font-black text-primary-600 dark:text-primary-400">
-//                                         {p.quantity || 0}
-//                                     </span>
-//                                 </td>
-//                                 <td className="px-8 py-5">
-//                                     <p className="text-gray-600 dark:text-gray-400 line-clamp-2 max-w-sm text-xs italic">
-//                                         {p.specifications || 'No specific requirements'}
-//                                     </p>
-//                                 </td>
-//                             </tr>
-//                         ))
-//                     )}
-//                 </tbody>
-//             </table>
-//         </div>
-//     </div>
-// );
+const RFQProductsTab = ({ rfq }: { rfq: RFQ }) => {
+    const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+    return (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="px-8 py-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/30">
+                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                    <Package className="w-5 h-5 text-primary-600" />
+                    Requested Items
+                </h3>
+                <span className="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 border border-gray-200 dark:border-gray-700">
+                    {rfq.products?.length || 0} Total
+                </span>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-50/80 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+                        <tr>
+                            <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Product Details</th>
+                            <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Category</th>
+                            <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs text-center">Quantity</th>
+                            <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs">Specifications</th>
+                            <th className="px-8 py-4 font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider text-xs text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                        {(!rfq.products || rfq.products.length === 0) ? (
+                            <tr>
+                                <td colSpan={5} className="px-8 py-12 text-center text-gray-500 italic">
+                                    No items have been added to this request yet.
+                                </td>
+                            </tr>
+                        ) : (
+                            rfq.products.map((p: any) => (
+                                <tr key={p.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
+                                    <td className="px-8 py-5">
+                                        <p className="font-bold text-gray-900 dark:text-white mb-1">
+                                            {p.name || 'Item Name Undefined'}
+                                        </p>
+                                        {/* <p className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {p.id}</p> */}
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded text-xs">
+                                            {p.category?.name || 'General'}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-5 text-center">
+                                        <span className="text-base font-black text-primary-600 dark:text-primary-400">
+                                            {p.pivot?.quantity || 0}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <p className="text-gray-600 dark:text-gray-400 line-clamp-2 max-w-sm text-xs italic">
+                                            {p.pivot?.specifications || 'No specific requirements'}
+                                        </p>
+                                    </td>
+                                    <td className="px-8 py-5 text-center">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setSelectedProduct(p)}
+                                            className="text-gray-500 hover:text-primary-600 hover:bg-primary-50"
+                                            title="View Specifications"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            <ProductDetailsModal
+                isOpen={!!selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+                product={selectedProduct}
+            />
+        </div>
+    );
+};
 
 const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
     const [page, setPage] = useState(1);
@@ -298,7 +385,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
                                     className="text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50"
                                     title="Award RFQ"
                                 >
-                                    <CheckCircle2 className="w-4 h-4" />
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                                 </Button>
 
                                 <Button
@@ -308,7 +395,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
                                     className="text-danger-500 hover:text-danger-600 hover:bg-danger-50"
                                     title="Reject Quotation"
                                 >
-                                    <XCircle className="w-4 h-4" />
+                                    <XCircle className="w-4 h-4 text-danger-500" />
                                 </Button>
                             </>
                         )}
@@ -318,7 +405,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
         }
     ];
 
-    return (
+    return (   
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center gap-2">
@@ -417,7 +504,7 @@ export const RFQDetailPage = () => {
 
     const tabs = [
         { id: 'overview', label: 'Overview', icon: FileText },
-        // { id: 'products', label: 'Requested Items', icon: Package },
+        { id: 'products', label: 'Requested Items', icon: Package },
         { id: 'quotations', label: 'RFQ Quotations', icon: Trophy },
         { id: 'activity', label: 'Logs', icon: Activity },
     ];
@@ -510,7 +597,7 @@ export const RFQDetailPage = () => {
             {/* Content Display */}
             <div className="max-w-7xl mx-auto px-6 py-10 lg:px-8">
                 {activeTab === 'overview' && <RFQOverviewTab rfq={rfq} />}
-                {/* {activeTab === 'products' && <RFQProductsTab rfq={rfq} />} */}
+                {activeTab === 'products' && <RFQProductsTab rfq={rfq} />}
                 {activeTab === 'quotations' && <RFQQuotationsTab rfqId={id!} />}
                 {activeTab === 'activity' && <ActivityLog entityType="supplier" entityId={id!} />}
             </div>
