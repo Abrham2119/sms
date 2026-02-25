@@ -1,23 +1,21 @@
+import {
+    FileText,
+    FolderTree,
+    KeyRound,
+    LayoutDashboard,
+    LogOut,
+    Package,
+    ShieldCheck,
+    Truck,
+    UserCircle,
+    UserCog,
+    Users,
+    X,
+    type LucideIcon
+} from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { PERMISSIONS, type Permission } from '../../types';
-import {
-    Truck,
-    FileText,
-    ShieldCheck,
-    Users,
-    FolderTree,
-    Package,
-    UserCog,
-    KeyRound,
-    LogOut,
-    X,
-    LayoutDashboard,
-    UserCircle,
-    ShoppingBag,
-    ClipboardList,
-    type LucideIcon
-} from 'lucide-react';
 import { Button } from '../ui/Button';
 
 interface SidebarProps {
@@ -83,8 +81,8 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
             title: "Procurement",
             links: [
                 { name: 'RFQs', path: '/admin/rfqs', icon: FileText, permission: PERMISSIONS.READ_RFQ },
-                { name: 'Quotations', path: '/admin/quotations', icon: ClipboardList, permission: PERMISSIONS.READ_QUOTATION },
-                { name: 'Purchase Orders', path: '/admin/purchase-orders', icon: ShoppingBag, permission: PERMISSIONS.READ_PURCHASE_ORDER },
+                // { name: 'Quotations', path: '/admin/quotations', icon: ClipboardList, permission: PERMISSIONS.READ_QUOTATION },
+                // { name: 'Purchase Orders', path: '/admin/purchase-orders', icon: ShoppingBag, permission: PERMISSIONS.READ_PURCHASE_ORDER },
             ]
         },
         {

@@ -57,6 +57,11 @@ export const CategoriesPage = () => {
             render: (c) => <span className="italic text-gray-500">{c.description || '-'}</span>
         },
         {
+            key: 'parent',
+            label: 'Parent',
+            render: (c) => <span className="text-gray-700">{c.parent?.name || '-'}</span>
+        },
+        {
             key: 'actions',
             label: 'Actions',
             render: (c) => (
@@ -131,19 +136,6 @@ export const CategoriesPage = () => {
                         setSortOrder(direction);
                     }}
                     loading={isLoading}
-                    renderCollapsible={(c) => (
-                        <div className="pl-8 py-2">
-                            {c.children && c.children.length > 0 ? (
-                                <DataTable
-                                    data={c.children}
-                                    columns={columns.filter(col => col.key !== 'actions')}
-                                    wrapperClassName="border-none shadow-none"
-                                />
-                            ) : (
-                                <p className="text-xs text-gray-400 italic">No sub-categories</p>
-                            )}
-                        </div>
-                    )}
                 />
             </div>
 
