@@ -144,8 +144,8 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                 <div className="h-full flex flex-col overflow-hidden">
                     <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800 whitespace-nowrap shrink-0">
                         <div className={`flex items-center gap-2 min-w-max transition-all duration-300 ${isCollapsed ? 'lg:justify-center lg:w-full' : ''}`}>
-                            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
-                                <span className="font-bold text-white">A</span>
+                            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0">
+                                <span className="font-bold text-black">A</span>
                             </div>
                             <span className={`text-xl font-bold text-white transition-opacity duration-300 ${isCollapsed ? 'lg:hidden lg:opacity-0' : 'opacity-100'}`}>
                                 SMS Portal
@@ -176,7 +176,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                                                 className={`
                                                     flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                                                     ${active
-                                                        ? 'bg-blue-600/20 text-blue-400 border-l-4 border-blue-500'
+                                                        ? 'bg-primary-500/10 text-primary-500 border-l-4 border-primary-500'
                                                         : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                                                     }
                                                     ${isCollapsed ? 'justify-center px-0' : ''}
@@ -197,7 +197,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
 
                     <div className="p-4 border-t border-gray-800 bg-[var(--color-sidebar-bg)] overflow-hidden shrink-0">
                         <div className={`mb-4 px-2 flex items-center gap-3 whitespace-nowrap ${isCollapsed ? 'justify-center' : ''}`}>
-                            <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-xs font-bold shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-xs font-bold text-black shrink-0">
                                 {user?.name?.charAt(0).toUpperCase() || 'U'}
                             </div>
                             <div className={`overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>

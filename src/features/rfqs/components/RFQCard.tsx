@@ -125,7 +125,7 @@ export const RFQCard = ({ rfq, onViewDetails, onSubmitQuotation }: RFQCardProps)
                     <Button
                         variant="primary"
                         size="sm"
-                        className="rounded-2xl font-semibold text-xs shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all active:scale-95 bg-gradient-to-br from-primary-600 to-primary-700 border-none disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
+                        className="rounded-2xl font-semibold text-xs shadow-lg shadow-primary-500/20 hover:shadow-primary-500/40 transition-all active:scale-95 bg-primary-500 hover:bg-primary-600 text-black border-none disabled:opacity-50 disabled:grayscale disabled:pointer-events-none"
                         onClick={() => onSubmitQuotation(rfq)}
                         disabled={rfq.pivot?.status === 'submitted'}
                     >

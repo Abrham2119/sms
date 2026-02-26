@@ -28,7 +28,7 @@ export const PermissionsPage = () => {
 
         switch (action) {
             case 'create': return 'bg-success-50 text-success-700 border-success-100';
-            case 'read': return 'bg-blue-50 text-blue-700 border-blue-100';
+            case 'read': return 'bg-primary-50 text-primary-700 border-primary-100';
             case 'update': return 'bg-amber-50 text-amber-700 border-amber-100';
             case 'delete': return 'bg-danger-50 text-danger-700 border-danger-100';
             default: return 'bg-gray-50 text-gray-700 border-gray-100';

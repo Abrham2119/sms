@@ -38,8 +38,8 @@ export const LandingPage = () => {
             <div className="flex-1 bg-white">
                 <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <div className="bg-primary-600 p-2 rounded-lg">
-                            <LayoutDashboard className="w-6 h-6 text-white" />
+                        <div className="bg-primary-500 p-2 rounded-lg">
+                            <LayoutDashboard className="w-6 h-6 text-black" />
                         </div>
                         <span className="text-xl font-bold text-black">Member Portal</span>
                     </div>
@@ -56,7 +56,7 @@ export const LandingPage = () => {
                     <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                         <Link
                             to="/Login"
-                            className="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                            className="px-8 py-4 bg-primary-500 hover:bg-primary-600 text-black font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
                         >
                             Sign In
                             <ArrowRight className="w-5 h-5" />

@@ -103,17 +103,55 @@ export const useBlacklistSupplier = () => {
     });
 };
 
+export const useSupplierAttachments = (id: string, params?: any) => {
+    return useQuery({
+        queryKey: ['suppliers', id, 'attachments', params],
+        queryFn: () => SupplierService.getAttachments(id, params),
+        enabled: !!id,
+    });
+};
+
 export const useUploadSupplierAttachments = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, files }: { id: string; files: File[] }) =>
-            SupplierService.uploadAttachments(id, files),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['suppliers'] });
+        mutationFn: ({ id, attachments }: { id: string; attachments: { file: File, expires_at?: string }[] }) =>
+            SupplierService.uploadAttachments(id, attachments),
+        onSuccess: (_, { id }) => {
+            queryClient.invalidateQueries({ queryKey: ['suppliers', id, 'attachments'] });
             toast.success('Attachments uploaded successfully!');
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || 'Failed to upload attachments.');
+        }
+    });
+};
+
+export const useUpdateSupplierAttachment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ supplierId, attachmentId, data }: { supplierId: string; attachmentId: string | number, data: { expires_at?: string | null } }) =>
+            SupplierService.updateAttachment(supplierId, attachmentId, data),
+        onSuccess: (_, { supplierId }) => {
+            queryClient.invalidateQueries({ queryKey: ['suppliers', supplierId, 'attachments'] });
+            toast.success('Attachment updated successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to update attachment.');
+        }
+    });
+};
+
+export const useDeleteSupplierAttachment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ supplierId, attachmentId }: { supplierId: string; attachmentId: string | number }) =>
+            SupplierService.deleteAttachment(supplierId, attachmentId),
+        onSuccess: (_, { supplierId }) => {
+            queryClient.invalidateQueries({ queryKey: ['suppliers', supplierId, 'attachments'] });
+            toast.success('Attachment deleted successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to delete attachment.');
         }
     });
 };

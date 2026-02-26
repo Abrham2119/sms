@@ -232,7 +232,7 @@ export function DataTable<T extends { id: string | number }>({
                                                 }`}
                                             onClick={toggleAll}
                                         >
-                                            {selectedIds.size === data.length && data.length > 0 && <Check className="w-3 h-3 text-white" />}
+                                            {selectedIds.size === data.length && data.length > 0 && <Check className="w-3 h-3 text-black" />}
                                         </div>
                                     </th>
                                 )}
@@ -305,7 +305,7 @@ export function DataTable<T extends { id: string | number }>({
                                                             toggleOne(item.id);
                                                         }}
                                                     >
-                                                        {selectedIds.has(item.id) && <Check className="w-3 h-3 text-white" />}
+                                                        {selectedIds.has(item.id) && <Check className="w-3 h-3 text-black" />}
                                                     </div>
                                                 </td>
                                             )}

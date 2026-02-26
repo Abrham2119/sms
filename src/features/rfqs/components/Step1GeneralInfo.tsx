@@ -151,8 +151,8 @@ export const Step1GeneralInfo: React.FC<Step1GeneralInfoProps> = ({
                     type="submit"
                     disabled={(!readOnly && !isValid) || isLoading}
                     className={`px-6 py-2 rounded-md transition-colors ${readOnly
-                        ? 'bg-gray-600 text-white hover:bg-gray-700'
-                        : 'bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50'
+                        ? 'bg-gray-600 text-black hover:bg-gray-700'
+                        : 'bg-primary-500 text-black hover:bg-primary-600 disabled:opacity-50'
                         }`}
                 >
                     {isLoading ? 'Processing...' : 'Next'}

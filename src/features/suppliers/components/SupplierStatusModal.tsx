@@ -1,8 +1,9 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
-import { Upload, X, CheckCircle, AlertTriangle, Ban, FileText } from 'lucide-react';
+import { Input } from '../../../components/ui/Input';
+import { X, CheckCircle, AlertTriangle, Ban, FileText, UploadCloud } from 'lucide-react';
 import {
     useApproveSupplier,
     useSuspendSupplier,
@@ -22,8 +23,7 @@ export const SupplierStatusModal: React.FC<SupplierStatusModalProps> = ({
     onClose,
     supplier
 }) => {
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [attachments, setAttachments] = useState<{ file: File | null; expires_at: string }[]>([{ file: null, expires_at: '' }]);
 
     const approveMutation = useApproveSupplier();
     const suspendMutation = useSuspendSupplier();
@@ -32,21 +32,37 @@ export const SupplierStatusModal: React.FC<SupplierStatusModalProps> = ({
 
     if (!supplier) return null;
 
-    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const filesArray = Array.from(e.target.files);
-            setSelectedFiles((prev) => [...prev, ...filesArray]);
-        }
+    const handleFileChange = (index: number, file: File | null) => {
+        setAttachments(prev => prev.map((item, i) => i === index ? { ...item, file } : item));
     };
 
-    const removeFile = (index: number) => {
-        setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    const handleDateChange = (index: number, expires_at: string) => {
+        setAttachments(prev => prev.map((item, i) => i === index ? { ...item, expires_at } : item));
+    };
+
+    const addAttachment = () => {
+        setAttachments(prev => [...prev, { file: null, expires_at: '' }]);
+    };
+
+    const removeAttachment = (index: number) => {
+        if (attachments.length === 1) {
+            setAttachments([{ file: null, expires_at: '' }]);
+            return;
+        }
+        setAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleUpload = async () => {
-        if (selectedFiles.length > 0) {
-            await uploadMutation.mutateAsync({ id: supplier.id, files: selectedFiles });
-            setSelectedFiles([]);
+        const validAttachments = attachments.filter(a => a.file !== null) as { file: File, expires_at: string }[];
+        if (validAttachments.length > 0) {
+            await uploadMutation.mutateAsync({
+                id: supplier.id,
+                attachments: validAttachments.map(a => ({
+                    file: a.file,
+                    expires_at: a.expires_at || undefined
+                }))
+            });
+            setAttachments([{ file: null, expires_at: '' }]);
         }
     };
 
@@ -72,7 +88,7 @@ export const SupplierStatusModal: React.FC<SupplierStatusModalProps> = ({
             isOpen={isOpen}
             onClose={onClose}
             title={`Manage Supplier: ${supplier.legal_name}`}
-            className="max-w-2xl"
+            className="max-w-3xl"
         >
             <div className="space-y-8 py-4">
                 {/* Status Actions */}
@@ -108,65 +124,70 @@ export const SupplierStatusModal: React.FC<SupplierStatusModalProps> = ({
 
                 {/* Attachments Section */}
                 <div className="space-y-4">
-                    <h3 className="text-sm font-bold uppercase text-gray-400 tracking-wider">Attachments</h3>
-
-                    <div
-                        className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl p-8 text-center hover:border-primary-500 transition-colors cursor-pointer"
-                        onClick={() => fileInputRef.current?.click()}
-                    >
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileSelect}
-                            multiple
-                            className="hidden"
-                        />
-                        <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                            Click to upload or drag and drop files
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">PDF, DOC, JPG, PNG (Max 10MB per file)</p>
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold uppercase text-gray-400 tracking-wider">Attachments</h3>
                     </div>
 
-                    {selectedFiles.length > 0 && (
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                    Selected Files ({selectedFiles.length})
-                                </span>
-                                <Button
-                                    size="sm"
-                                    onClick={handleUpload}
-                                    disabled={isPending}
-                                >
-                                    Upload All
-                                </Button>
-                            </div>
-                            <div className="max-h-48 overflow-y-auto space-y-2 pr-2">
-                                {selectedFiles.map((file, idx) => (
-                                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
-                                        <div className="flex items-center gap-3">
-                                            <FileText className="w-4 h-4 text-primary-500" />
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-medium text-gray-900 dark:text-white truncate max-w-[200px]">
-                                                    {file.name}
-                                                </span>
-                                                <span className="text-xs text-gray-400">
-                                                    {(file.size / 1024 / 1024).toFixed(2)} MB
+                    <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+                        {attachments.map((item, index) => (
+                            <div key={index} className="bg-gray-50 dark:bg-gray-900/40 p-4 rounded-xl border border-gray-100 dark:border-gray-700 relative group">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">Select File</label>
+                                        <div className="relative">
+                                            <input
+                                                type="file"
+                                                onChange={(e) => handleFileChange(index, e.target.files?.[0] || null)}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                            />
+                                            <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm">
+                                                <FileText className="w-4 h-4 text-primary-600" />
+                                                <span className="truncate text-gray-600 dark:text-gray-300">
+                                                    {item.file ? item.file.name : 'Choose a file...'}
                                                 </span>
                                             </div>
                                         </div>
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
-                                            className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors"
-                                        >
-                                            <X className="w-4 h-4 text-gray-500" />
-                                        </button>
                                     </div>
-                                ))}
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] uppercase font-bold text-gray-400">Expiry Date (Optional)</label>
+                                        <Input
+                                            type="date"
+                                            value={item.expires_at}
+                                            onChange={(e) => handleDateChange(index, e.target.value)}
+                                            className="h-9"
+                                        />
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => removeAttachment(index)}
+                                    className="absolute -top-2 -right-2 p-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-gray-400 hover:text-red-500 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
                             </div>
-                        </div>
-                    )}
+                        ))}
+                    </div>
+
+                    <div className="flex flex-col gap-4 mt-2">
+                        <button
+                            onClick={addAttachment}
+                            className="flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-500 hover:border-primary-500 hover:text-primary-600 transition-all"
+                        >
+                            <UploadCloud className="w-4 h-4" />
+                            + Add Another File
+                        </button>
+
+                        <Button
+                            onClick={handleUpload}
+                            isLoading={uploadMutation.isPending}
+                            disabled={!attachments.some(a => a.file)}
+                            className="w-full"
+                        >
+                            Upload {attachments.filter(a => a.file).length} Documents
+                        </Button>
+                    </div>
                 </div>
             </div>
 

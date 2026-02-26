@@ -1,8 +1,9 @@
 import { api } from "../../../lib/api";
-import type { Supplier, PaginatedResponse, ApiResponse, Product, SupplierProfile, SupplierProfileResponse } from "../../../types";
+import type { ApiResponse, PaginatedResponse, Product, Supplier, SupplierProfile, SupplierProfileResponse } from "../../../types";
 import { queryBuilder } from "../../../utils/queryBuilder";
 
 export const SUPPLIER_ENDPOINTS = {
+    DEL: "admin",
     LIST: "/admin/suppliers",
     BASE: "/admin/suppliers",
     MY_PRODUCTS: "supplier/my-products",
@@ -60,16 +61,51 @@ export class SupplierService {
         await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/blacklist`);
     }
 
-    static async uploadAttachments(id: string, files: File[]): Promise<void> {
+    static async getAttachments(id: string, params?: any): Promise<PaginatedResponse<any>> {
+        const queryString = queryBuilder(params || {});
+        const response = await api.get<any>(`${SUPPLIER_ENDPOINTS.BASE}/${id}/attachments${queryString}`);
+        // Handle Laravel ApiResponse wrapper { success: true, data: { ...paginated } }
+        if (response.data?.data && (response.data.data.data || response.data.data.current_page)) {
+            return response.data.data;
+        }
+        // Handle direct PaginatedResponse
+        return response.data;
+    }
+
+    static async uploadAttachments(id: string, attachments: { file: File, expires_at?: string }[]): Promise<void> {
         const formData = new FormData();
-        files.forEach((file) => {
-            formData.append("attachment[]", file);
+        formData.append('_method', 'PUT');
+        attachments.forEach((item, index) => {
+            formData.append(`attachments[${index}][file]`, item.file);
+            if (item.expires_at) {
+                formData.append(`attachments[${index}][expires_at]`, item.expires_at);
+            }
         });
-        await api.put(`${SUPPLIER_ENDPOINTS.BASE}/${id}/attachments`, formData, {
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${id}/attachments`, formData, {
             headers: {
-                "Content-Type": "multipart/form-data",
-            },
+                'Content-Type': 'multipart/form-data',
+            }
         });
+    }
+
+    static async updateAttachment(supplierId: string, attachmentId: string | number, data: { expires_at?: string | null }): Promise<void> {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        if (data.expires_at) {
+            formData.append('expires_at', data.expires_at);
+        } else {
+            formData.append('expires_at', '');
+        }
+        await api.post(`${SUPPLIER_ENDPOINTS.BASE}/${supplierId}/attachments/${attachmentId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+    }
+
+    static async deleteAttachment(supplierId: string, attachmentId: string | number): Promise<void> {
+        console.log(supplierId, attachmentId);
+        await api.delete(`${SUPPLIER_ENDPOINTS.DEL}/attachments/${attachmentId}`);
     }
 
     static async getLinkedProducts(id: string, params?: any): Promise<PaginatedResponse<Product>> {

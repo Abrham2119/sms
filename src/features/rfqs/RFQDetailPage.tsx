@@ -264,7 +264,7 @@ const RFQProductsTab = ({ rfq }: { rfq: RFQ }) => {
 const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(20);
-    const [statusFilter, setStatusFilter] = useState<string>("submitted");
+    const [statusFilter, setStatusFilter] = useState<string>("");
 
     const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
     const [actionQuotation, setActionQuotation] = useState<{ id: string, type: 'award' | 'reject', supplierName: string } | null>(null);
@@ -405,7 +405,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
         }
     ];
 
-    return (   
+    return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center gap-2">
@@ -416,7 +416,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
                 <div className="flex items-center gap-3">
                     <Filter className="w-4 h-4 text-gray-400" />
                     <div className="flex bg-gray-100 dark:bg-gray-900/50 p-1 rounded-xl border border-gray-200 dark:border-gray-700">
-                        {['submitted', 'awarded', 'rejected'].map(s => (
+                        {['', 'submitted', 'awarded', 'rejected'].map(s => (
                             <button
                                 key={s}
                                 onClick={() => setStatusFilter(s)}
@@ -424,7 +424,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
                                     ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-sm scale-105'
                                     : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'}`}
                             >
-                                {s.charAt(0).toUpperCase() + s.slice(1)}
+                                {s === '' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
                             </button>
                         ))}
                     </div>

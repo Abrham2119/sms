@@ -117,7 +117,7 @@ export const Step2Products: React.FC<Step2ProductsProps> = ({
                             <button
                                 onClick={handleAddProduct}
                                 disabled={!currentProduct}
-                                className={`w-full p-2 text-white rounded-md text-sm font-medium transition-colors ${editingIndex !== null ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-primary-600 hover:bg-primary-700'
+                                className={`w-full p-2 text-black rounded-md text-sm font-medium transition-colors ${editingIndex !== null ? 'bg-indigo-500 hover:bg-indigo-600' : 'bg-primary-500 hover:bg-primary-600'
                                     } disabled:opacity-50`}
                             >
                                 {editingIndex !== null ? 'Update Item' : 'Add to List'}
@@ -173,7 +173,7 @@ export const Step2Products: React.FC<Step2ProductsProps> = ({
                                         <td className="px-4 py-3 text-right flex justify-end gap-3">
                                             <button
                                                 onClick={() => handleEditProduct(p, index)}
-                                                className="text-blue-600 hover:text-blue-800 text-xs font-bold"
+                                                className="text-primary-600 hover:text-primary-800 text-xs font-bold"
                                             >
                                                 Edit
                                             </button>
@@ -202,7 +202,7 @@ export const Step2Products: React.FC<Step2ProductsProps> = ({
                 <button
                     onClick={() => onNext(selectedProducts)}
                     disabled={selectedProducts.length === 0 || isLoading}
-                    className="px-6 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors"
+                    className="px-6 py-2 bg-primary-500 text-black rounded-md hover:bg-primary-600 disabled:opacity-50 transition-colors"
                 >
                     {isLoading ? 'Saving...' : 'Next'}
                 </button>

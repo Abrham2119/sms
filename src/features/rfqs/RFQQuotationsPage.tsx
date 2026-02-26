@@ -29,6 +29,7 @@ export const RFQQuotationsPage = () => {
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [sortBy, setSortBy] = useState<string | undefined>();
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
+    const [status, setStatus] = useState<string>("");
 
     // UI State
     const [viewingQuotation, setViewingQuotation] = useState<Quotation | null>(null);
@@ -51,7 +52,8 @@ export const RFQQuotationsPage = () => {
         per_page: perPage,
         search: debouncedSearch,
         sort_by: sortBy,
-        sort_order: sortOrder
+        sort_order: sortOrder,
+        status: status
     });
 
     const acceptMutation = useAcceptQuotation();
@@ -197,6 +199,33 @@ export const RFQQuotationsPage = () => {
                     )}
                 </div>
 
+                {/* Status Filters */}
+                <div className="flex flex-wrap items-center gap-2 mb-6">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mr-2">Filter by Status:</span>
+                    {[
+                        { label: 'All', value: '' },
+                        { label: 'Submitted', value: 'submitted' },
+                        { label: 'Shortlisted', value: 'shortlisted' },
+                        { label: 'Accepted', value: 'accepted' },
+                        { label: 'Rejected', value: 'rejected' },
+                        { label: 'Awarded', value: 'awarded' }
+                    ].map((item) => (
+                        <button
+                            key={item.label}
+                            onClick={() => {
+                                setStatus(item.value);
+                                setPage(1);
+                            }}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${status === item.value
+                                ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-lg shadow-gray-200'
+                                : 'bg-white text-gray-600 border-gray-100 hover:border-gray-200 hover:bg-gray-50'
+                                }`}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+
                 <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-8">
                     <DataTable
                         data={data?.data || []}
@@ -258,6 +287,6 @@ export const RFQQuotationsPage = () => {
                     isSubmitting={evaluateMutation.isPending}
                 />
             </div>
-        </PermissionGuard>
+        </PermissionGuard >
     );
 };

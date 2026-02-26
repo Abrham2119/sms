@@ -124,14 +124,14 @@ export const RegisterPage = () => {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-primary-600/30"
+                        className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-black bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-primary-500/30"
                     >
                         {isLoading ? (
                             <Loader2 className="w-5 h-5 animate-spin" />
                         ) : (
                             <>
                                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                                    <ArrowRight className="h-5 w-5 text-primary-500 group-hover:text-primary-400" aria-hidden="true" />
+                                    <ArrowRight className="h-5 w-5 text-black group-hover:text-gray-800" aria-hidden="true" />
                                 </span>
                                 Create Account
                             </>

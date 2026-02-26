@@ -98,7 +98,7 @@ export const Step3ReviewPublish: React.FC<Step3ReviewPublishProps> = ({
                     <button
                         onClick={onPublish}
                         disabled={isLoading}
-                        className="px-8 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
+                        className="px-8 py-2 bg-green-600 text-black font-bold rounded-md hover:bg-green-700 transition-all shadow-md active:scale-95 disabled:opacity-50"
                     >
                         {isLoading ? 'Publishing...' : 'Publish RFQ'}
                     </button>
