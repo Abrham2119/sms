@@ -65,43 +65,28 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
     }, [open, initialData, reset]);
 
     const handleFormSubmit = async (data: any) => {
-        const formData = new FormData();
+        // Construct business data payload exactly as requested
+        const payload = {
+            type: data.type,
+            legal_name: data.legal_name,
+            trade_name: data.trade_name,
+            email: data.email,
+            tin: data.tin,
+            website: data.website,
+            status: data.status,
+            contacts: data.contacts.map((c: any) => ({
+                ...c,
+                is_primary: !!c.is_primary // Ensure boolean as requested
+            })),
+            addresses: data.addresses
+        };
 
-        // Basic fields
-        formData.append('legal_name', data.legal_name);
-        formData.append('trade_name', data.trade_name);
-        formData.append('email', data.email);
-        formData.append('tin', data.tin);
-        if (data.website) formData.append('website', data.website);
-        formData.append('type', data.type);
-        formData.append('status', data.status);
-
-        // Files
-        if (data.logo && data.logo[0]) {
-            formData.append('logo', data.logo[0]);
-        }
-
-        // Correctly format nested arrays for Laravel multipart/form-data
-        data.contacts?.forEach((contact: any, index: number) => {
-            Object.entries(contact).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
-                    // Send booleans as '1' or '0' for Laravel compatibility in multipart/form-data
-                    const processedValue = typeof value === 'boolean' ? (value ? '1' : '0') : value.toString();
-                    formData.append(`contacts[${index}][${key}]`, processedValue);
-                }
-            });
+        // If a logo is present, we include it in the object passed to onSubmit
+        // The service will handle splitting JSON from FormData
+        await onSubmit({
+            ...payload,
+            logo: (data.logo && data.logo[0]) ? data.logo[0] : undefined
         });
-
-        data.addresses?.forEach((address: any, index: number) => {
-            Object.entries(address).forEach(([key, value]) => {
-                if (value !== null && value !== undefined) {
-                    const processedValue = typeof value === 'boolean' ? (value ? '1' : '0') : value.toString();
-                    formData.append(`addresses[${index}][${key}]`, processedValue);
-                }
-            });
-        });
-
-        await onSubmit(formData);
         onClose();
     };
 

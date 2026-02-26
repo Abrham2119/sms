@@ -33,14 +33,20 @@ export const quotationItemSchema = z.object({
     product_id: z.string().uuid(),
     quantity: z.number().positive("Quantity must be positive"),
     unit_price: z.number().positive("Unit price must be positive"),
+    discount: z.number().nonnegative().default(0),
+    warranty_available: z.boolean().default(false),
+    warranty_duration: z.string().optional(),
+    warranty_details: z.string().optional(),
 });
 
 export const quotationSchema = z.object({
     rfq_id: z.string().uuid(),
     minimum_order_quantity: z.number().min(1, "MOQ must be at least 1"),
     lead_time_days: z.number().min(1, "Lead time must be at least 1 day"),
+    proforma_validity_date: z.string().min(1, "Validity date is required"),
     delivery_method: z.string().min(1, "Delivery method is required"),
     warranty_details: z.string().optional(),
+    credit_amount: z.number().nonnegative().default(0),
     credit_available: z.boolean(),
     credit_period_days: z.number().min(1, "Credit period is required"),
     availability_status: z.string().min(1, "Availability status is required"),

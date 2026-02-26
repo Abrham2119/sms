@@ -21,6 +21,10 @@ interface ItemQuotation {
     required_qty: number;
     offered_qty: number;
     unit_price: number;
+    discount: number;
+    warranty_available: boolean;
+    warranty_duration: string;
+    warranty_details: string;
 }
 
 interface SubmitQuotationDialogProps {
@@ -41,8 +45,10 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
     // Form States
     const [moq, setMoq] = useState(10);
     const [leadTime, setLeadTime] = useState(7);
+    const [proformaValidityDate, setProformaValidityDate] = useState('2026-03-15');
     const [deliveryMethod, setDeliveryMethod] = useState('Air');
     const [warranty, setWarranty] = useState('1 year warranty');
+    const [creditAmount, setCreditAmount] = useState(200);
     const [creditAvailable, setCreditAvailable] = useState(true);
     const [creditPeriod, setCreditPeriod] = useState(30);
     const [availability, setAvailability] = useState('in_stock');
@@ -58,13 +64,17 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                 name: p.name,
                 required_qty: Number(p.pivot.quantity),
                 offered_qty: Number(p.pivot.quantity),
-                unit_price: 0
+                unit_price: 0,
+                discount: 0,
+                warranty_available: true,
+                warranty_duration: '2026-03-15',
+                warranty_details: ''
             }));
             setItems(initialItems);
         }
     }, [rfq]);
 
-    const handleItemChange = (index: number, field: keyof ItemQuotation, value: string | number) => {
+    const handleItemChange = (index: number, field: keyof ItemQuotation, value: string | number | boolean) => {
         const newItems = [...items];
         newItems[index] = { ...newItems[index], [field]: value };
         setItems(newItems);
@@ -85,8 +95,10 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
             rfq_id: rfq?.id,
             minimum_order_quantity: moq,
             lead_time_days: leadTime,
+            proforma_validity_date: proformaValidityDate,
             delivery_method: deliveryMethod,
             warranty_details: warranty,
+            credit_amount: creditAmount,
             credit_available: creditAvailable,
             credit_period_days: creditAvailable ? creditPeriod : 0,
             availability_status: availability,
@@ -94,7 +106,11 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
             items: items.map(item => ({
                 product_id: item.product_id,
                 quantity: item.offered_qty,
-                unit_price: item.unit_price
+                unit_price: item.unit_price,
+                discount: item.discount,
+                warranty_available: item.warranty_available,
+                warranty_duration: item.warranty_duration,
+                warranty_details: item.warranty_details
             }))
         };
 
@@ -145,6 +161,13 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                             onFocus={handleFocus}
                             required
                         />
+                        <Input
+                            label="Validity Date"
+                            type="date"
+                            value={proformaValidityDate}
+                            onChange={(e) => setProformaValidityDate(e.target.value)}
+                            required
+                        />
                         <div className="space-y-1">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Delivery Method</label>
                             <select
@@ -174,10 +197,17 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Input
-                            label="Warranty Details"
+                            label="Warranty (General)"
                             value={warranty}
                             onChange={(e) => setWarranty(e.target.value)}
                             placeholder="e.g. 1 year warranty"
+                        />
+                        <Input
+                            label="Credit Amount"
+                            type="number"
+                            value={creditAmount}
+                            onChange={(e) => setCreditAmount(Number(e.target.value))}
+                            onFocus={handleFocus}
                         />
                         <div className="flex flex-col gap-1.5">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Credit Available</label>
@@ -249,6 +279,8 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                         <th className="px-6 py-4 text-center">Required</th>
                                         <th className="px-6 py-4 text-center">Offered</th>
                                         <th className="px-6 py-4">Unit Price</th>
+                                        <th className="px-6 py-4">Discount</th>
+                                        <th className="px-6 py-4">Item Warranty</th>
                                         <th className="px-6 py-4 text-right">Subtotal</th>
                                     </tr>
                                 </thead>
@@ -284,8 +316,46 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                         ${item.unit_price <= 0 ? 'border-red-300 ring-4 ring-red-500/10' : 'border-gray-200 dark:border-gray-700'}
                                                     `}
                                                         placeholder="0.00"
-                                                        required
                                                     />
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <input
+                                                    type="number"
+                                                    value={item.discount}
+                                                    onChange={(e) => handleItemChange(idx, 'discount', Number(e.target.value))}
+                                                    onFocus={handleFocus}
+                                                    className="w-20 p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-primary-500 transition-all"
+                                                />
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-2 min-w-[200px]">
+                                                    <label className="flex items-center gap-2 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={item.warranty_available}
+                                                            onChange={(e) => handleItemChange(idx, 'warranty_available', e.target.checked)}
+                                                            className="w-4 h-4 rounded text-primary-600"
+                                                        />
+                                                        <span className="text-xs font-semibold">Warranty Available</span>
+                                                    </label>
+                                                    {item.warranty_available && (
+                                                        <>
+                                                            <input
+                                                                type="date"
+                                                                value={item.warranty_duration}
+                                                                onChange={(e) => handleItemChange(idx, 'warranty_duration', e.target.value)}
+                                                                className="w-full p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 text-xs focus:ring-1 focus:ring-primary-500"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                value={item.warranty_details}
+                                                                placeholder="Details"
+                                                                onChange={(e) => handleItemChange(idx, 'warranty_details', e.target.value)}
+                                                                className="w-full p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 text-xs focus:ring-1 focus:ring-primary-500"
+                                                            />
+                                                        </>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-right font-black text-primary-600 dark:text-primary-400">
@@ -296,7 +366,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                 </tbody>
                                 <tfoot className="bg-gray-50 dark:bg-gray-900/50">
                                     <tr>
-                                        <td colSpan={4} className="px-6 py-4 text-right font-bold text-gray-500 uppercase tracking-widest text-xs">
+                                        <td colSpan={6} className="px-6 py-4 text-right font-bold text-gray-500 uppercase tracking-widest text-xs">
                                             Grand Total Estimate
                                         </td>
                                         <td className="px-6 py-4 text-right text-xl font-black text-gray-900 dark:text-white">

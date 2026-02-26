@@ -73,6 +73,10 @@ export interface QuotationItem {
     total_price: string;
     lead_time_days: string | null;
     remarks: string | null;
+    discount: number;
+    warranty_available: boolean;
+    warranty_duration: string;
+    warranty_details: string;
     product: {
         id: string;
         name: string;
@@ -91,8 +95,10 @@ export interface Quotation {
     minimum_order_quantity: string;
     lead_time_days: string;
     is_evaluated?: boolean
+    proforma_validity_date: string;
     delivery_method: string;
     warranty_details: string;
+    credit_amount: number;
     credit_available: string;
     credit_period_days: string;
     availability_status: string;

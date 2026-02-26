@@ -35,24 +35,35 @@ export class SupplierService {
         return (response.data as any).data || response.data;
     }
 
-    static async create(data: Partial<Supplier> | FormData): Promise<Supplier> {
-        const response = await api.post<ApiResponse<Supplier> | Supplier>(SUPPLIER_ENDPOINTS.BASE, data, {
-            headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
-        });
-        return (response.data as any).data || response.data;
+    static async create(data: any): Promise<Supplier> {
+        const { logo, ...jsonData } = data;
+        const response = await api.post<ApiResponse<Supplier> | Supplier>(SUPPLIER_ENDPOINTS.BASE, jsonData);
+        const supplier = (response.data as any).data || response.data;
+
+        if (logo instanceof File) {
+            return this.uploadLogo(supplier.id, logo);
+        }
+        return supplier;
     }
 
-    static async update(id: string, data: Partial<Supplier> | FormData): Promise<Supplier> {
-        const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
-        if (data instanceof FormData && !data.has('_method')) {
-            data.append('_method', 'PUT');
+    static async update(id: string, data: any): Promise<Supplier> {
+        const { logo, ...jsonData } = data;
+        const response = await api.put<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, jsonData);
+        const supplier = (response.data as any).data || response.data;
+
+        if (logo instanceof File) {
+            return this.uploadLogo(id, logo);
         }
+        return supplier;
+    }
 
-        // Use POST for FormData updates to support _method spoofing for file uploads in some backends
-        const response = data instanceof FormData
-            ? await api.post<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data, config)
-            : await api.put<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data, config);
-
+    static async uploadLogo(id: string, file: File): Promise<Supplier> {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('logo', file);
+        const response = await api.post<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
         return (response.data as any).data || response.data;
     }
 
