@@ -194,7 +194,7 @@ const SuppliersPageContent = () => {
                         <div key={idx} className={`text-sm p-3 rounded-xl border ${contact.is_primary ? 'bg-primary-50/50 dark:bg-primary-900/10 border-primary-100 dark:border-primary-900/20 shadow-sm' : 'border-gray-100 dark:border-gray-700'}`}>
                             <div className="flex items-center justify-between mb-1">
                                 <div className="font-bold text-gray-800 dark:text-gray-200">{contact.name}</div>
-                                {contact.is_primary && <span className="text-[10px] bg-primary-500 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Primary</span>}
+                                {contact.is_primary && <span className="text-[10px] bg-primary-500 text-black px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Primary</span>}
                             </div>
                             <div className="text-xs text-gray-500 flex flex-col gap-1">
                                 <span className="flex items-center gap-1"><Mail className="w-3 h-3" /> {contact.email}</span>
@@ -221,7 +221,7 @@ const SuppliersPageContent = () => {
                 </div>
                 <Button
                     onClick={handleCreate}
-                    className="whitespace-nowrap bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-2xl shadow-xl shadow-primary-200 transition-all hover:scale-105 active:scale-95"
+                    className="whitespace-nowrap bg-primary-500 hover:bg-primary-600 text-black font-bold py-3 px-6 rounded-2xl shadow-xl shadow-primary-500/20 transition-all hover:scale-105 active:scale-95"
                 >
                     <Plus className="w-5 h-5 mr-2" />
                     Register New Supplier

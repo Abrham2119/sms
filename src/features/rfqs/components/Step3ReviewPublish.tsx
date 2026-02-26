@@ -35,7 +35,7 @@ export const Step3ReviewPublish: React.FC<Step3ReviewPublishProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                     <div>
                         <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Reference Number</span>
-                        <span className="text-sm font-medium text-primary-700 bg-primary-50 px-2 py-0.5 rounded italic">{referenceNumber || 'DRAFT'}</span>
+                        <span className="text-sm font-medium text-primary-800 bg-primary-50 px-2 py-0.5 rounded italic">{referenceNumber || 'DRAFT'}</span>
                     </div>
                     <div>
                         <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider">Submission Deadline</span>

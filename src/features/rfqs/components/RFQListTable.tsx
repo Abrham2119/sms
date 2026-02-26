@@ -49,7 +49,7 @@ export const RFQListTable: React.FC<RFQListTableProps> = ({ rfqs, onEdit, onView
                                 onClick={() => onView(rfq)}
                             >
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="text-sm font-bold text-primary-600">{rfq.reference_number}</span>
+                                    <span className="text-sm font-bold text-primary-800">{rfq.reference_number}</span>
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="text-sm text-gray-900 max-w-xs truncate">{rfq.description}</div>

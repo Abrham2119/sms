@@ -94,7 +94,7 @@ export const RFQDetails: React.FC<RFQDetailsProps> = ({ rfq }) => {
                                             <td className="px-6 py-4 text-gray-600 dark:text-gray-300">
                                                 ID: {item.category_id.substring(0, 8)}...
                                             </td>
-                                            <td className="px-6 py-4 text-center font-mono font-bold text-primary-600">
+                                            <td className="px-6 py-4 text-center font-mono font-bold text-black">
                                                 {item.pivot.quantity}
                                             </td>
                                             <td className="px-6 py-4 text-gray-500 dark:text-gray-400 italic text-xs">

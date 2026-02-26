@@ -93,7 +93,7 @@ export const SupplierProductsPageForTab = ({ supplierId: propSupplierId }: Suppl
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="text-primary-600 hover:text-primary-700 hover:bg-primary-50"
+                        className="text-black hover:text-primary-800 hover:bg-primary-50"
                         onClick={(e) => { e.stopPropagation(); navigate(`/products/${item.id}`); }}
                         title="View Details"
                     >
@@ -142,7 +142,7 @@ export const SupplierProductsPageForTab = ({ supplierId: propSupplierId }: Suppl
                     </Button>
                     <Button
                         onClick={() => setIsLinkingModalOpen(true)}
-                        className="bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl px-6 py-2 shadow-lg shadow-primary-200 dark:shadow-none flex items-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                        className="bg-primary-500 hover:bg-primary-600 text-black font-bold rounded-xl px-6 py-2 shadow-lg shadow-primary-500/20 flex items-center gap-2 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <Plus className="w-5 h-5" />
                         Link New Products

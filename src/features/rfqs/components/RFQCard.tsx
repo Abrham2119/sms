@@ -34,7 +34,7 @@ export const RFQCard = ({ rfq, onViewDetails, onSubmitQuotation }: RFQCardProps)
             {/* Card Header */}
             <div className="flex justify-between items-start mb-4">
                 <div className="space-y-1">
-                    <h3 className="text-[17px] font-bold text-gray-900 dark:text-white tracking-tight group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-[17px] font-bold text-gray-900 dark:text-white tracking-tight group-hover:text-primary-800 transition-colors">
                         {rfq.reference_number}
                     </h3>
                     <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest flex items-center gap-1">
@@ -89,7 +89,7 @@ export const RFQCard = ({ rfq, onViewDetails, onSubmitQuotation }: RFQCardProps)
                                         <td className="px-4 py-2 font-semibold text-gray-700 dark:text-gray-300 truncate max-w-[120px]">
                                             {product.name}
                                         </td>
-                                        <td className="px-4 py-2 text-right font-bold text-primary-600 dark:text-primary-400 w-16">
+                                        <td className="px-4 py-2 text-right font-bold text-black dark:text-primary-400 w-16">
                                             {product.pivot.quantity}
                                         </td>
                                     </tr>

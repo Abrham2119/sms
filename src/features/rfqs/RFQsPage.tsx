@@ -250,7 +250,7 @@ export const RFQsPage = () => {
                     </div>
                     <Button
                         onClick={handleCreate}
-                        className="whitespace-nowrap bg-[#0f172a] hover:bg-[#1e293b] text-white font-bold py-3 px-6 rounded-2xl shadow-xl shadow-gray-200 transition-all hover:scale-105 active:scale-95"
+                        className="whitespace-nowrap bg-primary-500 hover:bg-primary-600 text-black font-bold py-3 px-6 rounded-2xl shadow-xl shadow-primary-500/20 transition-all hover:scale-105 active:scale-95"
                     >
                         <Plus className="w-5 h-5 mr-2" />
                         Create New RFQ

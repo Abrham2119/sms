@@ -63,9 +63,9 @@ export const UserStatusModal: React.FC<UserStatusModalProps> = ({
                     <Button
                         onClick={handleConfirm}
                         isLoading={toggleStatusMutation.isPending}
-                        className={`flex-1 text-white shadow-lg ${isActive
-                            ? 'bg-primary-600 hover:bg-primary-700 shadow-primary-200'
-                            : 'bg-primary-600 hover:bg-primary-700 shadow-primary-200'
+                        className={`flex-1 text-black font-bold shadow-lg ${isActive
+                            ? 'bg-primary-500 hover:bg-primary-600 shadow-primary-500/20'
+                            : 'bg-primary-500 hover:bg-primary-600 shadow-primary-500/20'
                             }`}
                     >
                         Confirm {actionText}

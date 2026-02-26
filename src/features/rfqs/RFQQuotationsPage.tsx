@@ -191,7 +191,7 @@ export const RFQQuotationsPage = () => {
                     {rfqStatus === 'evaluation' && (
                         <Button
                             onClick={() => navigate(`/admin/evaluations/${rfqId}`, { state: { rfqStatus } })}
-                            className="bg-[#0f172a] hover:bg-[#1e293b] text-white font-bold py-3 px-6 rounded-2xl shadow-xl shadow-gray-200 transition-all hover:scale-105 active:scale-95"
+                            className="bg-primary-500 hover:bg-primary-600 text-black font-bold py-3 px-6 rounded-2xl shadow-xl shadow-primary-500/20 transition-all hover:scale-105 active:scale-95"
                         >
                             <ListChecks className="w-5 h-5 mr-2" />
                             View Evaluations
@@ -217,7 +217,7 @@ export const RFQQuotationsPage = () => {
                                 setPage(1);
                             }}
                             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${status === item.value
-                                ? 'bg-[#0f172a] text-white border-[#0f172a] shadow-lg shadow-gray-200'
+                                ? 'bg-primary-500 text-black border-primary-500 shadow-lg shadow-primary-500/20'
                                 : 'bg-white text-gray-600 border-gray-100 hover:border-gray-200 hover:bg-gray-50'
                                 }`}
                         >

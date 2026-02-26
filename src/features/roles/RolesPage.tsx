@@ -107,7 +107,7 @@ export const RolesPage = () => {
                         >
                             Roles
                             {activeTab === 0 && (
-                                <span className="absolute bottom-0 left-0 w-full h-1 bg-primary-600 rounded-t-full" />
+                                <span className="absolute bottom-0 left-0 w-full h-1 bg-primary-500 rounded-t-full" />
                             )}
                         </button>
 
@@ -134,7 +134,7 @@ export const RolesPage = () => {
                                 </div>
                                 <button
                                     onClick={() => setFormState({ open: true, data: null })}
-                                    className="w-full sm:w-auto px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-200"
+                                    className="w-full sm:w-auto px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-500/20"
                                 >
                                     <Plus size={20} />
                                     Add Role

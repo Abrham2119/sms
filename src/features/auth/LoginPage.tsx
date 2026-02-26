@@ -38,7 +38,7 @@ export const LoginPage = () => {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-100 dark:border-gray-700">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+          <h1 className="text-2xl font-black text-black dark:text-primary-400">
             SMS Portal
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2">
@@ -70,7 +70,7 @@ export const LoginPage = () => {
 
           <div className="text-center mt-4">
             <span className="text-sm text-gray-600 dark:text-gray-400">Don't have an account? </span>
-            <Link to="/register" className="text-sm text-primary-600 hover:underline">Register</Link>
+            <Link to="/register" className="text-sm text-primary-800 font-bold hover:underline">Register</Link>
           </div>
         </form>
       </div>

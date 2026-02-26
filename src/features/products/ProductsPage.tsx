@@ -133,7 +133,7 @@ const ProductsPageContent = () => {
                 <div className="flex gap-2 w-full sm:w-auto">
                     <Button
                         onClick={() => setFormState({ open: true, data: null })}
-                        className="whitespace-nowrap px-6 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-lg shadow-primary-200"
+                        className="whitespace-nowrap px-6 bg-primary-500 hover:bg-primary-600 text-black font-bold rounded-xl shadow-lg shadow-primary-500/20"
                     >
                         <Plus size={20} className="mr-2" />
                         Add Product

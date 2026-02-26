@@ -585,7 +585,7 @@ export const RFQDetailPage = () => {
                                     <Icon className={`w-4 h-4 ${isActive ? 'animate-pulse' : ''}`} />
                                     {tab.label}
                                     {isActive && (
-                                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 rounded-t-full shadow-[0_-2px_4px_rgba(37,99,235,0.2)]" />
+                                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-500 rounded-t-full shadow-[0_-2px_4px_rgba(255,255,0,0.2)]" />
                                     )}
                                 </button>
                             );

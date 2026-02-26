@@ -444,7 +444,7 @@ const AttachmentsTab = ({ supplierId }: { supplierId: string }) => {
                     </div>
                     <Button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl px-6 h-10 shadow-lg shadow-primary-200 dark:shadow-none flex items-center justify-center gap-2 group"
+                        className="w-full sm:w-auto bg-primary-500 hover:bg-primary-600 text-black font-bold rounded-xl px-6 h-10 shadow-lg shadow-primary-500/20 flex items-center justify-center gap-2 group"
                     >
                         <UploadCloud className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
                         Upload
@@ -614,7 +614,7 @@ export const SupplierDetailPage = () => {
                         </Button>
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex items-start gap-4">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-blue-200 dark:shadow-none">
+                                <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center text-black font-bold text-2xl shadow-lg shadow-primary-500/20">
                                     {supplier.legal_name.charAt(0)}
                                 </div>
                                 <div>
@@ -659,7 +659,7 @@ export const SupplierDetailPage = () => {
                                     <Icon className="w-4 h-4" />
                                     {tab.label}
                                     {isActive && (
-                                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-600 rounded-t-full" />
+                                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary-500 rounded-t-full" />
                                     )}
                                 </button>
                             );

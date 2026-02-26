@@ -173,7 +173,7 @@ export const Step2Products: React.FC<Step2ProductsProps> = ({
                                         <td className="px-4 py-3 text-right flex justify-end gap-3">
                                             <button
                                                 onClick={() => handleEditProduct(p, index)}
-                                                className="text-primary-600 hover:text-primary-800 text-xs font-bold"
+                                                className="text-black hover:text-primary-800 text-xs font-bold"
                                             >
                                                 Edit
                                             </button>

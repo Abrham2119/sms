@@ -47,7 +47,7 @@ export const LandingPage = () => {
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 flex flex-col items-center text-center">
                     <h1 className="text-4xl md:text-6xl font-extrabold text-black tracking-tight mb-6">
-                        Smart Banking for <span className="text-primary-600">Smart Members</span>
+                        Smart Banking for <span className="text-black font-black underline decoration-primary-500 decoration-4">Smart Members</span>
                     </h1>
                     <p className="text-lg md:text-xl text-black max-w-2xl mb-10">
                         Securely manage your membership, savings, and transactions. Experience the next generation of digital banking services.
@@ -77,7 +77,7 @@ export const LandingPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {features.map((feature, index) => (
                             <div key={index} className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                                <div className="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center text-primary-600 mb-6">
+                                <div className="w-12 h-12 bg-primary-500 rounded-xl flex items-center justify-center text-black mb-6">
                                     <feature.icon className="w-6 h-6" />
                                 </div>
                                 <h3 className="text-xl font-bold text-black mb-3">{feature.title}</h3>
@@ -95,9 +95,9 @@ export const LandingPage = () => {
                         © {new Date().getFullYear()} Member Portal. All rights reserved.
                     </div>
                     <div className="flex gap-8 text-black">
-                        <a href="#" className="hover:text-primary-600 transition-colors">Privacy Policy</a>
-                        <a href="#" className="hover:text-primary-600 transition-colors">Terms of Service</a>
-                        <a href="#" className="hover:text-primary-600 transition-colors">Contact Support</a>
+                        <a href="#" className="hover:text-primary-500 transition-colors">Privacy Policy</a>
+                        <a href="#" className="hover:text-primary-500 transition-colors">Terms of Service</a>
+                        <a href="#" className="hover:text-primary-500 transition-colors">Contact Support</a>
                     </div>
                 </div>
             </footer>

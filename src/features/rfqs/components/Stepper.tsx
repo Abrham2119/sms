@@ -24,8 +24,8 @@ export const Stepper: React.FC<StepperProps> = ({ steps, currentStep }) => {
                         <div key={step} className="flex flex-col items-center flex-1">
                             <div
                                 className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300 ${isActive
-                                        ? 'bg-primary-600 border-primary-600 text-white'
-                                        : 'bg-white border-gray-300 text-gray-500'
+                                    ? 'bg-primary-500 border-primary-500 text-black'
+                                    : 'bg-white border-gray-300 text-gray-500'
                                     } ${isCurrent ? 'ring-4 ring-primary-100' : ''}`}
                             >
                                 {index + 1}

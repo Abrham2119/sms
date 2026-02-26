@@ -260,7 +260,7 @@ export const UserDetailPage = () => {
 
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                         <div className="flex items-start gap-6">
-                            <div className="w-20 h-20 rounded-3xl bg-primary-600 flex items-center justify-center text-white font-black text-3xl shadow-2xl shadow-primary-200 dark:shadow-none animate-in zoom-in duration-500">
+                            <div className="w-20 h-20 rounded-3xl bg-primary-500 flex items-center justify-center text-black font-black text-3xl shadow-2xl shadow-primary-500/20 animate-in zoom-in duration-500">
                                 {user.name.charAt(0).toUpperCase()}
                             </div>
                             <div className="space-y-2">
@@ -315,7 +315,7 @@ export const UserDetailPage = () => {
                                     className={`
                                         flex items-center gap-2.5 pb-4 text-sm font-bold transition-all relative
                                         ${isActive
-                                            ? 'text-primary-600'
+                                            ? 'text-primary-800 dark:text-primary-400'
                                             : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
                                         }
                                     `}
@@ -323,7 +323,7 @@ export const UserDetailPage = () => {
                                     <Icon className={`w-4 h-4 ${isActive ? 'animate-pulse' : ''}`} />
                                     {tab.label}
                                     {isActive && (
-                                        <div className="absolute bottom-0 left-0 w-full h-1 bg-primary-600 rounded-t-full animate-in slide-in-from-bottom-2" />
+                                        <div className="absolute bottom-0 left-0 w-full h-1 bg-primary-500 rounded-t-full animate-in slide-in-from-bottom-2" />
                                     )}
                                 </button>
                             );

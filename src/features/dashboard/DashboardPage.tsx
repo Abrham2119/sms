@@ -20,7 +20,7 @@ const DashboardPage = () => {
             <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm p-8 mb-6">
                 <div className="flex items-start gap-6">
                     <div className="w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-                        <UserCircle className="w-12 h-12 text-primary-600 dark:text-primary-400" />
+                        <UserCircle className="w-12 h-12 text-black" />
                     </div>
                     <div className="flex-1">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -35,7 +35,7 @@ const DashboardPage = () => {
                                 {roles.map((role) => (
                                     <span
                                         key={role.uuid}
-                                        className="px-3 py-1 text-sm font-semibold rounded-full bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-200 dark:border-primary-800"
+                                        className="px-3 py-1 text-sm font-semibold rounded-full bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-400 border border-primary-200 dark:border-primary-800"
                                     >
                                         {role.name}
                                     </span>

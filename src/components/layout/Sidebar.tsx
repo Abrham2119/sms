@@ -207,7 +207,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                         </div>
                         <Button
                             variant="ghost"
-                            className={`w-full text-red-400 hover:text-red-300 hover:bg-red-900/20 ${isCollapsed ? 'justify-center px-0' : 'justify-start'}`}
+                            className={`w-full text-black hover:text-red-600 hover:bg-red-50 ${isCollapsed ? 'justify-center px-0' : 'justify-start'}`}
                             onClick={() => logout()}
                             title={isCollapsed ? "Log out" : undefined}
                         >

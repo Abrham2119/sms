@@ -88,7 +88,7 @@ export const Step1GeneralInfo: React.FC<Step1GeneralInfoProps> = ({
                             <button
                                 type="button"
                                 onClick={() => append({ value: '' })}
-                                className="text-primary-600 hover:text-primary-700 text-xs font-bold flex items-center gap-1 bg-primary-50 px-2 py-1 rounded-lg transition-colors"
+                                className="text-black hover:text-primary-700 text-xs font-bold flex items-center gap-1 bg-primary-50 px-2 py-1 rounded-lg transition-colors"
                             >
                                 <Plus className="w-3 h-3" /> Add Term
                             </button>
