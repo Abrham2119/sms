@@ -134,7 +134,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
             )}
 
             <aside className={`
-                fixed lg:sticky top-0 left-0 z-50 h-screen bg-[var(--color-sidebar-bg)] text-white border-r border-gray-800
+                fixed lg:sticky top-0 left-0 z-50 h-screen bg-[var(--color-sidebar-bg)] text-white border-r border-gray-100 dark:border-gray-800
                 transition-all duration-300 ease-in-out flex-shrink-0
                 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                 lg:translate-x-0
@@ -142,12 +142,12 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                 group
             `}>
                 <div className="h-full flex flex-col overflow-hidden">
-                    <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800 whitespace-nowrap shrink-0">
+                    <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800/50 whitespace-nowrap shrink-0">
                         <div className={`flex items-center gap-2 min-w-max transition-all duration-300 ${isCollapsed ? 'lg:justify-center lg:w-full' : ''}`}>
-                            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0">
+                            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(255,255,0,0.4)]">
                                 <span className="font-bold text-black">A</span>
                             </div>
-                            <span className={`text-xl font-bold text-white transition-opacity duration-300 ${isCollapsed ? 'lg:hidden lg:opacity-0' : 'opacity-100'}`}>
+                            <span className={`text-xl font-black text-white transition-opacity duration-300 ${isCollapsed ? 'lg:hidden lg:opacity-0' : 'opacity-100'} tracking-tighter uppercase`}>
                                 SMS Portal
                             </span>
                         </div>
@@ -174,10 +174,10 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                                                 to={link.path}
                                                 onClick={() => onClose()}
                                                 className={`
-                                                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                                                    flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all relative group/item
                                                     ${active
-                                                        ? 'bg-primary-500/10 text-primary-500 border-l-4 border-primary-500'
-                                                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                                                        ? 'bg-primary-500/10 text-primary-500'
+                                                        : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
                                                     }
                                                     ${isCollapsed ? 'justify-center px-0' : ''}
                                                 `}
@@ -207,7 +207,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                         </div>
                         <Button
                             variant="ghost"
-                            className={`w-full text-black hover:text-red-600 hover:bg-red-50 ${isCollapsed ? 'justify-center px-0' : 'justify-start'}`}
+                            className={`w-full text-primary-500 hover:text-black hover:bg-primary-500 rounded-xl font-black ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} transition-all`}
                             onClick={() => logout()}
                             title={isCollapsed ? "Log out" : undefined}
                         >

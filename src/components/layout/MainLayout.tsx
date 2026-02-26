@@ -36,7 +36,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
 
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 shadow-sm">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSidebarOpen(true)}
@@ -51,14 +51,14 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             >
               {isSidebarCollapsed ? <AlignJustify className="w-5 h-5" /> : <AlignLeft className="w-5 h-5" />}
             </button>
-            <h1 className="text-xl font-bold text-gray-800 hidden sm:block">
+            <h1 className="text-xl font-black text-gray-900 hidden sm:block tracking-tight">
               {pageTitle}
             </h1>
           </div>
 
           <div className="flex items-center gap-4">
 
-            <div className="hidden md:flex items-center bg-gray-100 rounded-md px-3 py-2 w-64">
+            <div className="hidden md:flex items-center bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 w-64 focus-within:border-primary-500 transition-colors">
               <Search className="w-4 h-4 text-gray-400 mr-2" />
               <input
                 type="text"
@@ -69,9 +69,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </div>
 
 
-            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full relative group">
+              <Bell className="w-5 h-5 transition-all" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-primary-500 rounded-full border-2 border-white"></span>
             </button>
 
 
@@ -85,16 +85,16 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
 
             <div className="relative group">
-              <button className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm border-2 border-white shadow-sm cursor-pointer hover:bg-indigo-200 transition-colors">
+              <button className="w-10 h-10 rounded-xl bg-primary-500 text-black flex items-center justify-center font-black text-sm border border-primary-400 shadow-sm cursor-pointer hover:bg-primary-600 transition-all hover:scale-105">
                 {user?.name?.substring(0, 2).toUpperCase() || "AZ"}
               </button>
 
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 hidden group-hover:block border border-gray-100 dark:border-gray-700">
-                <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-xl py-1 z-50 hidden group-hover:block border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+                <div className="px-5 py-4 border-b border-gray-100">
+                  <p className="text-sm font-bold text-gray-900 truncate">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  <p className="text-xs text-primary-800 font-bold truncate mt-1">
                     {user?.email}
                   </p>
                 </div>
