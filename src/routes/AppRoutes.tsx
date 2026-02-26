@@ -17,6 +17,7 @@ import { RolesPage } from "../features/roles/RolesPage";
 import { PermissionsPage } from "../features/permissions/PermissionsPage";
 import CategoriesPage from "../features/categories/CategoriesPage";
 import ProductsPage from "../features/products/ProductsPage";
+import { UOMsPage } from "../features/uoms/UOMsPage";
 import { ProductDetailPage } from "../features/products/ProductDetailPage";
 import SupplierProductsPage from "../features/suppliers/SupplierProductsPage";
 import { SupplierDetailPage } from "../features/suppliers/SupplierDetailPage";
@@ -54,6 +55,7 @@ const AppRoutes = () => {
                     <Route path="/suppliers/link/:id" element={<SupplierProductsPage />} />
                     <Route path="/requests" element={<RequestsPage />} />
                     <Route path="/categories" element={<CategoriesPage />} />
+                    <Route path="/uoms" element={<UOMsPage />} />
                     <Route path="/products" element={<ProductsPage />} />
                     <Route path="/products/:id" element={<ProductDetailPage />} />
                     <Route path="/suppliers/:id/products" element={<SupplierProductsPage />} />

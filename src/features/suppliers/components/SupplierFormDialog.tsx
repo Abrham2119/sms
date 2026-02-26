@@ -27,6 +27,7 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
             email: '',
             tin: '',
             website: '',
+            type: 'local',
             status: 'active',
             contacts: [{ name: '', email: '', phone: '', role: '', is_primary: true }],
             addresses: [{ type: 'hq', country: 'Ethiopia', city: '', address_line1: '' }]
@@ -54,6 +55,7 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
                     email: '',
                     tin: '',
                     website: '',
+                    type: 'local',
                     status: 'active',
                     contacts: [{ name: '', email: '', phone: '', role: '', is_primary: true }],
                     addresses: [{ type: 'hq', country: 'Ethiopia', city: '', address_line1: '' }]
@@ -62,8 +64,44 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
         }
     }, [open, initialData, reset]);
 
-    const handleFormSubmit = async (data: Supplier) => {
-        await onSubmit(data);
+    const handleFormSubmit = async (data: any) => {
+        const formData = new FormData();
+
+        // Basic fields
+        formData.append('legal_name', data.legal_name);
+        formData.append('trade_name', data.trade_name);
+        formData.append('email', data.email);
+        formData.append('tin', data.tin);
+        if (data.website) formData.append('website', data.website);
+        formData.append('type', data.type);
+        formData.append('status', data.status);
+
+        // Files
+        if (data.logo && data.logo[0]) {
+            formData.append('logo', data.logo[0]);
+        }
+
+        // Correctly format nested arrays for Laravel multipart/form-data
+        data.contacts?.forEach((contact: any, index: number) => {
+            Object.entries(contact).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    // Send booleans as '1' or '0' for Laravel compatibility in multipart/form-data
+                    const processedValue = typeof value === 'boolean' ? (value ? '1' : '0') : value.toString();
+                    formData.append(`contacts[${index}][${key}]`, processedValue);
+                }
+            });
+        });
+
+        data.addresses?.forEach((address: any, index: number) => {
+            Object.entries(address).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                    const processedValue = typeof value === 'boolean' ? (value ? '1' : '0') : value.toString();
+                    formData.append(`addresses[${index}][${key}]`, processedValue);
+                }
+            });
+        });
+
+        await onSubmit(formData);
         onClose();
     };
 
@@ -130,6 +168,21 @@ export const SupplierFormDialog: React.FC<SupplierFormDialogProps> = ({
                                 { value: 'suspended', label: 'Suspended' },
                                 { value: 'blacklisted', label: 'Blacklisted' }
                             ]}
+                        />
+                        <Select
+                            label="Supplier Type"
+                            {...register("type", { required: "Supplier type is required" })}
+                            options={[
+                                { value: 'local', label: 'Local' },
+                                { value: 'foreign', label: 'Foreign' }
+                            ]}
+                            error={errors.type?.message}
+                        />
+                        <Input
+                            label="Company Logo"
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg"
+                            {...register("logo")}
                         />
                     </div>
                 </div>

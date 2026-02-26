@@ -6,6 +6,7 @@ export interface User {
     status?: string;
     roles?: (string | { id: string, name: string })[];
     email_verified_at?: string;
+    profile_picture?: string;
     created_at?: string;
     updated_at?: string;
 }

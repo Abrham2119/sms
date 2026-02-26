@@ -11,6 +11,7 @@ import {
     useProducts,
     useUpdateProduct,
 } from "./hooks/useProduct";
+import { useUOMs } from "../uoms/hooks/useUOM";
 // We need categories for the dropdown in the form
 import { Edit2, Eye, Trash2 } from "lucide-react";
 import type { Column } from "../../components/table/DataTable";
@@ -50,22 +51,39 @@ const ProductsPageContent = () => {
 
     const columns: Column<Product>[] = [
         { key: 'name', label: 'Name', sortable: true, searchable: true },
+        { key: 'code', label: 'Code', sortable: true, searchable: true },
         {
             key: 'category',
             label: 'Category',
             render: (p) => p.category?.name || '-'
         },
         {
+            key: 'uom',
+            label: 'UOM',
+            render: (p) => p.uom ? `${p.uom.name} (${p.uom.abbreviation})` : '-'
+        },
+        {
+            key: 'quantity',
+            label: 'Quantity',
+            sortable: true,
+            render: (p) => p.quantity || '0'
+        },
+        {
             key: 'is_active',
             label: 'Status',
-            render: (p) => (
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${p.is_active
-                    ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
-                    : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
-                    }`}>
-                    {p.is_active ? "Active" : "Inactive"}
-                </span>
-            )
+            render: (p) => {
+                const isActive = typeof p.is_active === 'string'
+                    ? p.is_active === '1'
+                    : !!p.is_active;
+                return (
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                        }`}>
+                        {isActive ? "Active" : "Inactive"}
+                    </span>
+                );
+            }
         },
         {
             key: 'actions',
@@ -94,6 +112,9 @@ const ProductsPageContent = () => {
     // Fetch categories for the form
     const { data: categoriesData } = useCategories({ per_page: 100 });
     const categories = categoriesData?.data || [];
+
+    const { data: uomsData } = useUOMs({ per_page: 100, is_active: true });
+    const uoms = uomsData?.data || [];
 
     const [formState, setFormState] = useState<{
         open: boolean;
@@ -169,6 +190,7 @@ const ProductsPageContent = () => {
                 onClose={() => setFormState({ open: false, data: null })}
                 initialData={formState.data}
                 categories={categories}
+                uoms={uoms}
                 onSubmit={formState.data ? handleUpdate : handleCreate}
             />
 

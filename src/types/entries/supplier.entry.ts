@@ -25,6 +25,8 @@ export interface Supplier {
     email: string;
     tin: string;
     website?: string;
+    type: 'local' | 'foreign';
+    logo?: string;
     status: 'active' | 'inactive' | 'suspended' | 'blacklisted';
     contacts: Contact[];
     addresses: Address[];
@@ -62,6 +64,7 @@ export interface SupplierProfileResponse {
     name: string;
     email: string;
     email_verified_at: string | null;
+    profile_picture: string | null;
     created_at: string;
     updated_at: string;
     supplier_profile: SupplierProfile;

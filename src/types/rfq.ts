@@ -5,6 +5,7 @@ export interface RFQ {
     submission_deadline: string;
     delivery_terms: string[];
     delivery_location: string;
+    type: 'all' | 'local' | 'foreign';
     status: string;
     created_at: string;
     updated_at: string;
@@ -47,6 +48,7 @@ export interface CreateRFQRequest {
     submission_deadline: string;
     delivery_terms: string[];
     delivery_location: string;
+    type: 'all' | 'local' | 'foreign';
 }
 
 export interface AttachProductsRequest {

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { ToastContainer } from "react-toastify";
-import type { Category } from "../../types";
+import type { UOM } from "../../types";
 import { PERMISSIONS } from "../../types";
 import { PermissionGuard } from "../../components/guards/PermissionGuard";
 import {
-    useCategories,
-    useCreateCategory,
-    useUpdateCategory,
-    useDeleteCategory,
-} from "./hooks/useCategory";
-import { CategoryFormDialog } from "./components/CategoryFormDialog";
+    useUOMs,
+    useCreateUOM,
+    useUpdateUOM,
+    useDeleteUOM,
+} from "./hooks/useUOM";
+import { UOMFormDialog } from "./components/UOMFormDialog";
 import { Button } from "../../components/ui/Button";
 import { DataTable } from "../../components/table/DataTable";
 import type { Column } from "../../components/table/DataTable";
@@ -18,15 +18,16 @@ import { Edit2, Trash2, Eye } from "lucide-react";
 
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { EntityDetailModal } from "../../components/ui/EntityDetailModal";
+import { Badge } from "../../components/ui/Badge";
 
-export const CategoriesPage = () => {
+export const UOMsPage = () => {
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(20);
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [sortBy, setSortBy] = useState<string | undefined>();
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>();
-    const [viewingCategory, setViewingCategory] = useState<Category | null>(null);
+    const [viewingUOM, setViewingUOM] = useState<UOM | null>(null);
 
     // Debounce search
     useEffect(() => {
@@ -37,59 +38,61 @@ export const CategoriesPage = () => {
         return () => clearTimeout(timer);
     }, [search]);
 
-    const { data: categoriesResponse, isLoading } = useCategories({
+    const { data: uomsResponse, isLoading } = useUOMs({
         page,
         per_page: perPage,
         search: debouncedSearch,
         sort_by: sortBy,
         sort_order: sortOrder
     });
-    const categories = categoriesResponse?.data || [];
-
-    // In a real app with hierarchy, we might not paginate or we page root nodes. 
-    // Assuming backend handles it or we fetch all for small dataset.
+    const uoms = uomsResponse?.data || [];
 
     const [formState, setFormState] = useState<{
         open: boolean;
-        data: Category | null;
+        data: UOM | null;
     }>({ open: false, data: null });
 
-    const createMut = useCreateCategory();
-    const updateMut = useUpdateCategory();
-    const deleteMut = useDeleteCategory();
+    const createMut = useCreateUOM();
+    const updateMut = useUpdateUOM();
+    const deleteMut = useDeleteUOM();
 
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    const columns: Column<Category>[] = [
+    const columns: Column<UOM>[] = [
         { key: 'name', label: 'Name', sortable: true, searchable: true },
+        { key: 'abbreviation', label: 'Abbreviation', sortable: true, searchable: true },
         {
             key: 'description',
             label: 'Description',
             sortable: true,
             searchable: true,
-            render: (c) => <span className="italic text-gray-500">{c.description || '-'}</span>
+            render: (u) => <span className="italic text-gray-500">{u.description || '-'}</span>
         },
         {
-            key: 'parent',
-            label: 'Parent',
-            render: (c) => <span className="text-gray-700">{c.parent?.name || '-'}</span>
+            key: 'is_active',
+            label: 'Status',
+            render: (u) => (
+                <Badge variant={u.is_active ? 'success' : 'neutral'}>
+                    {u.is_active ? 'Active' : 'Inactive'}
+                </Badge>
+            )
         },
         {
             key: 'actions',
             label: 'Actions',
-            render: (c) => (
+            render: (u) => (
                 <div className="flex justify-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setViewingCategory(c); }}>
+                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setViewingUOM(u); }}>
                         <Eye className="w-4 h-4 text-primary-600" />
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setFormState({ open: true, data: c }); }}>
+                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setFormState({ open: true, data: u }); }}>
                         <Edit2 className="w-4 h-4" />
                     </Button>
                     <Button
                         variant="ghost"
                         size="sm"
                         className="text-danger-600 hover:text-danger-700 hover:bg-danger-50"
-                        onClick={(e) => { e.stopPropagation(); setDeleteId(c.id); }}
+                        onClick={(e) => { e.stopPropagation(); setDeleteId(u.id); }}
                     >
                         <Trash2 className="w-4 h-4" />
                     </Button>
@@ -98,11 +101,11 @@ export const CategoriesPage = () => {
         }
     ];
 
-    const handleCreate = async (data: { name: string; parent_id: string | null; description?: string }) => {
+    const handleCreate = async (data: { name: string; abbreviation: string; description: string | null; is_active: boolean }) => {
         await createMut.mutateAsync(data);
     };
 
-    const handleUpdate = async (data: { name: string; parent_id: string | null; description?: string }) => {
+    const handleUpdate = async (data: { name: string; abbreviation: string; description: string | null; is_active: boolean }) => {
         if (formState.data) {
             await updateMut.mutateAsync({ id: formState.data.id, data });
         }
@@ -119,24 +122,24 @@ export const CategoriesPage = () => {
         <div className="max-w-[1400px] mx-auto pb-8 animate-in fade-in duration-500">
             <div className="mb-8 flex justify-between items-center">
                 <h1 className="text-2xl font-black text-gray-900 tracking-tight">
-                    Categories
+                    Units of Measurement
                 </h1>
                 <Button
                     onClick={() => setFormState({ open: true, data: null })}
                     className="w-full sm:w-auto px-6 py-2.5 bg-primary-500 hover:bg-primary-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary-500/20"
                 >
                     <Plus size={20} />
-                    Add Category
+                    Add UOM
                 </Button>
             </div>
 
             <div className="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden p-8">
                 <DataTable
-                    data={categories}
+                    data={uoms}
                     columns={columns}
-                    searchPlaceholder="Search categories..."
+                    searchPlaceholder="Search UOMs..."
                     serverSide={true}
-                    totalItems={categoriesResponse?.total || 0}
+                    totalItems={uomsResponse?.total || 0}
                     currentPage={page}
                     itemsPerPage={perPage}
                     onPageChange={setPage}
@@ -153,11 +156,10 @@ export const CategoriesPage = () => {
                 />
             </div>
 
-            <CategoryFormDialog
+            <UOMFormDialog
                 open={formState.open}
                 onClose={() => setFormState({ open: false, data: null })}
                 initialData={formState.data}
-                categories={categories}
                 onSubmit={formState.data ? handleUpdate : handleCreate}
             />
 
@@ -165,29 +167,25 @@ export const CategoriesPage = () => {
                 open={!!deleteId}
                 onClose={() => setDeleteId(null)}
                 onConfirm={handleDelete}
-                title="Delete Category?"
-                description="Are you sure you want to delete this category? This action cannot be undone."
+                title="Delete Unit of Measurement?"
+                description="Are you sure you want to delete this Unit of Measurement? This action cannot be undone."
                 confirmText="Delete"
                 variant="danger"
                 isLoading={deleteMut.isPending}
             />
 
             <EntityDetailModal
-                isOpen={!!viewingCategory}
-                onClose={() => setViewingCategory(null)}
-                title="Category Details"
+                isOpen={!!viewingUOM}
+                onClose={() => setViewingUOM(null)}
+                title="UOM Details"
                 sections={[
                     {
-                        title: "Category Information",
+                        title: "UOM Information",
                         fields: [
-                            { label: "Category Name", value: viewingCategory?.name },
-                            {
-                                label: "Parent Category",
-                                value: viewingCategory?.parent_id
-                                    ? categories.find(cat => cat.id === viewingCategory.parent_id)?.name || 'Unknown'
-                                    : 'Root'
-                            },
-                            { label: "Description", value: viewingCategory?.description || 'No description provided.' },
+                            { label: "Name", value: viewingUOM?.name },
+                            { label: "Abbreviation", value: viewingUOM?.abbreviation },
+                            { label: "Description", value: viewingUOM?.description || 'No description provided.' },
+                            { label: "Status", value: viewingUOM?.is_active ? 'Active' : 'Inactive' },
                         ]
                     }
                 ]}
@@ -198,12 +196,12 @@ export const CategoriesPage = () => {
     );
 };
 
-export const CategoriesPageWithGuard = () => {
+export const UOMsPageWithGuard = () => {
     return (
-        <PermissionGuard requiredPermission={PERMISSIONS.READ_CATEGORY}>
-            <CategoriesPage />
+        <PermissionGuard requiredPermission={PERMISSIONS.READ_PRODUCT}>
+            <UOMsPage />
         </PermissionGuard>
     );
 };
 
-export default CategoriesPageWithGuard;
+export default UOMsPageWithGuard;

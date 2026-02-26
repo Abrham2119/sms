@@ -35,13 +35,24 @@ export class SupplierService {
         return (response.data as any).data || response.data;
     }
 
-    static async create(data: Partial<Supplier>): Promise<Supplier> {
-        const response = await api.post<ApiResponse<Supplier> | Supplier>(SUPPLIER_ENDPOINTS.BASE, data);
+    static async create(data: Partial<Supplier> | FormData): Promise<Supplier> {
+        const response = await api.post<ApiResponse<Supplier> | Supplier>(SUPPLIER_ENDPOINTS.BASE, data, {
+            headers: data instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+        });
         return (response.data as any).data || response.data;
     }
 
-    static async update(id: string, data: Partial<Supplier>): Promise<Supplier> {
-        const response = await api.put<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data);
+    static async update(id: string, data: Partial<Supplier> | FormData): Promise<Supplier> {
+        const config = data instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+        if (data instanceof FormData && !data.has('_method')) {
+            data.append('_method', 'PUT');
+        }
+
+        // Use POST for FormData updates to support _method spoofing for file uploads in some backends
+        const response = data instanceof FormData
+            ? await api.post<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data, config)
+            : await api.put<ApiResponse<Supplier> | Supplier>(`${SUPPLIER_ENDPOINTS.BASE}/${id}`, data, config);
+
         return (response.data as any).data || response.data;
     }
 

@@ -43,6 +43,17 @@ export class UserService {
         await api.put(`${USER_ENDPOINTS.TOGGLE_STATUS}/${userId}/update-status`, { status });
     }
 
+    static async updateProfilePicture(userId: string, file: File): Promise<void> {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('profile_picture', file);
+        await api.post(`${USER_ENDPOINTS.BASE}/${userId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        });
+    }
+
     static async getActivities(id: string, params?: any): Promise<any> {
         const queryString = queryBuilder(params || {});
         return await api.get(`${USER_ENDPOINTS.BASE}/${id}/activities${queryString}`);

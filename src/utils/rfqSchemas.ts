@@ -12,6 +12,7 @@ export const step1Schema = z.object({
         value: z.string().min(1, "Term cannot be empty")
     })).min(1, "At least one delivery term is required"),
     delivery_location: z.string().min(1, "Delivery location is required"),
+    type: z.enum(['all', 'local', 'foreign']),
 });
 
 export const rfqProductSchema = z.object({
@@ -41,7 +42,7 @@ export const quotationSchema = z.object({
     delivery_method: z.string().min(1, "Delivery method is required"),
     warranty_details: z.string().optional(),
     credit_available: z.boolean(),
-    credit_period_days: z.number().min(0).optional(),
+    credit_period_days: z.number().min(1, "Credit period is required"),
     availability_status: z.string().min(1, "Availability status is required"),
     additional_terms: z.string().optional(),
     items: z.array(quotationItemSchema).min(1, "At least one item must be included"),

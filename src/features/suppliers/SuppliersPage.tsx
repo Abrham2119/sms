@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Mail, Globe, MapPin, User, Eye, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Mail, Globe, MapPin, User, Eye, Edit2, Trash2, Building2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DataTable } from '../../components/table/DataTable';
 import type { Column } from '../../components/table/DataTable';
@@ -80,6 +80,26 @@ const SuppliersPageContent = () => {
 
     const columns: Column<Supplier>[] = [
         {
+            key: 'logo',
+            label: 'Logo',
+            render: (item) => (
+                <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shadow-sm flex items-center justify-center">
+                    {item.logo ? (
+                        <img
+                            src={item.logo.startsWith('http') ? item.logo : `${import.meta.env.VITE_API_URL}/storage/${item.logo}`}
+                            alt={item.legal_name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(item.legal_name) + '&background=random';
+                            }}
+                        />
+                    ) : (
+                        <Building2 className="w-5 h-5 text-gray-400" />
+                    )}
+                </div>
+            )
+        },
+        {
             key: 'legal_name',
             label: 'Legal Name',
             sortable: true,
@@ -104,6 +124,19 @@ const SuppliersPageContent = () => {
                         </span>
                     )}
                 </div>
+            )
+        },
+        {
+            key: 'type',
+            label: 'Type',
+            sortable: true,
+            render: (item) => (
+                <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${item.type === 'foreign'
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    }`}>
+                    {item.type}
+                </span>
             )
         },
         {

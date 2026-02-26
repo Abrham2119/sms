@@ -25,6 +25,7 @@ export const Step1GeneralInfo: React.FC<Step1GeneralInfoProps> = ({
     } = useForm<Step1FormData>({
         resolver: zodResolver(step1Schema),
         defaultValues: {
+            type: 'all',
             ...initialData,
             delivery_terms: Array.isArray(initialData?.delivery_terms)
                 ? initialData.delivery_terms.map(t => typeof t === 'string' ? { value: t } : t)
@@ -143,6 +144,25 @@ export const Step1GeneralInfo: React.FC<Step1GeneralInfoProps> = ({
                 />
                 {errors.delivery_location && (
                     <p className="mt-1 text-xs text-red-500">{errors.delivery_location.message}</p>
+                )}
+            </div>
+
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    RFQ Type
+                </label>
+                <select
+                    {...register('type')}
+                    disabled={readOnly}
+                    className={`w-full p-2 border rounded-md ${errors.type ? 'border-red-500' : 'border-gray-300'
+                        } ${readOnly ? 'bg-gray-100 text-gray-500' : ''}`}
+                >
+                    <option value="all">All</option>
+                    <option value="local">Local</option>
+                    <option value="foreign">Foreign</option>
+                </select>
+                {errors.type && (
+                    <p className="mt-1 text-xs text-red-500">{errors.type.message}</p>
                 )}
             </div>
 

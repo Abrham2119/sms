@@ -218,6 +218,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                         value={creditPeriod}
                                         onChange={(e) => setCreditPeriod(Number(e.target.value))}
                                         onFocus={handleFocus}
+                                        required
                                     />
                                 </div>
                             )}

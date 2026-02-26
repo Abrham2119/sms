@@ -23,15 +23,32 @@ const ProductInfoTab = ({ product }: { product: Product }) => (
                     <p className="font-medium text-gray-900 dark:text-white mt-1">{product.name}</p>
                 </div>
                 <div>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Product Code</label>
+                    <p className="font-medium text-gray-900 dark:text-white mt-1 font-mono">{product.code}</p>
+                </div>
+                <div>
                     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</label>
                     <p className="font-medium text-gray-900 dark:text-white mt-1">{product.category?.name || 'Uncategorized'}</p>
                 </div>
                 <div>
+                    <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit of Measurement</label>
+                    <p className="font-medium text-gray-900 dark:text-white mt-1">
+                        {product.uom ? `${product.uom.name} (${product.uom.abbreviation})` : '-'}
+                    </p>
+                </div>
+                <div>
                     <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</label>
                     <div className="mt-1">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${product.is_active ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"}`}>
-                            {product.is_active ? 'Active' : 'Inactive'}
-                        </span>
+                        {(() => {
+                            const isActive = typeof product.is_active === 'string'
+                                ? product.is_active === '1'
+                                : !!product.is_active;
+                            return (
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" : "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"}`}>
+                                    {isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            );
+                        })()}
                     </div>
                 </div>
                 <div className="md:col-span-2 lg:col-span-3">

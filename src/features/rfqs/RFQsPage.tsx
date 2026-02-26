@@ -135,6 +135,21 @@ export const RFQsPage = () => {
             )
         },
         {
+            key: 'type',
+            label: 'Type',
+            sortable: true,
+            render: (rfq) => (
+                <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${rfq.type === 'foreign'
+                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                        : rfq.type === 'local'
+                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                            : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                    }`}>
+                    {rfq.type}
+                </span>
+            )
+        },
+        {
             key: 'status',
             label: 'Status',
             render: (rfq) => {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { Product, Category } from '../../../types';
+import type { Product, Category, UOM } from '../../../types';
 import { Modal } from '../../../components/ui/Modal';
 import { Input } from '../../../components/ui/Input';
 import { Select } from '../../../components/ui/Select';
@@ -11,6 +11,7 @@ interface ProductFormDialogProps {
     onClose: () => void;
     initialData?: Product | null;
     categories: Category[];
+    uoms: UOM[];
     onSubmit: (data: any) => Promise<void>;
 }
 
@@ -19,11 +20,14 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     onClose,
     initialData,
     categories,
+    uoms,
     onSubmit
 }) => {
     const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<{
         name: string;
+        code: string;
         category_id: string;
+        uom_id: string;
         description: string;
         is_active: string;
     }>();
@@ -32,11 +36,13 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
         if (open) {
             if (initialData) {
                 setValue('name', initialData.name);
+                setValue('code', initialData.code);
                 setValue('category_id', initialData.category_id);
+                setValue('uom_id', initialData.uom_id);
                 setValue('description', initialData.description);
                 setValue('is_active', initialData.is_active ? 'true' : 'false');
             } else {
-                reset({ name: '', category_id: '', description: '', is_active: 'true' });
+                reset({ name: '', code: '', category_id: '', uom_id: '', description: '', is_active: 'true' });
             }
         }
     }, [open, initialData, reset, setValue]);
@@ -50,6 +56,7 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
     };
 
     const categoryOptions = categories.map(c => ({ value: c.id, label: c.name }));
+    const uomOptions = uoms.map(u => ({ value: u.id, label: `${u.name} (${u.abbreviation})` }));
 
     return (
         <Modal
@@ -65,11 +72,25 @@ export const ProductFormDialog: React.FC<ProductFormDialogProps> = ({
                     error={errors.name?.message}
                 />
 
+                <Input
+                    label="Product Code"
+                    {...register("code", { required: "Code is required" })}
+                    placeholder="e.g. PRD-001"
+                    error={errors.code?.message}
+                />
+
                 <Select
                     label="Category"
                     {...register("category_id", { required: "Category is required" })}
                     options={[{ value: "", label: "Select Category" }, ...categoryOptions]}
                     error={errors.category_id?.message}
+                />
+
+                <Select
+                    label="Unit of Measurement"
+                    {...register("uom_id", { required: "UOM is required" })}
+                    options={[{ value: "", label: "Select UOM" }, ...uomOptions]}
+                    error={errors.uom_id?.message}
                 />
 
                 <div className="w-full">

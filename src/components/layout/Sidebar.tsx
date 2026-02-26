@@ -89,6 +89,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
             links: [
                 { name: 'Categories', path: '/categories', icon: FolderTree, permission: PERMISSIONS.READ_CATEGORY },
                 { name: 'Products', path: '/products', icon: Package, permission: PERMISSIONS.READ_PRODUCT },
+                { name: 'UOMs', path: '/uoms', icon: Package, permission: PERMISSIONS.READ_PRODUCT },
             ]
         },
 

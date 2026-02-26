@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { SupplierService } from '../api/supplierService';
+import { UserService } from '../../users/api/userService';
 import type { Supplier, SupplierProfile } from '../../../types';
 
 export const useSuppliers = (params?: any) => {
@@ -265,6 +266,20 @@ export const useUpdateMyProfile = () => {
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || 'Failed to update profile.');
+        }
+    });
+};
+
+export const useUpdateProfilePicture = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ userId, file }: { userId: string, file: File }) => UserService.updateProfilePicture(userId, file),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['my-profile'] });
+            toast.success('Profile picture updated!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to update profile picture.');
         }
     });
 };

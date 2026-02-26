@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { useMyProfile, useUpdateMyProfile } from './hooks/useSupplier';
-import { Loader2, Save, Building2, Mail, Phone, Globe, ShieldCheck, UserCog } from 'lucide-react';
+import { useMyProfile, useUpdateMyProfile, useUpdateProfilePicture } from './hooks/useSupplier';
+import { Loader2, Save, Building2, Mail, Phone, Globe, ShieldCheck, UserCog, Camera } from 'lucide-react';
+import { useRef } from 'react';
 
 interface ProfileFormData {
     trade_name: string;
@@ -13,11 +14,24 @@ interface ProfileFormData {
 const ProfilePage = () => {
     const { data: profileData, isLoading } = useMyProfile();
     const updateMutation = useUpdateMyProfile();
+    const updateAvatarMutation = useUpdateProfilePicture();
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { register, handleSubmit, reset, formState: { isDirty } } = useForm<ProfileFormData>();
 
     const supplierProfile = profileData?.supplier_profile;
     const user = profileData;
+
+    const handleAvatarClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file && user?.id) {
+            await updateAvatarMutation.mutateAsync({ userId: user.id, file });
+        }
+    };
 
     useEffect(() => {
         if (supplierProfile) {
@@ -69,9 +83,37 @@ const ProfilePage = () => {
                 <div className="md:col-span-1 space-y-6">
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
                         <div className="flex flex-col items-center">
-                            <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-4">
-                                <Building2 className="w-10 h-10 text-primary-600 dark:text-primary-400" />
+                            <div
+                                className="relative w-24 h-24 group cursor-pointer"
+                                onClick={handleAvatarClick}
+                            >
+                                <div className="w-24 h-24 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center overflow-hidden border-2 border-primary-50">
+                                    {user?.profile_picture ? (
+                                        <img
+                                            src={user.profile_picture.startsWith('http') ? user.profile_picture : `${import.meta.env.VITE_API_URL}/storage/${user.profile_picture}`}
+                                            className="w-full h-full object-cover"
+                                            alt="Profile"
+                                        />
+                                    ) : (
+                                        <Building2 className="w-10 h-10 text-primary-600 dark:text-primary-400" />
+                                    )}
+                                </div>
+                                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Camera className="w-6 h-6 text-white" />
+                                </div>
+                                {updateAvatarMutation.isPending && (
+                                    <div className="absolute inset-0 bg-white/60 dark:bg-gray-800/60 rounded-full flex items-center justify-center">
+                                        <Loader2 className="w-6 h-6 animate-spin text-primary-600" />
+                                    </div>
+                                )}
                             </div>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                            />
                             <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-1">
                                 {supplierProfile.legal_name}
                             </h2>
