@@ -1,6 +1,15 @@
 @import "tailwindcss";
 @import "./styles/animations.css";
 
+/* NProgress page loader — brand yellow */
+#nprogress .bar {
+  background: #ffff00 !important;
+  height: 3px !important;
+}
+#nprogress .peg {
+  box-shadow: 0 0 10px #ffff00, 0 0 5px #ffff00 !important;
+}
+
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
