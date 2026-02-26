@@ -46,7 +46,7 @@ export const RFQMultiStepForm: React.FC<RFQMultiStepFormProps> = ({ initialRFQ, 
     const [step1Data, setStep1Data] = useState<Step1FormData | null>(
         initialRFQ ? {
             description: initialRFQ.description || '',
-            type: initialRFQ.type || 'all',
+            for: initialRFQ.for || 'all',
             submission_deadline: formatDateForInput(initialRFQ.submission_deadline),
             delivery_terms: Array.isArray(initialRFQ.delivery_terms)
                 ? initialRFQ.delivery_terms.map(t => ({ value: t }))

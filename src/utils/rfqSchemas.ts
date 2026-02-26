@@ -12,7 +12,7 @@ export const step1Schema = z.object({
         value: z.string().min(1, "Term cannot be empty")
     })).min(1, "At least one delivery term is required"),
     delivery_location: z.string().min(1, "Delivery location is required"),
-    type: z.enum(['all', 'local', 'foreign']),
+    for: z.enum(['all', 'local', 'foreign']),
 });
 
 export const rfqProductSchema = z.object({
