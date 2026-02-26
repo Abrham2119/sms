@@ -39,7 +39,7 @@ export const LoginPage = () => {
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-100 dark:border-gray-700">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black text-black dark:text-primary-400">
-            SMS Portal
+            Droga pharma
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2">
             Sign in to your account

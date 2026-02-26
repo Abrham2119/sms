@@ -144,11 +144,13 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                 <div className="h-full flex flex-col overflow-hidden">
                     <div className="h-16 flex items-center justify-between px-4 border-b border-gray-800/50 whitespace-nowrap shrink-0">
                         <div className={`flex items-center gap-2 min-w-max transition-all duration-300 ${isCollapsed ? 'lg:justify-center lg:w-full' : ''}`}>
-                            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(255,255,0,0.4)]">
-                                <span className="font-bold text-black">A</span>
-                            </div>
+                            <img
+                                src="/assets/logo/Droga Pharma Logo-02.svg"
+                                alt="Droga Pharma"
+                                className="w-10 h-10 object-contain shrink-0"
+                            />
                             <span className={`text-xl font-black text-white transition-opacity duration-300 ${isCollapsed ? 'lg:hidden lg:opacity-0' : 'opacity-100'} tracking-tighter uppercase`}>
-                                SMS Portal
+                                Droga pharma
                             </span>
                         </div>
                         <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-white">
