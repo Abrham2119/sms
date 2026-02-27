@@ -76,7 +76,12 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
 
     const handleItemChange = (index: number, field: keyof ItemQuotation, value: string | number | boolean) => {
         const newItems = [...items];
-        newItems[index] = { ...newItems[index], [field]: value };
+        // For numeric fields, ensure value is at least 0
+        let finalValue = value;
+        if (typeof value === 'number' && ['offered_qty', 'unit_price', 'discount'].includes(field)) {
+            finalValue = Math.max(0, value);
+        }
+        newItems[index] = { ...newItems[index], [field]: finalValue };
         setItems(newItems);
     };
 
@@ -86,7 +91,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
         e.preventDefault();
 
         // Basic Validation
-        if (items.some(item => item.unit_price <= 0)) {
+        if (items.some(item => item.unit_price < 0)) {
             toast.error("Please provide a valid unit price for all items.");
             return;
         }
@@ -134,7 +139,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
             isOpen={isOpen}
             onClose={onClose}
             title={`Submit Quotation for ${rfq.reference_number}`}
-            className="max-w-4xl"
+            className="max-w-6xl"
         >
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* General Terms Section */}
@@ -148,16 +153,18 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                         <Input
                             label="Min. Order Qty"
                             type="number"
+                            min="0"
                             value={moq}
-                            onChange={(e) => setMoq(Number(e.target.value))}
+                            onChange={(e) => setMoq(Math.max(0, Number(e.target.value)))}
                             onFocus={handleFocus}
                             required
                         />
                         <Input
                             label="Lead Time (Days)"
                             type="number"
+                            min="0"
                             value={leadTime}
-                            onChange={(e) => setLeadTime(Number(e.target.value))}
+                            onChange={(e) => setLeadTime(Math.max(0, Number(e.target.value)))}
                             onFocus={handleFocus}
                             required
                         />
@@ -205,8 +212,9 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                         <Input
                             label="Credit Amount"
                             type="number"
+                            min="0"
                             value={creditAmount}
-                            onChange={(e) => setCreditAmount(Number(e.target.value))}
+                            onChange={(e) => setCreditAmount(Math.max(0, Number(e.target.value)))}
                             onFocus={handleFocus}
                         />
                         <div className="flex flex-col gap-1.5">
@@ -245,8 +253,9 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                     <Input
                                         label="Credit Period (Days)"
                                         type="number"
+                                        min="0"
                                         value={creditPeriod}
-                                        onChange={(e) => setCreditPeriod(Number(e.target.value))}
+                                        onChange={(e) => setCreditPeriod(Math.max(0, Number(e.target.value)))}
                                         onFocus={handleFocus}
                                         required
                                     />
@@ -296,6 +305,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                             <td className="px-6 py-4 text-center">
                                                 <input
                                                     type="number"
+                                                    min="0"
                                                     value={item.offered_qty}
                                                     onChange={(e) => handleItemChange(idx, 'offered_qty', Number(e.target.value))}
                                                     onFocus={handleFocus}
@@ -308,12 +318,13 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                     <input
                                                         type="number"
                                                         step="any"
+                                                        min="0"
                                                         value={item.unit_price}
                                                         onChange={(e) => handleItemChange(idx, 'unit_price', Number(e.target.value))}
                                                         onFocus={handleFocus}
                                                         className={`
                                                         w-32 pl-7 p-1.5 border rounded-lg dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-primary-500 transition-all
-                                                        ${item.unit_price <= 0 ? 'border-red-300 ring-4 ring-red-500/10' : 'border-gray-200 dark:border-gray-700'}
+                                                        ${item.unit_price < 0 ? 'border-red-300 ring-4 ring-red-500/10' : 'border-gray-200 dark:border-gray-700'}
                                                     `}
                                                         placeholder="0.00"
                                                     />
@@ -322,6 +333,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                             <td className="px-6 py-4">
                                                 <input
                                                     type="number"
+                                                    min="0"
                                                     value={item.discount}
                                                     onChange={(e) => handleItemChange(idx, 'discount', Number(e.target.value))}
                                                     onFocus={handleFocus}
