@@ -93,15 +93,36 @@ const statusColors: Record<string, string> = {
 /* ─────────────────────────────────────────────
    Droga brand logo mark
 ───────────────────────────────────────────── */
-const DrogaLogo = () => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{ width: '40px', height: '40px', background: '#0056b3', borderRadius: '2px', flexShrink: 0, position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ position: 'absolute', width: '18px', height: '18px', border: '4px solid white', transform: 'rotate(45deg) translate(2px, -2px)' }} />
-            <div style={{ position: 'absolute', width: '18px', height: '18px', border: '4px solid white', transform: 'translate(-2px, 2px)' }} />
+/* Official Droga Consulting letterhead header */
+interface DrogaHeaderProps {
+    supLegal: string;
+    phone?: string;
+    supEmail?: string;
+}
+const DrogaHeader = ({ supLegal, phone, supEmail }: DrogaHeaderProps) => (
+    <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: '10px',
+        borderBottom: '3px solid #cc0000',
+        marginBottom: '20px',
+    }}>
+        {/* Left: Logo */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img
+                src="/assets/logo/Droga logo 1.svg"
+                alt="Droga Consulting Logo"
+                style={{ height: 'auto', width: 'auto', objectFit: 'contain', flexShrink: 0 }}
+            />
         </div>
-        <div>
-            <p style={{ color: '#0056b3', fontWeight: 900, fontSize: '13px', letterSpacing: '-0.5px', textTransform: 'uppercase', lineHeight: 1.2 }}>Droga Consulting</p>
-            <p style={{ color: '#0056b3', fontSize: '7px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.7 }}>Consult · Create · Configure</p>
+        {/* Right: Supplier info */}
+        <div style={{ textAlign: 'right', color: '#000000', lineHeight: 1.8 }}>
+            <p style={{ fontWeight: 600, color: '#000000', fontSize: '12px' }}>{supLegal}</p>
+            <p style={{ fontSize: '11px', fontWeight: 400 }}>{phone}</p>
+            {supEmail && (
+                <p style={{ fontSize: '11px', fontWeight: 400 }}>{supEmail}</p>
+            )}
         </div>
     </div>
 );
@@ -122,8 +143,8 @@ const InvoiceSheet = ({ q }: { q: Quotation }) => {
     const creditAmt = q.credit_amount || 0;
 
     const supLegal = q.supplier?.legal_name || 'Acme Technologies Ltd.';
-    const supTrade = q.supplier?.trade_name || '';
-    const supEmail = q.supplier?.email || 'contact@supplier.com';
+    const supPhone = q.supplier?.phone || '';
+    const supEmail = q.supplier?.email || '';
 
     const statusClass = statusColors[q.status?.toLowerCase()] ?? 'bg-gray-100 text-gray-600 border border-gray-200';
 
@@ -141,19 +162,14 @@ const InvoiceSheet = ({ q }: { q: Quotation }) => {
             position: 'relative',
         }}>
 
-            {/* ── 1. HEADER ─────────────────────────────── */}
+            {/* ── 1. HEADER (Droga Letterhead) ──────────── */}
+            <DrogaHeader supLegal={supLegal} phone={supPhone} supEmail={supEmail} />
+
+            {/* ── QUOTATION META ────────────────────────── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '22px' }}>
-                <div>
-                    <DrogaLogo />
-                    <div style={{ marginTop: '10px', fontSize: '10px', color: '#6b7280', lineHeight: '1.65' }}>
-                        <p style={{ fontWeight: 600, color: '#374151' }}>Droga Consulting Services PLC</p>
-                        <p>Kirkos Sub-City, Afework Building, 5th Floor</p>
-                        <p>Addis Ababa, Ethiopia</p>
-                        <p>info@drogaconsulting.com · +251 935 505 064</p>
-                    </div>
-                </div>
-                <div style={{ textAlign: 'right', flexShrink: 0, marginLeft: '24px' }}>
-                    <h1 style={{ fontSize: '30px', fontWeight: 900, color: '#0f172a', letterSpacing: '-1px', lineHeight: 1, marginBottom: '12px' }}>QUOTATION</h1>
+                <div />
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <h1 style={{ fontSize: '28px', fontWeight: 900, color: '#0f172a', letterSpacing: '-1px', lineHeight: 1, marginBottom: '10px' }}>QUOTATION</h1>
                     {[['Quotation #', qNumber], ['Date', submittedAt], ['Valid Until', validUntil]].map(([label, value]) => (
                         <div key={label} style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px', marginBottom: '4px' }}>
                             <span style={{ fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 700, color: '#94a3b8' }}>{label}</span>
@@ -167,15 +183,15 @@ const InvoiceSheet = ({ q }: { q: Quotation }) => {
                 </div>
             </div>
 
-            {/* Rule */}
-            <div style={{ borderTop: '2px solid #0f172a', marginBottom: '18px' }} />
+            {/* Divider */}
+            <div style={{ borderTop: '1px solid #e2e8f0', marginBottom: '18px' }} />
 
             {/* ── 2. PARTIES ────────────────────────────── */}
             <div style={{ display: 'flex', gap: '20px', marginBottom: '22px' }}>
                 <div style={{ flex: 1 }}>
                     <p style={{ fontSize: '8.5px', textTransform: 'uppercase', letterSpacing: '0.09em', fontWeight: 800, color: '#94a3b8', marginBottom: '6px' }}>Supplied By</p>
                     <p style={{ fontWeight: 800, fontSize: '12.5px', color: '#0f172a', lineHeight: 1.3 }}>{supLegal}</p>
-                    {supTrade && supTrade !== supLegal && <p style={{ fontSize: '11px', color: '#6b7280', fontWeight: 500 }}>{supTrade}</p>}
+                    {/* {supTrade && supTrade !== supLegal && <p style={{ fontSize: '11px', color: '#6b7280', fontWeight: 500 }}>{supTrade}</p>} */}
                     <p style={{ fontSize: '10px', color: '#9ca3af', marginTop: '3px' }}>{supEmail}</p>
                 </div>
                 <div style={{ flex: 1 }}>

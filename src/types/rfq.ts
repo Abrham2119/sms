@@ -112,6 +112,7 @@ export interface Quotation {
         legal_name: string;
         trade_name: string;
         email: string | null;
+        phone: string | null;
     };
     items: QuotationItem[];
 }
