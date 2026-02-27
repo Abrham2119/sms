@@ -69,3 +69,21 @@ export interface SupplierProfileResponse {
     updated_at: string;
     supplier_profile: SupplierProfile;
 }
+export interface ExpirationInfo {
+    status: string;
+    color: string;
+    remaining_days: number;
+    human_readable: string;
+}
+
+export interface SupplierAttachment {
+    id: string | number;
+    name: string;
+    file_name: string;
+    mime_type: string;
+    size: string;
+    url: string;
+    created_at: string;
+    expires_at: string | null;
+    expiration?: ExpirationInfo;
+}

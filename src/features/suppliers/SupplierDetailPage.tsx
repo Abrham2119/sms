@@ -1,4 +1,4 @@
-import { Activity, ArrowLeft, Building2, Calendar, Clock, Download, Edit, Eye, File, FileText, Globe, Mail, MapPin, Package, Search, Settings, Trash2, UploadCloud, User, X } from 'lucide-react';
+import { Activity, ArrowLeft, Building2, Calendar, Download, Edit, Eye, File, FileArchive, FileText, Globe, Image, Mail, MapPin, Package, Search, Settings, Trash2, UploadCloud, User, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ActivityLog } from '../../components/common/ActivityLog';
@@ -6,7 +6,7 @@ import { Button } from '../../components/ui/Button';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { Input } from '../../components/ui/Input';
 import { Modal } from '../../components/ui/Modal';
-import type { Supplier } from '../../types';
+import type { Supplier, SupplierAttachment } from '../../types';
 import { SupplierStatusModal } from './components/SupplierStatusModal';
 import { useDeleteSupplier, useSupplier, useSupplierAttachments, useUploadSupplierAttachments, useUpdateSupplierAttachment, useDeleteSupplierAttachment } from './hooks/useSupplier';
 import SupplierProductsPageForTab from './SupplierProductsPageForTab';
@@ -287,107 +287,139 @@ const AttachmentCard = ({
     onEdit,
     onDelete
 }: {
-    attachment: any;
-    onEdit: (a: any) => void;
-    onDelete: (a: any) => void;
+    attachment: SupplierAttachment;
+    onEdit: (a: SupplierAttachment) => void;
+    onDelete: (a: SupplierAttachment) => void;
 }) => {
-    const isExpired = attachment.expires_at && new Date(attachment.expires_at) < new Date();
     const expiration = attachment.expiration;
 
-    return (
-        <div className="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col">
-            {/* Header/Preview Area */}
-            <div className="relative aspect-[4/3] bg-gray-50 dark:bg-gray-900/50 flex items-center justify-center p-6 border-b border-gray-50 dark:border-gray-700">
-                <div className="absolute top-3 right-3 flex gap-1 transform translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-200">
-                    <a
-                        href={attachment.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="p-1.5 bg-white/90 dark:bg-gray-800/90 text-gray-600 hover:text-primary-600 rounded-lg shadow-sm backdrop-blur-sm"
-                        title="Preview"
-                    >
-                        <Eye className="w-4 h-4" />
-                    </a>
-                </div>
+    // Blinking effect for yellow (#F59E0B) and red (#EF4444)
+    const shouldBlink = expiration?.color === '#F59E0B' || expiration?.color === '#EF4444' || expiration?.color === '#f43f5e';
 
-                {attachment.mime_type?.startsWith('image/') ? (
-                    <img
-                        src={attachment.url}
-                        alt={attachment.file_name}
-                        className="w-full h-full object-contain"
-                    />
-                ) : (
-                    <div className="flex flex-col items-center gap-2">
-                        <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                            <FileText className={`w-10 h-10 ${isExpired ? 'text-red-400' : 'text-primary-500'}`} />
-                        </div>
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{attachment.mime_type?.split('/')[1] || 'FILE'}</span>
+    const handleDownload = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const link = document.createElement('a');
+        link.href = attachment.url;
+        link.download = attachment.file_name;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    return (
+        <div
+            onClick={() => window.open(attachment.url, '_blank')}
+            className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300 overflow-hidden flex items-center p-3 gap-4 h-24 cursor-pointer"
+        >
+            {/* Thumbnail Area - Left side, small square */}
+            <div className="relative w-16 h-16 bg-white dark:bg-gray-900 flex shrink-0 items-center justify-center rounded-lg border border-gray-100 dark:border-gray-700 group-hover:border-primary-100 transition-colors">
+                {/* Blinking Circle Indicator */}
+                {shouldBlink && expiration && (
+                    <div className="absolute -top-1 -right-1 flex h-3 w-3 z-20">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: expiration.color }}></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3" style={{ backgroundColor: expiration.color }}></span>
                     </div>
                 )}
+
+                <div className="flex flex-col items-center gap-1">
+                    {attachment.mime_type?.startsWith('image/') ? (
+                        <Image size={24} className="text-blue-500" />
+                    ) : attachment.mime_type?.includes('pdf') ? (
+                        <FileText size={24} className="text-red-500" />
+                    ) : (attachment.mime_type?.includes('msword') || attachment.mime_type?.includes('officedocument')) ? (
+                        <FileText size={24} className="text-blue-600" />
+                    ) : (attachment.mime_type?.includes('zip') || attachment.mime_type?.includes('rar')) ? (
+                        <FileArchive size={24} className="text-amber-500" />
+                    ) : (
+                        <File size={24} className="text-gray-400" />
+                    )}
+                    <span className="text-[7px] font-black text-gray-400 uppercase tracking-tighter">
+                        {attachment.mime_type?.split('/')[1]?.split('.')?.pop() || 'FILE'}
+                    </span>
+                </div>
+
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                    <div
+                        className="p-1.5 bg-white shadow-sm border border-gray-100 text-gray-700 rounded-md hover:text-primary-600 transition-colors"
+                        title="Preview Document"
+                    >
+                        <Eye size={14} />
+                    </div>
+                </div>
             </div>
 
-            {/* Content area */}
-            <div className="p-4 flex-1 flex flex-col">
-                <div className="flex-1 space-y-3">
-                    <div className="flex flex-col gap-1">
-                        <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm" title={attachment.file_name}>
-                            {attachment.file_name}
-                        </h4>
-                        <div className="flex items-center gap-2 text-[10px] text-gray-500">
-                            <span>{attachment.size}</span>
-                            <span>•</span>
-                            <span>{new Date(attachment.created_at).toLocaleDateString()}</span>
-                        </div>
+            {/* Info Area - Middle side */}
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <div className="flex flex-col mb-1">
+                    <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm" title={attachment.file_name}>
+                        {attachment.file_name}
+                    </h4>
+                    <div className="flex items-center gap-2 text-[10px] text-gray-500 font-medium lowercase">
+                        <span>{attachment.size}</span>
+                        <span>•</span>
+                        <span>uploaded {new Date(attachment.created_at).toLocaleDateString()}</span>
                     </div>
+                </div>
 
-                    {/* Status Badge */}
+                {/* Expiration Badge */}
+                <div className="flex items-center gap-4">
                     {expiration ? (
-                        <div
-                            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium"
-                            style={{ backgroundColor: `${expiration.color}15`, color: expiration.color }}
-                        >
-                            <Clock className="w-3.5 h-3.5" />
-                            {expiration.human_readable}
+                        <div className="flex items-center gap-2">
+                            <div
+                                className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                style={{ backgroundColor: `${expiration.color}20`, color: expiration.color }}
+                            >
+                                {expiration.human_readable}
+                            </div>
+                            {attachment.expires_at && (
+                                <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                    <Calendar size={10} />
+                                    {new Date(attachment.expires_at).toLocaleDateString()}
+                                </span>
+                            )}
                         </div>
                     ) : attachment.expires_at ? (
-                        <div className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium ${isExpired ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
-                            <Calendar className="w-3.5 h-3.5" />
-                            {isExpired ? 'Expired' : `Expires: ${new Date(attachment.expires_at).toLocaleDateString()}`}
+                        <div className="flex items-center gap-2">
+                            <div className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-50 text-green-600">
+                                Active
+                            </div>
+                            <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                <Calendar size={10} />
+                                {new Date(attachment.expires_at).toLocaleDateString()}
+                            </span>
                         </div>
                     ) : (
-                        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-gray-50 dark:bg-gray-900/40 text-gray-500 italic">
-                            No Expiry set
-                        </div>
+                        <span className="text-[10px] text-gray-400 italic">No expiry set</span>
                     )}
                 </div>
+            </div>
 
-                {/* Footer Actions */}
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEdit(attachment)}
-                        className="flex-1 h-8 text-xs font-bold hover:bg-primary-50 hover:text-primary-600"
-                    >
-                        <Edit className="w-3.5 h-3.5 mr-1.5" />
-                        Edit
-                    </Button>
-                    <a
-                        href={attachment.url}
-                        download
-                        className="flex-1 flex items-center justify-center h-8 px-3 py-1 bg-gray-100 dark:bg-gray-700/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-gray-600 dark:text-gray-300 hover:text-emerald-600 transition-colors rounded-lg text-xs font-bold"
-                    >
-                        <Download className="w-3.5 h-3.5 mr-1.5" />
-                        Save
-                    </a>
-                    <button
-                        onClick={() => onDelete(attachment)}
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        title="Delete Permanently"
-                    >
-                        <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                </div>
+            {/* Actions Area - Right side */}
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => { e.stopPropagation(); onEdit(attachment); }}
+                    className="w-9 h-9 p-0 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
+                    title="Edit Metadata"
+                >
+                    <Edit size={18} />
+                </Button>
+                <button
+                    onClick={handleDownload}
+                    className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors border-none bg-transparent"
+                    title="Download File"
+                >
+                    <Download size={18} />
+                </button>
+                <button
+                    onClick={(e) => { e.stopPropagation(); onDelete(attachment); }}
+                    className="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors border-none bg-transparent"
+                    title="Delete permanently"
+                >
+                    <Trash2 size={18} />
+                </button>
             </div>
         </div>
     );
@@ -454,19 +486,20 @@ const AttachmentsTab = ({ supplierId }: { supplierId: string }) => {
 
             {/* Results Grid */}
             {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {[...Array(8)].map((_, i) => (
-                        <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-100 dark:border-gray-700 animate-pulse h-[320px]">
-                            <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-xl mb-4" />
-                            <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-2/3 mb-2" />
-                            <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/3 mb-4" />
-                            <div className="h-10 bg-gray-50 dark:bg-gray-900 rounded-xl" />
+                <div className="flex flex-col gap-4">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 animate-pulse flex h-24 gap-4 items-center">
+                            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg shrink-0" />
+                            <div className="flex-1 space-y-2">
+                                <div className="h-4 bg-gray-100 dark:bg-gray-700 rounded w-1/3" />
+                                <div className="h-3 bg-gray-100 dark:bg-gray-700 rounded w-1/4" />
+                            </div>
                         </div>
                     ))}
                 </div>
             ) : (attachmentsData?.data && Array.isArray(attachmentsData.data) && attachmentsData.data.length > 0) ? (
                 <div className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div className="flex flex-col gap-3">
                         {attachmentsData.data.map((item: any) => (
                             <AttachmentCard
                                 key={item.id}

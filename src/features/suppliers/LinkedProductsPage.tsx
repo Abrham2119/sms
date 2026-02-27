@@ -17,11 +17,9 @@ const LinkedProductsPageContent = () => {
     const [isLinkingModalOpen, setIsLinkingModalOpen] = useState(false);
     const [unlinkingProduct, setUnlinkingProduct] = useState<Product | null>(null);
 
-    // Get supplier ID from profile
     const { data: profile } = useMyProfile();
     const supplierId = profile?.supplier_profile?.id || "";
 
-    // Fetch supplier's linked products using the new endpoint
     const { data: productsData, isLoading } = useMyLinkedProducts(supplierId, {
         page,
         per_page: perPage,
