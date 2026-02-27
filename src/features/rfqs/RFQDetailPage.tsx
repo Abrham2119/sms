@@ -305,7 +305,6 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
             render: (item) => (
                 <div className="flex flex-col">
                     <span className="font-bold text-gray-900 dark:text-white">{item.quotation_number}</span>
-                    <span className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: {item.id.slice(0, 8)}</span>
                 </div>
             )
         },

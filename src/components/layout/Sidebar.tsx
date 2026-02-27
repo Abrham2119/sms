@@ -57,7 +57,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
             title: "Products",
             links: [
                 { name: 'My Products', path: '/my-products', icon: Package, permission: PERMISSIONS.READ_PRODUCT },
-                { name: 'Linked Products', path: '/linked-products', icon: Package, permission: PERMISSIONS.READ_PRODUCT },
+                // { name: 'Linked Products', path: '/linked-products', icon: Package, permission: PERMISSIONS.READ_PRODUCT },
                 { name: 'Available RFQs', path: '/supplier/rfqs', icon: FileText, roles: [] },
             ]
         },
