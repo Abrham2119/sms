@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
     ShieldCheck,
     Package,
-    DollarSign,
     Loader2,
     CheckCircle2
 } from 'lucide-react';
@@ -22,6 +21,8 @@ interface ItemQuotation {
     offered_qty: number;
     unit_price: number;
     discount: number;
+    availability: string;
+    moq: number;
     warranty_available: boolean;
     warranty_duration: string;
     warranty_details: string;
@@ -43,15 +44,13 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
     const submitMutation = useSubmitQuotation();
 
     // Form States
-    const [moq, setMoq] = useState(10);
+    const [currency, setCurrency] = useState('USD');
     const [leadTime, setLeadTime] = useState(7);
     const [proformaValidityDate, setProformaValidityDate] = useState('2026-03-15');
     const [deliveryMethod, setDeliveryMethod] = useState('Air');
-    const [warranty, setWarranty] = useState('1 year warranty');
     const [creditAmount, setCreditAmount] = useState(200);
     const [creditAvailable, setCreditAvailable] = useState(true);
     const [creditPeriod, setCreditPeriod] = useState(30);
-    const [availability, setAvailability] = useState('in_stock');
     const [terms, setTerms] = useState('Free installation');
 
     // Items state
@@ -66,6 +65,8 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                 offered_qty: Number(p.pivot.quantity),
                 unit_price: 0,
                 discount: 0,
+                availability: 'in_stock',
+                moq: 1,
                 warranty_available: true,
                 warranty_duration: '2026-03-15',
                 warranty_details: ''
@@ -78,7 +79,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
         const newItems = [...items];
         // For numeric fields, ensure value is at least 0
         let finalValue = value;
-        if (typeof value === 'number' && ['offered_qty', 'unit_price', 'discount'].includes(field)) {
+        if (typeof value === 'number' && ['offered_qty', 'unit_price', 'discount', 'moq'].includes(field)) {
             finalValue = Math.max(0, value);
         }
         newItems[index] = { ...newItems[index], [field]: finalValue };
@@ -98,21 +99,21 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
 
         const payload = {
             rfq_id: rfq?.id,
-            minimum_order_quantity: moq,
+            currency: currency,
             lead_time_days: leadTime,
             proforma_validity_date: proformaValidityDate,
             delivery_method: deliveryMethod,
-            warranty_details: warranty,
             credit_amount: creditAmount,
             credit_available: creditAvailable,
             credit_period_days: creditAvailable ? creditPeriod : 0,
-            availability_status: availability,
             additional_terms: terms,
             items: items.map(item => ({
                 product_id: item.product_id,
                 quantity: item.offered_qty,
                 unit_price: item.unit_price,
                 discount: item.discount,
+                availability_status: item.availability,
+                minimum_order_quantity: item.moq,
                 warranty_available: item.warranty_available,
                 warranty_duration: item.warranty_duration,
                 warranty_details: item.warranty_details
@@ -150,15 +151,19 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <Input
-                            label="Min. Order Qty"
-                            type="number"
-                            min="0"
-                            value={moq}
-                            onChange={(e) => setMoq(Math.max(0, Number(e.target.value)))}
-                            onFocus={handleFocus}
-                            required
-                        />
+                        <div className="space-y-1">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Currency</label>
+                            <select
+                                value={currency}
+                                onChange={(e) => setCurrency(e.target.value)}
+                                className="w-full h-10 px-3 rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary-500 text-sm font-bold"
+                            >
+                                <option value="USD">USD ($)</option>
+                                <option value="ETB">ETB (Br)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                            </select>
+                        </div>
                         <Input
                             label="Lead Time (Days)"
                             type="number"
@@ -188,27 +193,9 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                 <option value="Courier">Courier</option>
                             </select>
                         </div>
-                        <div className="space-y-1">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">Availability</label>
-                            <select
-                                value={availability}
-                                onChange={(e) => setAvailability(e.target.value)}
-                                className="w-full h-10 px-3 rounded-md border border-gray-300 dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-primary-500 text-sm"
-                            >
-                                <option value="in_stock">In Stock</option>
-                                <option value="on_order">On Order</option>
-                                <option value="made_to_order">Made to Order</option>
-                            </select>
-                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Input
-                            label="Warranty (General)"
-                            value={warranty}
-                            onChange={(e) => setWarranty(e.target.value)}
-                            placeholder="e.g. 1 year warranty"
-                        />
                         <Input
                             label="Credit Amount"
                             type="number"
@@ -287,8 +274,9 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                         <th className="px-6 py-4">Product</th>
                                         <th className="px-6 py-4 text-center">Required</th>
                                         <th className="px-6 py-4 text-center">Offered</th>
-                                        <th className="px-6 py-4">Unit Price</th>
+                                        <th className="px-6 py-4 min-w-[120px]">Unit Price</th>
                                         <th className="px-6 py-4">Discount</th>
+                                        <th className="px-6 py-4">Availability & MOQ</th>
                                         <th className="px-6 py-4">Item Warranty</th>
                                         <th className="px-6 py-4 text-right">Subtotal</th>
                                     </tr>
@@ -314,7 +302,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="relative">
-                                                    <DollarSign className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs">{currency}</span>
                                                     <input
                                                         type="number"
                                                         step="any"
@@ -323,7 +311,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                         onChange={(e) => handleItemChange(idx, 'unit_price', Number(e.target.value))}
                                                         onFocus={handleFocus}
                                                         className={`
-                                                        w-32 pl-7 p-1.5 border rounded-lg dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-primary-500 transition-all
+                                                        w-32 pl-10 p-1.5 border rounded-lg dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-primary-500 transition-all
                                                         ${item.unit_price < 0 ? 'border-red-300 ring-4 ring-red-500/10' : 'border-gray-200 dark:border-gray-700'}
                                                     `}
                                                         placeholder="0.00"
@@ -339,6 +327,30 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                     onFocus={handleFocus}
                                                     className="w-20 p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-primary-500 transition-all"
                                                 />
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-2 min-w-[120px]">
+                                                    <select
+                                                        value={item.availability}
+                                                        onChange={(e) => handleItemChange(idx, 'availability', e.target.value)}
+                                                        className="w-full p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 text-xs font-bold focus:ring-1 focus:ring-primary-500"
+                                                    >
+                                                        <option value="in_stock">In Stock</option>
+                                                        <option value="on_order">On Order</option>
+                                                        <option value="made_to_order">Made to Order</option>
+                                                    </select>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] text-gray-400 uppercase font-black shrink-0">MOQ:</span>
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            value={item.moq}
+                                                            onChange={(e) => handleItemChange(idx, 'moq', Number(e.target.value))}
+                                                            onFocus={handleFocus}
+                                                            className="w-full p-1 border border-gray-200 dark:border-gray-700 rounded dark:bg-gray-900 text-[10px] font-bold text-center"
+                                                        />
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col gap-2 min-w-[200px]">
@@ -371,18 +383,18 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-right font-black text-primary-600 dark:text-primary-400">
-                                                ${(item.offered_qty * item.unit_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                                {currency} {(item.offered_qty * item.unit_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                                 <tfoot className="bg-gray-50 dark:bg-gray-900/50">
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-4 text-right font-bold text-gray-500 uppercase tracking-widest text-xs">
-                                            Grand Total Estimate
+                                        <td colSpan={7} className="px-6 py-4 text-right font-bold text-gray-500 uppercase tracking-widest text-xs">
+                                            Grand Total Estimate ({currency})
                                         </td>
                                         <td className="px-6 py-4 text-right text-xl font-black text-gray-900 dark:text-white">
-                                            ${totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                            {currency} {totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                         </td>
                                     </tr>
                                 </tfoot>
