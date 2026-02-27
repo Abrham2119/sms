@@ -182,7 +182,7 @@ export const RFQQuotationsPage = () => {
                             Back to RFQs
                         </Button>
                         <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-1">
-                            RFQ Quotations
+                           Proforma Invoice
                         </h1>
                         <p className="text-gray-500 text-sm font-medium">
                             Review and manage supplier quotations for this request.

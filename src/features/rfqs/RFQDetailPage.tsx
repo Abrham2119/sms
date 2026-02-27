@@ -301,7 +301,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
     const columns: Column<Quotation>[] = [
         {
             key: 'quotation_number',
-            label: 'Quotation #',
+            label: 'PI #',
             render: (item) => (
                 <div className="flex flex-col">
                     <span className="font-bold text-gray-900 dark:text-white">{item.quotation_number}</span>
@@ -409,7 +409,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
                 <div className="flex items-center gap-2">
                     <Trophy className="w-5 h-5 text-amber-500" />
-                    <h3 className="font-bold text-gray-900 dark:text-white">RFQ Quotations</h3>
+                    <h3 className="font-bold text-gray-900 dark:text-white">Proforma Invoice</h3>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -504,7 +504,7 @@ export const RFQDetailPage = () => {
     const tabs = [
         { id: 'overview', label: 'Overview', icon: FileText },
         { id: 'products', label: 'Requested Items', icon: Package },
-        { id: 'quotations', label: 'RFQ Quotations', icon: Trophy },
+        { id: 'quotations', label: 'Proforma Invoice', icon: Trophy },
         { id: 'activity', label: 'Logs', icon: Activity },
     ];
 
