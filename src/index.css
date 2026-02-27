@@ -1,11 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
 @import "./styles/animations.css";
+
+/* ── Print helpers for A4 invoice modal ── */
+@media print {
+  body {
+    background: none !important;
+    padding: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
 
 /* NProgress page loader — brand yellow */
 #nprogress .bar {
   background: #ffff00 !important;
   height: 3px !important;
 }
+
 #nprogress .peg {
   box-shadow: 0 0 10px #ffff00, 0 0 5px #ffff00 !important;
 }
