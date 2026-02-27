@@ -37,7 +37,7 @@ interface SidebarSection {
 }
 
 export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
-    const { user, roles, logout, hasPermission } = useAuthStore();
+    const { user, roles, logout, hasPermission, isLoading } = useAuthStore();
     const location = useLocation();
 
     const isActive = (path: string) => location.pathname.startsWith(path);
@@ -212,6 +212,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                             variant="ghost"
                             className={`w-full text-primary-500 hover:text-black hover:bg-primary-500 rounded-xl font-black ${isCollapsed ? 'justify-center px-0' : 'justify-start px-4'} transition-all`}
                             onClick={() => logout()}
+                            isLoading={isLoading}
                             title={isCollapsed ? "Log out" : undefined}
                         >
                             <LogOut className={`w-4 h-4 shrink-0 ${isCollapsed ? '' : 'mr-2'}`} />
@@ -223,17 +224,6 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
                 </div>
             </aside>
 
-            {/* Main content margin adjustment - This needs to be communicated to MainLayout or handled via context if not strict prop passing. 
-                For now, we rely on the implementation in MainLayout or assume it handles responsiveness. 
-                Wait, MainLayout has `lg:pl-20` hardcoded. We need to check MainLayout to ensure it adapts to sidebar width change.
-                Actually sidebar width changes affect layout only if MainLayout knows about it.
-                But the prompt sidebar request is handled here. The CSS transition might overlap content if MainLayout padding isn't adjusted.
-                However, I cannot change MainLayout props easily without lifting state up. 
-                The Prompt asked to "add a close/minimize button". 
-                If I change the width here, it will overlay content or leave gap.
-                Let's assume for this specific file request, I implement the internal logic.
-                Ideally `isCollapsed` should be lifted to `MainLayout`.
-            */}
         </>
     );
 };
