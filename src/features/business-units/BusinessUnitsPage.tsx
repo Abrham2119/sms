@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { Plus, Mail, Globe, Eye, Edit2, Trash2, Building2 } from 'lucide-react';
-import { DataTable } from '../../components/table/DataTable';
+import { Building2, Edit2, Eye, Globe, Mail, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { PermissionGuard } from '../../components/guards/PermissionGuard';
 import type { Column } from '../../components/table/DataTable';
+import { DataTable } from '../../components/table/DataTable';
 import { Button } from '../../components/ui/Button';
-import { BusinessUnitFormDialog } from './components/BusinessUnitFormDialog';
-import { useBusinessUnits, useCreateBusinessUnit, useUpdateBusinessUnit, useDeleteBusinessUnit } from './hooks/useBusinessUnits';
-import type { BusinessUnit } from '../../types';
-import { PERMISSIONS } from '../../types';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { EntityDetailModal } from '../../components/ui/EntityDetailModal';
-import { PermissionGuard } from '../../components/guards/PermissionGuard';
+import type { BusinessUnit } from '../../types';
+import { PERMISSIONS } from '../../types';
+import { BusinessUnitFormDialog } from './components/BusinessUnitFormDialog';
+import { useBusinessUnits, useCreateBusinessUnit, useDeleteBusinessUnit, useUpdateBusinessUnit } from './hooks/useBusinessUnits';
 
 const BusinessUnitsPageContent = () => {
     // State
@@ -131,18 +131,6 @@ const BusinessUnitsPageContent = () => {
             )
         },
         {
-            key: 'type',
-            label: 'Type',
-            render: (item) => (
-                <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${item.type === 'foreign'
-                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                    }`}>
-                    {item.type}
-                </span>
-            )
-        },
-        {
             key: 'actions',
             label: 'Actions',
             render: (item) => (
@@ -195,10 +183,11 @@ const BusinessUnitsPageContent = () => {
             </div>
 
             <DataTable
-                data={data || []}
+                data={data?.data || []}
                 columns={columns}
                 loading={isLoading}
-                totalItems={data?.length || 0}
+                serverSide
+                totalItems={data?.total || 0}
                 currentPage={page}
                 itemsPerPage={perPage}
                 onPageChange={setPage}

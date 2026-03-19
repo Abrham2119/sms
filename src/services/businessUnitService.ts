@@ -1,25 +1,48 @@
 import { api } from "../lib/api";
-import type { BusinessUnit, CreateBusinessUnitRequest, BusinessUnitResponse } from "../types";
+import type { BusinessUnit, BusinessUnitResponse, CreateBusinessUnitRequest } from "../types";
 import { queryBuilder } from "../utils/queryBuilder";
 
 export const businessUnitService = {
     getAll: async (params?: any) => {
         const queryString = queryBuilder(params || {});
-        const response = await api.get<{ data: BusinessUnitResponse }>(`/admin/business-units${queryString}`);
-        return response.data.data;
+        const response = await api.get<BusinessUnitResponse>(`/admin/business-units${queryString}`);
+        return response.data;
     },
 
     create: async (data: CreateBusinessUnitRequest) => {
-        const response = await api.post<{ message: string; data: BusinessUnit }>("/admin/business-units", data);
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                const val = value as any;
+                if (val instanceof File || val instanceof Blob) {
+                    formData.append(key, val);
+                } else {
+                    formData.append(key, String(val));
+                }
+            }
+        });
+        const response = await api.post<{ message: string; data: BusinessUnit }>(
+            "/admin/business-units", 
+            formData,
+            {
+                headers: {
+                    'Content-Type': undefined
+                }
+            }
+        );
         return response.data;
     },
 
     update: async (id: string, data: Partial<CreateBusinessUnitRequest>) => {
-        // Since update can include a logo (file), we might need FormData
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => {
             if (value !== undefined && value !== null) {
-                formData.append(key, value instanceof File ? value : String(value));
+                const val = value as any;
+                if (val instanceof File || val instanceof Blob) {
+                    formData.append(key, val);
+                } else {
+                    formData.append(key, String(val));
+                }
             }
         });
 
@@ -28,8 +51,8 @@ export const businessUnitService = {
             formData,
             {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Content-Type': undefined
+                }
             }
         );
         return response.data;

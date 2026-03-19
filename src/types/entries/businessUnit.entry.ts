@@ -1,3 +1,4 @@
+import type { PaginatedResponse } from "./common.entry";
 
 export interface BusinessUnit {
     id: string;
@@ -22,4 +23,4 @@ export interface CreateBusinessUnitRequest {
     logo?: File;
 }
 
-export type BusinessUnitResponse = BusinessUnit[];
+export type BusinessUnitResponse = PaginatedResponse<BusinessUnit>;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Mail, Globe, CreditCard, Phone, Camera } from 'lucide-react';
 import type { BusinessUnit } from '../../../types';
@@ -20,9 +20,8 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
     initialData,
     onSubmit
 }) => {
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<any>({
+    const { register, handleSubmit, reset, watch, formState: { errors, isSubmitting } } = useForm<any>({
         defaultValues: {
-            type: 'local',
             legal_name: '',
             trade_name: '',
             email: '',
@@ -31,6 +30,25 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
             website: ''
         }
     });
+
+    const [preview, setPreview] = useState<string | null>(null);
+    const watchedLogo = watch('logo');
+
+    useEffect(() => {
+        if (watchedLogo && watchedLogo[0] instanceof File) {
+            const url = URL.createObjectURL(watchedLogo[0]);
+            setPreview(url);
+            return () => URL.revokeObjectURL(url);
+        } else if (initialData?.logo) {
+            // Prepend BASE_URL if it's a relative path, but handle full URLs too
+            const logoUrl = initialData.logo.startsWith('http') 
+                ? initialData.logo 
+                : `${import.meta.env.VITE_API_BASE_URL}/storage/${initialData.logo}`;
+            setPreview(logoUrl);
+        } else {
+            setPreview(null);
+        }
+    }, [watchedLogo, initialData]);
 
     useEffect(() => {
         if (open) {
@@ -44,7 +62,6 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
                 });
             } else {
                 reset({
-                    type: 'local',
                     legal_name: '',
                     trade_name: '',
                     email: '',
@@ -63,7 +80,6 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
             : undefined;
         
         const payload: any = {
-            type: data.type,
             legal_name: data.legal_name,
             trade_name: data.trade_name,
             email: data.email,
@@ -87,16 +103,7 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
             className="max-w-2xl"
         >
             <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Select
-                        label="Type"
-                        {...register("type", { required: "Type is required" })}
-                        options={[
-                            { value: 'local', label: 'Local' },
-                            { value: 'foreign', label: 'Foreign' }
-                        ]}
-                        error={errors.type?.message as string}
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">                 
                     <Input
                         label="Legal Name"
                         {...register("legal_name", { required: "Legal name is required" })}
@@ -142,7 +149,15 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
                         </label>
                         <div className="flex items-center gap-4">
                             <div className="relative w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden group hover:border-primary-500 transition-colors">
-                                <Camera className="w-6 h-6 text-gray-400 group-hover:text-primary-500" />
+                                {preview ? (
+                                    <img 
+                                        src={preview} 
+                                        alt="Preview" 
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <Camera className="w-6 h-6 text-gray-400 group-hover:text-primary-500" />
+                                )}
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -151,7 +166,7 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
                                 />
                             </div>
                             <div className="text-xs text-gray-500">
-                                <p className="font-bold text-gray-700 dark:text-gray-300">Upload logo</p>
+                                <p className="font-bold text-gray-700 dark:text-gray-300">{preview ? 'Change logo' : 'Upload logo'}</p>
                                 <p>PNG, JPG up to 2MB</p>
                             </div>
                         </div>
