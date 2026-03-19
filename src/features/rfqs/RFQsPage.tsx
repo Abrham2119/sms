@@ -1,4 +1,4 @@
-import { Eye, FileText, Pencil, Plus } from 'lucide-react';
+import { Eye, FileText, Pencil, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -246,6 +246,17 @@ export const RFQsPage = () => {
                             <Pencil className="w-4 h-4 text-indigo-600" />
                         </Button>
                     )}
+                </div>
+            )
+        },
+        {
+            key: 'close',
+            label: 'Close',
+            render: (rfq) => (
+                <div className="flex justify-start gap-2" onClick={(e) => e.stopPropagation()}>
+                    <Button variant="ghost" size="sm" onClick={() => handleView(rfq)}>
+                        <X className="w-4 h-4 text-red-500" />
+                    </Button>
                 </div>
             )
         }
