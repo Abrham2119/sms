@@ -1,3 +1,9 @@
+export interface BusinessUnit {
+    id: string;
+    code: string;
+    legal_name: string;
+}
+
 export interface User {
     id: string;
     name: string;
@@ -5,6 +11,7 @@ export interface User {
     phone?: string;
     status?: string;
     roles?: (string | { id: string, name: string })[];
+    business_units?: BusinessUnit[];
     email_verified_at?: string;
     profile_picture?: string;
     created_at?: string;

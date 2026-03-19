@@ -11,12 +11,14 @@ interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
+    selectedBusinessUnitId: string | null;
 
     login: (credentials: LoginCredentials) => Promise<void>;
     register: (credentials: RegisterCredentials) => Promise<void>;
     logout: () => Promise<void>;
     hasPermission: (permissionName: Permission) => boolean;
     setAuth: (user: User, token: string, roles: Role[]) => void;
+    setSelectedBusinessUnitId: (id: string | null) => void;
     resetError: () => void;
 }
 
@@ -30,6 +32,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
             error: null,
+            selectedBusinessUnitId: null,
 
             login: async (credentials) => {
                 set({ isLoading: true, error: null });
@@ -46,7 +49,8 @@ export const useAuthStore = create<AuthState>()(
                         roles,
                         permissions,
                         isAuthenticated: true,
-                        isLoading: false
+                        isLoading: false,
+                        selectedBusinessUnitId: user.business_units?.[0]?.id || null
                     });
                 } catch (error: any) {
                     set({
@@ -71,7 +75,8 @@ export const useAuthStore = create<AuthState>()(
                         roles,
                         permissions,
                         isAuthenticated: true,
-                        isLoading: false
+                        isLoading: false,
+                        selectedBusinessUnitId: user.business_units?.[0]?.id || null
                     });
                 } catch (error: any) {
                     set({
@@ -95,7 +100,8 @@ export const useAuthStore = create<AuthState>()(
                         roles: [],
                         permissions: [],
                         isAuthenticated: false,
-                        isLoading: false
+                        isLoading: false,
+                        selectedBusinessUnitId: null
                     });
                 }
             },
@@ -117,6 +123,8 @@ export const useAuthStore = create<AuthState>()(
                 });
             },
 
+            setSelectedBusinessUnitId: (id) => set({ selectedBusinessUnitId: id }),
+
             resetError: () => set({ error: null }),
         }),
         {
@@ -127,7 +135,8 @@ export const useAuthStore = create<AuthState>()(
                 token: state.token,
                 roles: state.roles,
                 permissions: state.permissions,
-                isAuthenticated: state.isAuthenticated
+                isAuthenticated: state.isAuthenticated,
+                selectedBusinessUnitId: state.selectedBusinessUnitId
             }),
         }
     )
