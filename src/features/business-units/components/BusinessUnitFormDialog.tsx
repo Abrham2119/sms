@@ -35,8 +35,10 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
     useEffect(() => {
         if (open) {
             if (initialData) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { logo, ...rest } = initialData;
                 reset({
-                    ...initialData,
+                    ...rest,
                     phone: initialData.phone || '',
                     website: initialData.website || ''
                 });
@@ -55,7 +57,10 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
     }, [open, initialData, reset]);
 
     const handleFormSubmit = async (data: any) => {
-        const logoFile = (data.logo && data.logo[0]) ? data.logo[0] : undefined;
+        // Only take the file if it's a FileList with at least one item
+        const logoFile = (data.logo && data.logo instanceof FileList && data.logo.length > 0) 
+            ? data.logo[0] 
+            : undefined;
         
         const payload: any = {
             type: data.type,
@@ -72,7 +77,6 @@ export const BusinessUnitFormDialog: React.FC<BusinessUnitFormDialogProps> = ({
         }
 
         await onSubmit(payload);
-        onClose();
     };
 
     return (
