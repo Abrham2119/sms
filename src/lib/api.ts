@@ -11,9 +11,12 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
+    const { token, selectedBusinessUnitId } = useAuthStore.getState();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    if (selectedBusinessUnitId) {
+      config.headers['X-Business-Unit-ID'] = selectedBusinessUnitId;
     }
     return config;
   },
