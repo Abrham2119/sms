@@ -7,17 +7,18 @@ import type { Column } from '../../components/table/DataTable';
 import { DataTable } from '../../components/table/DataTable';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { CustomDropdown } from '../../components/ui/CustomDropdown';
 import { Modal } from '../../components/ui/Modal';
 import { rfqService } from '../../services/rfqService';
 import { PERMISSIONS } from '../../types';
 import type { RFQ } from '../../types/rfq';
 import { RFQMultiStepForm } from './components/RFQMultiStepForm';
-import { useCancelRFQ, useCloseRFQ, useMoveRFQToEvaluation, useRFQs } from './hooks/useRFQ';
+import { useFinalizeCloseRFQ, useRFQs } from './hooks/useRFQ';
 
 export const RFQsPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
     const [selectedRFQ, setSelectedRFQ] = useState<RFQ | undefined>(undefined);
+    const [rfqToClose, setRfqToClose] = useState<RFQ | undefined>(undefined);
     const navigate = useNavigate();
 
     // Pagination & Search State
@@ -46,9 +47,7 @@ export const RFQsPage = () => {
         sort_order: sortOrder
     });
 
-    const moveEvaluationMutation = useMoveRFQToEvaluation();
-    const cancelMutation = useCancelRFQ();
-    const closeMutation = useCloseRFQ();
+    const finalizeCloseMutation = useFinalizeCloseRFQ();
 
     const rfqs = data?.data || [];
     const totalItems = data?.total || 0;
@@ -105,6 +104,22 @@ export const RFQsPage = () => {
         }
     };
 
+    const handleCloseClick = (rfq: RFQ) => {
+        setRfqToClose(rfq);
+        setIsCloseModalOpen(true);
+    };
+
+    const handleConfirmClose = () => {
+        if (rfqToClose) {
+            finalizeCloseMutation.mutate(rfqToClose.id, {
+                onSuccess: () => {
+                    setIsCloseModalOpen(false);
+                    setRfqToClose(undefined);
+                }
+            });
+        }
+    };
+
     const columns: Column<RFQ>[] = [
         {
             key: 'reference_number',
@@ -153,64 +168,17 @@ export const RFQsPage = () => {
             key: 'status',
             label: 'Status',
             render: (rfq) => {
-                const currentStatus = rfq.status.toLowerCase();
-                const isTerminal = ['closed', 'cancelled'].includes(currentStatus);
-
                 const formatStatus = (s: string) => {
                     if (!s) return 'N/A';
                     const replaced = s.replace(/_/g, ' ');
                     return replaced.charAt(0).toUpperCase() + replaced.slice(1).toLowerCase();
                 };
 
-                if (isTerminal) {
-                    return (
-                        <div className="w-40 whitespace-nowrap">
-                            <Badge variant={getStatusVariant(rfq.status) as any} className="w-full justify-center py-2.5 rounded-2xl">
-                                {formatStatus(rfq.status)}
-                            </Badge>
-                        </div>
-                    );
-                }
-
-                // Define transitions based on rules
-                const isDraftOrPublished = ['draft', 'published'].includes(currentStatus);
-                const isEvaluation = currentStatus === 'evaluation';
-
-                // Initial options always include current state
-                const options = [{ label: formatStatus(rfq.status), value: currentStatus }];
-
-                if (isDraftOrPublished) {
-                    options.push(
-                        { label: 'Evaluation', value: 'evaluation' },
-                        { label: 'Closed', value: 'closed' },
-                        { label: 'Cancelled', value: 'cancelled' }
-                    );
-                } else if (isEvaluation) {
-                    options.push(
-                        { label: 'Closed', value: 'closed' },
-                        { label: 'Cancelled', value: 'cancelled' }
-                    );
-                }
-
-                // De-duplicate in case backend returns one of the target statuses as current
-                const uniqueOptions = options.filter((opt, index, self) =>
-                    index === self.findIndex((t) => t.value === opt.value)
-                );
-
                 return (
-                    <div className="w-40 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <CustomDropdown
-                            options={uniqueOptions}
-                            value={currentStatus}
-                            onChange={(newStatus: string) => {
-                                if (newStatus === currentStatus) return;
-                                if (newStatus === 'evaluation') moveEvaluationMutation.mutate(rfq.id);
-                                else if (newStatus === 'cancelled') cancelMutation.mutate(rfq.id);
-                                else if (newStatus === 'closed') closeMutation.mutate(rfq.id);
-                            }}
-                            labelPrefix=""
-                            className="w-full"
-                        />
+                    <div className="w-40 whitespace-nowrap">
+                        <Badge variant={getStatusVariant(rfq.status) as any} className="w-full justify-center py-2.5 rounded-2xl">
+                            {formatStatus(rfq.status)}
+                        </Badge>
                     </div>
                 );
             }
@@ -254,9 +222,11 @@ export const RFQsPage = () => {
             label: 'Close',
             render: (rfq) => (
                 <div className="flex justify-start gap-2" onClick={(e) => e.stopPropagation()}>
-                    <Button variant="ghost" size="sm" onClick={() => handleView(rfq)}>
-                        <X className="w-4 h-4 text-red-500" />
-                    </Button>
+                    {!['closed', 'cancelled'].includes(rfq.status?.toLowerCase()) && (
+                        <Button variant="ghost" size="sm" onClick={() => handleCloseClick(rfq)}>
+                            <X className="w-4 h-4 text-red-500" />
+                        </Button>
+                    )}
                 </div>
             )
         }
@@ -318,6 +288,40 @@ export const RFQsPage = () => {
                         initialRFQ={selectedRFQ}
                         onSuccess={handleSuccess}
                     />
+                </Modal>
+
+                <Modal
+                    isOpen={isCloseModalOpen}
+                    onClose={() => setIsCloseModalOpen(false)}
+                    title="Confirm Close RFQ"
+                    className="max-w-2xl"
+                >
+                    <div className="p-6">
+                        <div className="flex items-center gap-4 mb-6 w-full justify-center text-red-600">
+    
+                            <h3 className="text-xl font-bold">Are you absolutely sure?</h3>
+                        </div>
+                        <p className="text-gray-600 mb-8">
+                            You are about to close RFQ <span className="font-bold text-gray-900">{rfqToClose?.reference_number}</span>. 
+                            This will prevent any further quotations and move the process to a final state. This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end gap-3">
+                            <Button 
+                                variant="ghost" 
+                                onClick={() => setIsCloseModalOpen(false)}
+                                className="px-6"
+                            >
+                                No, Keep Open
+                            </Button>
+                            <Button 
+                                onClick={handleConfirmClose}
+                                className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 shadow-lg shadow-red-200"
+                                isLoading={finalizeCloseMutation.isPending}
+                            >
+                                Yes, Close RFQ
+                            </Button>
+                        </div>
+                    </div>
                 </Modal>
             </div>
         </PermissionGuard>

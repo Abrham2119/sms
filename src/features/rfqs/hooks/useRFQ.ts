@@ -169,6 +169,20 @@ export const useCloseRFQ = () => {
         mutationFn: (id: string) => rfqService.closeRFQ(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['rfqs'] });
+            toast.success('RFQ status updated successfully!');
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || 'Failed to update RFQ status.');
+        }
+    });
+};
+
+export const useFinalizeCloseRFQ = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id: string) => rfqService.finalizeClose(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['rfqs'] });
             toast.success('RFQ closed successfully!');
         },
         onError: (error: any) => {

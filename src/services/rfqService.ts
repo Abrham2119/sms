@@ -88,6 +88,11 @@ export const rfqService = {
         return response.data;
     },
 
+    finalizeClose: async (rfqId: string) => {
+        const response = await api.post(`/admin/rfqs/close/${rfqId}`);
+        return response.data;
+    },
+
     evaluateQuotation: async (quotationId: string, data: any) => {
         const response = await api.post(`/admin/quotations/${quotationId}/evaluate`, data);
         return response.data;
