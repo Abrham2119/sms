@@ -1,8 +1,4 @@
-export interface BusinessUnit {
-    id: string;
-    code: string;
-    legal_name: string;
-}
+import type { BusinessUnit } from './businessUnit.entry';
 
 export interface User {
     id: string;

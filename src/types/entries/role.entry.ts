@@ -16,6 +16,12 @@ export const PERMISSIONS = {
     UPDATE_CATEGORY: 'update_category',
     DELETE_CATEGORY: 'delete_category',
 
+    // Business Unit management
+    CREATE_BUSINESS_UNIT: 'create_business_unit',
+    READ_BUSINESS_UNIT: 'read_business_unit',
+    UPDATE_BUSINESS_UNIT: 'update_business_unit',
+    DELETE_BUSINESS_UNIT: 'delete_business_unit',
+
     // Permission management
     CREATE_PERMISSION: 'create_permission',
     READ_PERMISSION: 'read_permission',

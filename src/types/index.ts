@@ -11,3 +11,4 @@ export * from './entries/admin.entry.ts';
 export * from './entries/category.entry.ts';
 export * from './entries/product.entry.ts';
 export * from './entries/uom.entry.ts';
+export * from './entries/businessUnit.entry.ts';

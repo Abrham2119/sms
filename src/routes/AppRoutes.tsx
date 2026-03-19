@@ -31,6 +31,7 @@ import { SupplierRFQsPage } from "../features/rfqs/SupplierRFQsPage";
 import { RFQQuotationsPage } from '../features/rfqs/RFQQuotationsPage';
 // import { EvaluationsListPage } from '../features/rfqs/EvaluationsListPage';
 import { ShortlistedEvaluationsPage } from '../features/rfqs/ShortlistedEvaluationsPage';
+import { BusinessUnitsPage } from '../features/business-units/BusinessUnitsPage';
 
 const AppRoutes = () => {
     return (
@@ -81,6 +82,7 @@ const AppRoutes = () => {
             <Route element={<ProtectedRoute allowedRoles={['admin', 'Super_Admin']} />}>
                 <Route element={<MainLayout />}>
                     <Route path="/admins" element={<AdminsPage />} />
+                    <Route path="/business-units" element={<BusinessUnitsPage />} />
 
                     <Route path="/users" element={<UsersPage />} />
                     <Route path="/users/:id" element={<UserDetailPage />} />

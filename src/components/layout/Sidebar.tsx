@@ -1,4 +1,5 @@
 import {
+    Building2,
     FileText,
     FolderTree,
     LayoutDashboard,
@@ -97,6 +98,7 @@ export const Sidebar = ({ isOpen, onClose, isCollapsed }: SidebarProps) => {
             title: "General",
             links: [
                 { name: 'Suppliers', path: '/suppliers', icon: Truck, permission: PERMISSIONS.READ_SUPPLIER },
+                { name: 'Business Units', path: '/business-units', icon: Building2, permission: PERMISSIONS.READ_BUSINESS_UNIT },
                 { name: 'Admins', path: '/admins', icon: ShieldCheck, permission: PERMISSIONS.READ_USER },
                 { name: 'Profile', path: '/my-profile', icon: UserCircle, roles: [] },
             ]
