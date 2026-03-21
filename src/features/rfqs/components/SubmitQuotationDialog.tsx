@@ -46,7 +46,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
     // Form States
     const [currency, setCurrency] = useState('USD');
     const [leadTime, setLeadTime] = useState(7);
-    const [proformaValidityDate, setProformaValidityDate] = useState('2026-03-15');
+    const [proformaValidityDate, setProformaValidityDate] = useState(new Date().toISOString().split('T')[0]);
     const [deliveryMethod, setDeliveryMethod] = useState('Air');
     const [creditAmount, setCreditAmount] = useState(200);
     const [creditAvailable, setCreditAvailable] = useState(true);
@@ -63,12 +63,12 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                 name: p.name,
                 required_qty: Number(p.pivot.quantity),
                 offered_qty: Number(p.pivot.quantity),
-                unit_price: 0,
+                unit_price: 1,
                 discount: 0,
                 availability: 'in_stock',
                 moq: 1,
                 warranty_available: true,
-                warranty_duration: '2026-03-15',
+                warranty_duration: new Date().toISOString().split('T')[0],
                 warranty_details: ''
             }));
             setItems(initialItems);
@@ -80,7 +80,11 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
         // For numeric fields, ensure value is at least 0
         let finalValue = value;
         if (typeof value === 'number' && ['offered_qty', 'unit_price', 'discount', 'moq'].includes(field)) {
-            finalValue = Math.max(0, value);
+            if (field === 'unit_price') {
+                finalValue = Math.max(1, value);
+            } else {
+                finalValue = Math.max(0, value);
+            }
         }
         newItems[index] = { ...newItems[index], [field]: finalValue };
         setItems(newItems);
@@ -92,8 +96,20 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
         e.preventDefault();
 
         // Basic Validation
-        if (items.some(item => item.unit_price < 0)) {
-            toast.error("Please provide a valid unit price for all items.");
+        const today = new Date().toISOString().split('T')[0];
+
+        if (proformaValidityDate < today) {
+            toast.error("Proforma Validity Date cannot be in the past.");
+            return;
+        }
+
+        if (items.some(item => item.unit_price < 1)) {
+            toast.error("Please provide a unit price of at least 1 for all items.");
+            return;
+        }
+
+        if (items.some(item => item.warranty_available && item.warranty_duration < today)) {
+            toast.error("Warranty Duration date cannot be in the past.");
             return;
         }
 
@@ -176,6 +192,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                         <Input
                             label="Validity Date"
                             type="date"
+                            min={new Date().toISOString().split('T')[0]}
                             value={proformaValidityDate}
                             onChange={(e) => setProformaValidityDate(e.target.value)}
                             required
@@ -306,15 +323,15 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                     <input
                                                         type="number"
                                                         step="any"
-                                                        min="0"
+                                                        min="1"
                                                         value={item.unit_price}
                                                         onChange={(e) => handleItemChange(idx, 'unit_price', Number(e.target.value))}
                                                         onFocus={handleFocus}
                                                         className={`
                                                         w-32 pl-10 p-1.5 border rounded-lg dark:bg-gray-900 text-sm font-bold focus:ring-2 focus:ring-primary-500 transition-all
-                                                        ${item.unit_price < 0 ? 'border-red-300 ring-4 ring-red-500/10' : 'border-gray-200 dark:border-gray-700'}
+                                                        ${item.unit_price < 1 ? 'border-red-300 ring-4 ring-red-500/10' : 'border-gray-200 dark:border-gray-700'}
                                                     `}
-                                                        placeholder="0.00"
+                                                        placeholder="1.00"
                                                     />
                                                 </div>
                                             </td>
@@ -367,6 +384,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
                                                         <>
                                                             <input
                                                                 type="date"
+                                                                min={new Date().toISOString().split('T')[0]}
                                                                 value={item.warranty_duration}
                                                                 onChange={(e) => handleItemChange(idx, 'warranty_duration', e.target.value)}
                                                                 className="w-full p-1.5 border border-gray-200 dark:border-gray-700 rounded-lg dark:bg-gray-900 text-xs focus:ring-1 focus:ring-primary-500"
