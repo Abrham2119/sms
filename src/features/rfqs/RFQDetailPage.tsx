@@ -13,22 +13,17 @@ import {
     AlertCircle,
     Hash,
     Trophy,
-    XCircle,
     Filter,
-    Eye,
-    CheckCircle2
+    Eye
 } from 'lucide-react';
 import {
     useRFQ,
-    useRFQQuotations,
-    useAwardQuotation,
-    useRejectQuotation
+    useRFQQuotations
 } from './hooks/useRFQ';
 import { ActivityLog } from '../../components/common/ActivityLog';
 import { Button } from '../../components/ui/Button';
 import { DataTable, type Column } from '../../components/table/DataTable';
 import { Badge } from '../../components/ui/Badge';
-import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { Modal } from '../../components/ui/Modal';
 import { QuotationDetailsModal } from './components/QuotationDetailsModal';
 import type { RFQ, Quotation } from '../../types/rfq';
@@ -267,36 +262,33 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
     const [statusFilter, setStatusFilter] = useState<string>("");
 
     const [selectedQuotation, setSelectedQuotation] = useState<Quotation | null>(null);
-    const [actionQuotation, setActionQuotation] = useState<{ id: string, type: 'award' | 'reject', supplierName: string } | null>(null);
 
-    const { data, isLoading, refetch } = useRFQQuotations(rfqId, {
+    const { data, isLoading } = useRFQQuotations(rfqId, {
         page,
         per_page: perPage,
         status: statusFilter
     });
 
-    const awardMutation = useAwardQuotation();
-    const rejectMutation = useRejectQuotation();
 
-    const handleAction = async () => {
-        if (!actionQuotation) return;
 
-        try {
-            if (actionQuotation.type === 'award') {
-                await awardMutation.mutateAsync(actionQuotation.id);
-            } else {
-                await rejectMutation.mutateAsync(actionQuotation.id);
-            }
-            refetch();
-            setActionQuotation(null);
-        } catch (error) {
-            // Error toast handled by hook
-        }
+
+
+
+
+    // Calculate ranking based on total score
+    const sortedByScore = [...(data?.data || [])].sort((a, b) => {
+        const scoreA = parseFloat(a.scores?.total_score || '0');
+        const scoreB = parseFloat(b.scores?.total_score || '0');
+        return scoreB - scoreA;
+    });
+
+    const getRankInfo = (q: Quotation) => {
+        const rank = sortedByScore.findIndex(item => item.id === q.id) + 1;
+        if (rank === 1) return { medal: "text-amber-400", label: "Gold", rank };
+        if (rank === 2) return { medal: "text-slate-300", label: "Silver", rank };
+        if (rank === 3) return { medal: "text-orange-400", label: "Bronze", rank };
+        return { medal: "text-gray-300", label: null, rank };
     };
-
-
-
-
 
     const columns: Column<Quotation>[] = [
         {
@@ -333,6 +325,32 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
             )
         },
         {
+            key: 'scores',
+            label: 'Total Score',
+            render: (q) => (
+                <span className="font-bold text-primary-600">
+                    {q.scores?.total_score || '0.00'}
+                </span>
+            )
+        },
+        {
+            key: 'rank',
+            label: 'Rank',
+            render: (q) => {
+                const info = getRankInfo(q);
+                return (
+                    <div className="flex items-center gap-2">
+                        {info.rank <= 3 ? (
+                            <Trophy className={`w-5 h-5 ${info.medal} fill-current`} />
+                        ) : (
+                            <span className="text-gray-400 text-sm font-medium">#{info.rank}</span>
+                        )}
+                        {info.label && <span className="text-[10px] font-bold uppercase tracking-tighter bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">{info.label}</span>}
+                    </div>
+                );
+            }
+        },
+        {
             key: 'status',
             label: 'Status',
             render: (item) => {
@@ -356,11 +374,6 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
             key: 'actions',
             label: 'Actions',
             render: (item) => {
-                const status = (item.status || 'pending').toLowerCase();
-                const supplierName = item.supplier?.legal_name || 'Supplier';
-                const isAwarded = status === 'awarded';
-                const isRejected = status === 'rejected';
-
                 return (
                     <div className="flex justify-center gap-2" onClick={(e) => e.stopPropagation()}>
                         <Button
@@ -372,32 +385,6 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
                         >
                             <Eye className="w-4 h-4" />
                         </Button>
-
-
-
-                        {!isAwarded && !isRejected && (
-                            <>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setActionQuotation({ id: item.id, type: 'award', supplierName })}
-                                    className="text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50"
-                                    title="Award RFQ"
-                                >
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                </Button>
-
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setActionQuotation({ id: item.id, type: 'reject', supplierName })}
-                                    className="text-danger-500 hover:text-danger-600 hover:bg-danger-50"
-                                    title="Reject Quotation"
-                                >
-                                    <XCircle className="w-4 h-4 text-danger-500" />
-                                </Button>
-                            </>
-                        )}
                     </div>
                 );
             }
@@ -445,18 +432,7 @@ const RFQQuotationsTab = ({ rfqId }: { rfqId: string }) => {
                 />
             </div>
 
-            <ConfirmDialog
-                open={!!actionQuotation}
-                onClose={() => setActionQuotation(null)}
-                onConfirm={handleAction}
-                title={actionQuotation?.type === 'award' ? 'Award RFQ to Supplier?' : 'Reject Supplier Quotation?'}
-                description={actionQuotation?.type === 'award'
-                    ? `Are you sure you want to award this RFQ to ${actionQuotation?.supplierName}? This will notify the supplier and finalize the selection process.`
-                    : `Are you sure you want to reject the quotation from ${actionQuotation?.supplierName}? This action is irreversible.`}
-                confirmText={actionQuotation?.type === 'award' ? 'Yes, Award RFQ' : 'Yes, Reject Quotation'}
-                variant={actionQuotation?.type === 'award' ? 'primary' : 'danger'}
-                isLoading={awardMutation.isPending || rejectMutation.isPending}
-            />
+
 
             <QuotationDetailsModal
                 isOpen={!!selectedQuotation}

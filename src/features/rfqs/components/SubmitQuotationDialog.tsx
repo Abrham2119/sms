@@ -122,7 +122,7 @@ export const SubmitQuotationDialog: React.FC<SubmitQuotationDialogProps> = ({
 
         submitMutation.mutate(payload, {
             onSuccess: () => {
-                toast.success("Quotation submitted successfully!");
+                // toast.success("Quotation submitted successfully!");
                 onSuccess();
                 onClose();
             }

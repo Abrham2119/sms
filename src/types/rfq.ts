@@ -14,7 +14,7 @@ export interface RFQ {
     pivot?: {
         supplier_id: string;
         request_for_quotation_id: string;
-        status: 'draft' | 'submitted' | 'withdrawn' | 'shortlisted' | 'awarded' | 'rejected';
+        status: 'draft' | 'submitted' | 'withdrawn' | 'shortlisted' | 'awarded' | 'rejected' | 'accepted';
         total_amount: string | null;
         quotation_number: string | null;
         submitted_at: string | null;
@@ -115,6 +115,14 @@ export interface Quotation {
         phone: string | null;
     };
     items: QuotationItem[];
+    scores?: {
+        price_score: string;
+        delivery_score: string;
+        financial_score: string;
+        performance_score: string;
+        compliance_score: string;
+        total_score: string;
+    };
 }
 
 export interface Evaluation {
