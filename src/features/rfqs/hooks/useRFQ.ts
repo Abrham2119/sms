@@ -86,12 +86,12 @@ export const useSupplierRFQs = (params?: any) => {
 };
 
 export const useSubmitQuotation = () => {
-    const queryClient = useQueryClient();
+        const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (data: any) => rfqService.submitQuotation(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['supplier-rfqs'] });
-            toast.success('Quotation submitted successfully!');
+            // toast.success('Quotation submitted successfully!');
         },
         onError: (error: any) => {
             toast.error(error?.response?.data?.message || 'Failed to submit quotation.');

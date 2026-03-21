@@ -89,7 +89,7 @@ export const rfqService = {
     },
 
     finalizeClose: async (rfqId: string) => {
-        const response = await api.post(`/admin/rfqs/close/${rfqId}`);
+        const response = await api.post(`/admin/rfqs/${rfqId}/close`);
         return response.data;
     },
 

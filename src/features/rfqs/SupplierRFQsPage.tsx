@@ -67,33 +67,33 @@ export const SupplierRFQsPage = () => {
     };
 
     return (
-        <div className="max-w-[1600px] mx-auto pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="max-w-[1600px] mx-auto pb-12 animate-in fade-in slide-in-from-bottom-4 duration-700 px-4 md:px-0">
             {/* Page Header */}
-            <div className="mb-10 space-y-8">
-                <div className="flex flex-col items-start gap-8">
+            <div className="mb-6 md:mb-10 space-y-4 md:space-y-8">
+                <div className="flex flex-col items-start gap-4 md:gap-8">
                     <div className="space-y-1">
-                        <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-1">
+                        <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white tracking-tight mb-0.5">
                             My RFQs
                         </h1>
-                        <p className="text-gray-500 text-sm font-medium">
+                        <p className="text-gray-500 text-xs md:text-sm font-medium">
                             Manage and respond to incoming Requests for Quotations with precision.
                         </p>
                     </div>
 
                     {/* Integrated Search + Filter Bar */}
-                    <div className="relative z-50 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl p-3 rounded-[2.5rem] border border-gray-200 dark:border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.05)] flex flex-col lg:flex-row items-center gap-4">
+                    <div className="relative z-10 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-2xl p-2 md:p-3 rounded-2xl md:rounded-[2.5rem] border border-gray-200 dark:border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.05)] flex flex-col lg:flex-row items-center gap-3 md:gap-4">
                         <div className="relative flex-1 w-full lg:w-auto">
-                            <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                            <Search className="absolute left-5 md:left-6 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Search by RFQ reference, description, product, status..."
-                                className="w-full bg-gray-50 dark:bg-gray-800/50 border-none rounded-[2rem] py-4 pl-14 pr-6 text-sm font-medium focus:ring-2 focus:ring-primary-500/20 transition-all dark:text-white"
+                                placeholder="Search RFQs..."
+                                className="w-full bg-gray-50 dark:bg-gray-800/50 border-none rounded-xl md:rounded-[2rem] py-3 md:py-4 pl-12 md:pl-14 pr-4 md:pr-6 text-sm font-medium focus:ring-2 focus:ring-primary-500/20 transition-all dark:text-white"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto px-2">
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full lg:w-auto px-1 md:px-2">
                             <CustomDropdown
                                 options={[
                                     { label: 'All', value: 'All' },
@@ -156,29 +156,29 @@ export const SupplierRFQsPage = () => {
 
                 {/* Modern Pagination */}
                 {meta && (
-                    <div className="mt-16 flex flex-col md:flex-row items-center justify-between gap-6 px-4">
-                        <div className="text-sm font-medium text-gray-500">
+                    <div className="mt-16 flex flex-col items-center justify-between gap-8 md:flex-row md:gap-6 px-4">
+                        <div className="text-sm font-medium text-gray-500 order-2 md:order-1">
                             Showing <span className="text-gray-900 dark:text-white font-black">{(page - 1) * perPage + 1}–{Math.min(page * perPage, meta.total)}</span> of <span className="text-gray-900 dark:text-white font-black">{meta.total}</span> RFQs
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 order-1 md:order-2">
                             <Button
                                 variant="secondary"
-                                className="w-12 h-12 rounded-2xl p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 disabled:opacity-30"
+                                className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 disabled:opacity-30"
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
                             >
                                 <ChevronLeft className="w-5 h-5" />
                             </Button>
 
-                            <div className="flex items-center gap-1 bg-white dark:bg-gray-900/50 p-1 rounded-2xl border border-gray-200 dark:border-gray-800">
-                                {[...Array(Math.min(5, meta.last_page))].map((_, i) => {
+                            <div className="flex items-center gap-1 bg-white dark:bg-gray-900/50 p-1 rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-800">
+                                {[...Array(Math.min(3, meta.last_page))].map((_, i) => {
                                     const pageNum = i + 1;
                                     return (
                                         <button
                                             key={pageNum}
                                             onClick={() => setPage(pageNum)}
-                                            className={`w-10 h-10 rounded-xl text-sm font-black transition-all ${page === pageNum
+                                            className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl text-xs md:text-sm font-black transition-all ${page === pageNum
                                                 ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30'
                                                 : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'
                                                 }`}
@@ -187,11 +187,11 @@ export const SupplierRFQsPage = () => {
                                         </button>
                                     );
                                 })}
-                                {meta.last_page > 5 && <span className="px-2 text-gray-400 font-bold">...</span>}
-                                {meta.last_page > 5 && (
+                                {meta.last_page > 3 && <span className="px-1 text-gray-400 font-bold">...</span>}
+                                {meta.last_page > 3 && (
                                     <button
                                         onClick={() => setPage(meta.last_page)}
-                                        className={`w-10 h-10 rounded-xl text-sm font-black transition-all ${page === meta.last_page ? 'bg-primary-600 text-white' : 'text-gray-400'
+                                        className={`w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl text-xs md:text-sm font-black transition-all ${page === meta.last_page ? 'bg-primary-600 text-white' : 'text-gray-400'
                                             }`}
                                     >
                                         {meta.last_page}
@@ -201,7 +201,7 @@ export const SupplierRFQsPage = () => {
 
                             <Button
                                 variant="secondary"
-                                className="w-12 h-12 rounded-2xl p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 disabled:opacity-30"
+                                className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl p-0 flex items-center justify-center border-gray-200 dark:border-gray-700 disabled:opacity-30"
                                 onClick={() => setPage(page + 1)}
                                 disabled={page === meta.last_page}
                             >
@@ -209,10 +209,10 @@ export const SupplierRFQsPage = () => {
                             </Button>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Rows per page:</span>
+                        <div className="flex items-center gap-3 order-3">
+                            <span className="text-[10px] md:text-xs font-black text-gray-400 uppercase tracking-widest">Rows:</span>
                             <select
-                                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-xl text-xs font-black px-3 py-2 focus:ring-primary-500/20"
+                                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg md:rounded-xl text-xs font-black px-2 md:px-3 py-1.5 md:py-2 focus:ring-primary-500/20"
                                 value={perPage}
                                 onChange={(e) => {
                                     setPerPage(Number(e.target.value));
