@@ -86,14 +86,17 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                 <CustomDropdown
                   options={businessUnitOptions}
                   value={selectedBusinessUnitId || ""}
-                  onChange={(id) => setSelectedBusinessUnitId(id)}
+                  onChange={(id) => {
+                    setSelectedBusinessUnitId(id);
+                    window.location.reload();
+                  }}
                   icon={Building}
                   labelPrefix=""
                   className="w-full"
                 />
               </div>
             )}
-
+ 
 
             {/* <Button
               size="sm"
