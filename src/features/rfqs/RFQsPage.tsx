@@ -122,6 +122,18 @@ export const RFQsPage = () => {
 
     const columns: Column<RFQ>[] = [
         {
+            key: 'row_number',
+            label: '#',
+            render: (rfq) => {
+                const index = rfqs.findIndex((r: RFQ) => r.id === rfq.id);
+                return (
+                    <span className="text-xs font-bold text-gray-400">
+                        {index !== -1 ? (page - 1) * perPage + index + 1 : '-'}
+                    </span>
+                );
+            }
+        },
+        {
             key: 'reference_number',
             label: 'Reference',
             sortable: true,
