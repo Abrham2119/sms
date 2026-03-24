@@ -9,6 +9,7 @@ export interface RFQ {
     status: string;
     created_at: string;
     updated_at: string;
+    number_of_suppliers?: number;
     created_by?: string;
     products?: RFQProduct[];
     pivot?: {
@@ -49,6 +50,7 @@ export interface CreateRFQRequest {
     delivery_terms: string[];
     delivery_location: string;
     for: 'all' | 'local' | 'foreign';
+    number_of_suppliers?: number;
 }
 
 export interface AttachProductsRequest {

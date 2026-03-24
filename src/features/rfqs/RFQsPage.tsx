@@ -127,8 +127,14 @@ export const RFQsPage = () => {
             sortable: true,
             searchable: true,
             render: (rfq) => (
-                <span className="text-sm font-bold text-[#0f172a]">{rfq.reference_number}</span>
+                <div className=' flex flex-row gap-3 items-center justify-center'>
+                    <span className="text-sm font-bold text-[#0f172a]">{rfq.reference_number}</span>
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full text-[#0f172a] bg-primary-50  text-[10px] font-black border border-primary-100 shrink-0">
+                        {rfq.number_of_suppliers || 0}
+                    </div>
+                </div>
             )
+
         },
         {
             key: 'description',
@@ -155,10 +161,10 @@ export const RFQsPage = () => {
             sortable: true,
             render: (rfq) => (
                 <span className={`px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider ${rfq.for === 'foreign'
-                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-                        : rfq.for === 'local'
-                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                            : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                    : rfq.for === 'local'
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                        : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400'
                     }`}>
                     {rfq.for}
                 </span>
@@ -298,22 +304,22 @@ export const RFQsPage = () => {
                 >
                     <div className="p-6">
                         <div className="flex items-center gap-4 mb-6 w-full justify-center text-red-600">
-    
+
                             <h3 className="text-xl font-bold">Are you absolutely sure?</h3>
                         </div>
                         <p className="text-gray-600 mb-8">
-                            You are about to close RFQ <span className="font-bold text-gray-900">{rfqToClose?.reference_number}</span>. 
+                            You are about to close RFQ <span className="font-bold text-gray-900">{rfqToClose?.reference_number}</span>.
                             This will prevent any further quotations and move the process to a final state. This action cannot be undone.
                         </p>
                         <div className="flex justify-end gap-3">
-                            <Button 
-                                variant="ghost" 
+                            <Button
+                                variant="ghost"
                                 onClick={() => setIsCloseModalOpen(false)}
                                 className="px-6"
                             >
                                 No, Keep Open
                             </Button>
-                            <Button 
+                            <Button
                                 onClick={handleConfirmClose}
                                 className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 shadow-lg shadow-red-200"
                                 isLoading={finalizeCloseMutation.isPending}
