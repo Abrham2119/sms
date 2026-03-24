@@ -4,6 +4,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import { Sidebar } from "./Sidebar";
 import { CustomDropdown } from "../ui/CustomDropdown";
+import { usePusherBeams } from "../../hooks/usePusherBeams";
 
 interface MainLayoutProps {
   children?: React.ReactNode;
@@ -14,6 +15,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { user, selectedBusinessUnitId, setSelectedBusinessUnitId } = useAuthStore();
   const location = useLocation();
+
+  // Initialize Pusher Beams
+  usePusherBeams({
+    userId: user?.id ?? null,
+    enabled: !!user
+  });
 
   const businessUnitOptions = user?.business_units?.map(bu => ({
     label: bu.legal_name,
