@@ -27,7 +27,13 @@ export const useCreateRFQ = () => {
             toast.success('RFQ created successfully!');
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || 'Failed to create RFQ.');
+            const data = error?.response?.data;
+            if (data?.errors && typeof data.errors === 'object') {
+                const firstError = Object.values(data.errors)[0];
+                toast.error(typeof firstError === 'string' ? firstError : data.message || 'Validation failed');
+            } else {
+                toast.error(data?.message || 'Failed to create RFQ.');
+            }
         }
     });
 };
@@ -42,7 +48,13 @@ export const useUpdateRFQ = () => {
             toast.success('RFQ updated successfully!');
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || 'Failed to update RFQ.');
+            const data = error?.response?.data;
+            if (data?.errors && typeof data.errors === 'object') {
+                const firstError = Object.values(data.errors)[0];
+                toast.error(typeof firstError === 'string' ? firstError : data.message || 'Validation failed');
+            } else {
+                toast.error(data?.message || 'Failed to update RFQ.');
+            }
         }
     });
 };
@@ -58,7 +70,13 @@ export const useAttachProductsRFQ = () => {
             toast.success('Products attached successfully!');
         },
         onError: (error: any) => {
-            toast.error(error?.response?.data?.message || 'Failed to attach products.');
+            const data = error?.response?.data;
+            if (data?.errors && typeof data.errors === 'object') {
+                const firstError = Object.values(data.errors)[0];
+                toast.error(typeof firstError === 'string' ? firstError : data.message || 'Validation failed');
+            } else {
+                toast.error(data?.message || 'Failed to attach products.');
+            }
         }
     });
 };
